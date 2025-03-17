@@ -1,0 +1,60 @@
+﻿@model IEnumerable<BaseDatos01_Tarea01_ListaEmpleados.Models.Employee>
+
+@{
+    ViewBag.Title = "Lista Empleados";
+}
+
+<h2>Lista de Empleados</h2>
+
+@if (TempData["InfoMessage"] != null)
+{
+    <div class="alert  alert-info">
+        <strong>Informacion: </strong>  @TempData["InfoMessage"]
+    </div>
+}
+else if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert  alert-success">
+        <strong>Informacion: </strong>  @TempData["SuccessMessage"]
+    </div>
+}
+else if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert  alert-danger">
+        <strong>ERROR: </strong>  @TempData["ErrorMessage"]
+    </div>
+}
+
+
+<table class="table table-hover">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.id)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Nombre)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Salario)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Nombre)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Salario)
+            </td>
+        </tr>
+    }
+</table>
+<p>
+    @Html.ActionLink("Insertar Empleado", "Create", null, new { @class = "btn btn-primary" })
+</p>
