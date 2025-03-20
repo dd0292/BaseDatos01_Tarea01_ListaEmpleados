@@ -22,8 +22,13 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.DAL
 			{
 				SqlCommand cmd = connection.CreateCommand();
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = "ObtenerEmpleados_Alfabético";
-				SqlDataAdapter sqlData = new SqlDataAdapter(cmd);
+                cmd.CommandText = "ObtenerEmpleados_Alfabeticamente";
+
+                SqlParameter outParam = new SqlParameter("@outResultCode", SqlDbType.Int);
+                outParam.Direction = ParameterDirection.Output;
+                cmd.Parameters.Add(outParam);
+
+                SqlDataAdapter sqlData = new SqlDataAdapter(cmd);
 				DataTable dataTableEmployees = new DataTable();
 
 				connection.Open();
@@ -53,19 +58,19 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.DAL
 
             using (SqlConnection connection = new SqlConnection(conString))
             {
-                SqlCommand cmd = new SqlCommand("InsertarEmpleado", connection);
+                SqlCommand cmd = new SqlCommand("InsertarNuevoEmpleado", connection);
                 cmd.CommandType = CommandType.StoredProcedure;
 
-                cmd.Parameters.AddWithValue("@NombreVar", employee.Nombre);
-                cmd.Parameters.AddWithValue("@SalarioVar", employee.Salario);
+                cmd.Parameters.AddWithValue("@inNombre", employee.Nombre);
+                cmd.Parameters.AddWithValue("@inSalario", employee.Salario);
 
-                SqlParameter outputParam = new SqlParameter("@Resultado", SqlDbType.Int);
+                SqlParameter outputParam = new SqlParameter("@outResultCode", SqlDbType.Int);
                 outputParam.Direction = ParameterDirection.Output;
                 cmd.Parameters.Add(outputParam);
 
                 connection.Open();
                 cmd.ExecuteNonQuery(); 
-                resultado = Convert.ToInt32(cmd.Parameters["@Resultado"].Value);
+                resultado = Convert.ToInt32(cmd.Parameters["@outResultCode"].Value);
                 connection.Close();
             }
 
