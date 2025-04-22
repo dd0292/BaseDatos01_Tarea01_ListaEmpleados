@@ -20,5 +20,35 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Models
         [Required]
         [DisplayName("Salario")]
         public decimal Salario { get; set; }
+
+        //[Key]
+        //[DisplayName("Id")]
+        //public decimal Id { get; set; }
+
+        //[Required]
+        //[DisplayName("IdPuesto")]
+        //public decimal IdPuesto { get; set; }
+
+        //[Required]
+        //[DisplayName("ValorDocumentoIdentidad")]
+        //public decimal ValorDocumentoIdentidad { get; set; }
+
+        //[Required]
+        //[DisplayName("Nombre")]
+        //public decimal Nombre { get; set; }
+
+        //[Required]
+        //[DisplayName("FechaContratacion")]
+        //public decimal FechaContratacion { get; set; }
+
+        //[Required]
+        //[DisplayName("SaldoVacaciones")]
+        //public decimal SaldoVacaciones { get; set; }
+
+        //[Required]
+        //[DisplayName("EsActivo")]
+        //public decimal EsActivo { get; set; }
+
+
     }
 }

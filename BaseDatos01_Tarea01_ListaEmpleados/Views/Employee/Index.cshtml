@@ -25,13 +25,20 @@ else if (TempData["ErrorMessage"] != null)
     </div>
 }
 
+
 @using (Html.BeginForm("Filtrar", "Empleado", FormMethod.Get))
 {
-    <div class="d-flex mb-3">
-        <input type="text" name="filtro" class="form-control mr-2" placeholder="Buscar por nombre o documento" />
-        <button type="submit" class="btn btn-info">Filtrar</button>
+    <div class="d-flex justify-content-between mb-3">
+        <div class="d-flex" style="flex-grow: 1;">
+            <input type="text" name="filtro" class="form-control mr-2" placeholder="Buscar por nombre o documento" />
+            <button type="submit" class="btn btn-info">Filtrar</button>
+        </div>
+
+        @Html.ActionLink("Insertar Empleado", "Create", null, new { @class = "btn btn-primary" })
     </div>
 }
+
+
 
 <table class="table table-hover">
     <tr>
@@ -54,13 +61,11 @@ else if (TempData["ErrorMessage"] != null)
             <td>@Html.DisplayFor(modelItem => item.Salario)</td>
 
             <td>
-                @Html.ActionLink("Consulta", "Create", null, new { @class = "btn btn-primary btn-sm" })
-                @Html.ActionLink("Editar", "Create", null, new { @class = "btn btn-success btn-sm" })
-                @Html.ActionLink("Borrar", "Create", null, new { @class = "btn btn-danger btn-sm" })
+                @Html.ActionLink("Consulta", "Read", "Employee", new { nombre = item.Nombre, salario = item.Salario}, new { @class = "btn btn-primary btn-sm" })
+                @Html.ActionLink("Editar", "Create", "Employee", new { @class = "btn btn-success btn-sm" })
+                @Html.ActionLink("Borrar", "Create", "Employee", new { @class = "btn btn-danger btn-sm" })
             </td>
         </tr>
     }
 </table>
-<p>
-    @Html.ActionLink("Insertar Empleado", "Create", null, new { @class = "btn btn-primary" })
-</p>
+

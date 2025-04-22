@@ -26,12 +26,6 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
             return View(employeeList);
         }
 
-        // GET: Employee/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
-
         // GET: Employee/Create
         [HttpGet]
         public ActionResult Create()
@@ -68,6 +62,45 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
                 return View();
             }
         }
+
+        // GET: Emplyee/Read
+        [HttpGet]
+        public ActionResult Read()
+        {
+            return View();
+        }
+
+        // POST: Employee/Read
+        [HttpPost]
+        public ActionResult Read(Employee employee)
+        {
+            bool IsInserted = false;
+            try
+            {
+
+                if (ModelState.IsValid)
+                {
+                    IsInserted = _employeeDAL.InsertEmployee(employee);
+
+                    if (IsInserted)
+                    {
+                        TempData["SuccessMessage"] = "Inserción exitosa !!!";
+                    }
+                    else
+                    {
+                        TempData["ErrorMessage"] = "[ERROR 50001]Nombre de Empleado ya existe";
+                    }
+                }
+
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+                return View();
+            }
+        }
+
 
         // GET: Employee/Edit/5
         public ActionResult Edit(int id)
