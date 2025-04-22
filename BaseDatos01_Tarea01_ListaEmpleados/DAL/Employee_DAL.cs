@@ -50,7 +50,6 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.DAL
 			return list;
 		}
 
-
         // Add Into Employees List
         public bool InsertEmployee(Employee employee)
         {
