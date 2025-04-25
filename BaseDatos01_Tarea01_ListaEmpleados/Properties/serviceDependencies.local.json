@@ -9,6 +9,11 @@
       "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.Sql/servers/tareabd/databases/Empleados",
       "type": "mssql.azure",
       "connectionId": "ConnectionStrings:DatabaseConnection"
+    },
+    "mssql2": {
+      "secretStore": "LocalSecretsFile",
+      "type": "mssql.onprem",
+      "connectionId": "Base_cloudcluster"
     }
   }
 }
