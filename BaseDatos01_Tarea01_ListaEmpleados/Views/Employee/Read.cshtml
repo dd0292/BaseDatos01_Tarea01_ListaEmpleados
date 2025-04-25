@@ -1,10 +1,10 @@
 ﻿@model BaseDatos01_Tarea01_ListaEmpleados.Models.Employee
 
 @{
-    ViewBag.Title = "Read";
+    ViewBag.Title = "Detalles del Empleado";
 }
 
-<h2>Insertar Empleado</h2>
+<h2>Consulta de Empleado</h2>
 
 @if (TempData["ErrorMessage"] != null)
 {
@@ -13,42 +13,42 @@
     </div>
 }
 
-@using (Html.BeginForm())
-{
-    @Html.AntiForgeryToken()
-
-    <div class="form-horizontal">
-        <h4>Datos Nuevo Empleado</h4>
-        <hr />
-
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.Nombre, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Nombre, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Nombre, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.Salario, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Salario, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Salario, "", new { @class = "text-danger" })
-            </div>
-        </div>
-        <h3>
-
-        </h3>
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Insertar" class="btn btn-primary" />
-                @Html.ActionLink("Regresar", "Index", null, new { @class = "btn btn-danger ml-2" })
-            </div>
+<div class="form-horizontal">
+    <div class="form-group">
+        <label class="control-label col-md-2">Nombre:</label>
+        <div class="col-md-10">
+            <p class="form-control-static">@Model.Nombre</p>
         </div>
     </div>
-}
+
+    <div class="form-group">
+        <label class="control-label col-md-2">Documento de Identidad:</label>
+        <div class="col-md-10">
+            <p class="form-control-static">@Model.ValorDocumentoIdentidad</p>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2">Puesto:</label>
+        <div class="col-md-10">
+            <p class="form-control-static">@Model.NombrePuesto</p>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2">Saldo Vacaciones:</label>
+        <div class="col-md-10">
+            <p class="form-control-static">@Model.SaldoVacaciones</p>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            @Html.ActionLink("Regresar", "Index", null, new { @class = "btn btn-secondary" })
+        </div>
+    </div>
+</div>
+
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")

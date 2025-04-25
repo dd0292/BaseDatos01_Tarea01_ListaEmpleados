@@ -1,0 +1,71 @@
+CREATE TABLE Puesto (
+    Id INT PRIMARY KEY IDENTITY,
+    Nombre VARCHAR(100) NOT NULL UNIQUE,
+    SalarioxHora MONEY NOT NULL 
+);
+
+CREATE TABLE Empleado (	
+    Id INT PRIMARY KEY IDENTITY,
+    IdPuesto INT FOREIGN KEY REFERENCES Puesto(Id),
+    ValorDocumentoIdentidad INT NOT NULL UNIQUE,
+    Nombre VARCHAR(100) NOT NULL UNIQUE,
+    FechaContratacion DATE NOT NULL,
+    SaldoVacaciones MONEY NOT NULL,
+    EsActivo BIT NOT NULL
+);
+
+CREATE TABLE TipoMovimiento (
+    Id INT PRIMARY KEY IDENTITY,
+    Nombre VARCHAR(100) NOT NULL UNIQUE,
+    TipoAccion VARCHAR(49) NOT NULL
+);
+
+CREATE TABLE Movimiento (
+    Id INT PRIMARY KEY IDENTITY,
+    IdEmpleado INT FOREIGN KEY REFERENCES Empleado(Id),
+    IdTipoMovimiento INT FOREIGN KEY REFERENCES TipoMovimiento(Id),
+    Fecha DATETIME NOT NULL,
+    Monto MONEY NOT NULL,
+    NuevoSaldo MONEY NOT NULL,
+    IdPostByUser INT FOREIGN KEY REFERENCES Usuario(Id),
+    PostInIP VARCHAR(100),
+    PostTime DATETIME
+);
+
+CREATE TABLE Usuario (
+    Id INT PRIMARY KEY IDENTITY,
+    Username VARCHAR(100) NOT NULL UNIQUE,
+    Pass VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE TipoEvento (
+    Id INT PRIMARY KEY IDENTITY,
+    Nombre VARCHAR(100) NOT NULL UNIQUE
+);
+
+CREATE TABLE BitacoraEvento (
+    Id INT PRIMARY KEY IDENTITY,
+    IdTipoEvento INT FOREIGN KEY REFERENCES TipoEvento(Id),
+    Descripcion VARCHAR(529),
+    IdPostByUser INT FOREIGN KEY REFERENCES Usuario(Id),
+    PostInIP VARCHAR(49),
+    PostTime DATETIME
+);
+
+CREATE TABLE DBError (
+    Id INT PRIMARY KEY IDENTITY,
+    UserName VARCHAR(100) NOT NULL,
+    Number_ INT,
+    State_ INT,
+    Severity_ INT,
+    Line_ INT,
+    Procedure_ NVARCHAR(100),
+    Message_ NVARCHAR(MAX),
+    DateTime_ DATETIME
+);
+
+CREATE TABLE Error (
+    Id INT PRIMARY KEY IDENTITY,
+    Codigo INT,
+    Descripcion VARCHAR(529)
+);

@@ -26,7 +26,7 @@ else if (TempData["ErrorMessage"] != null)
 }
 
 
-@using (Html.BeginForm("Filtrar", "Empleado", FormMethod.Get))
+@using (Html.BeginForm("Index", "Employee", FormMethod.Get))
 {
     <div class="d-flex justify-content-between mb-3">
         <div class="d-flex" style="flex-grow: 1;">
@@ -38,15 +38,13 @@ else if (TempData["ErrorMessage"] != null)
     </div>
 }
 
-
-
 <table class="table table-hover">
     <tr>
         <th>
             @Html.DisplayNameFor(model => model.Nombre)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Salario)
+            @Html.DisplayNameFor(model => model.ValorDocumentoIdentidad)
         </th>
         <th>
             Consulta, Borrado o Editar
@@ -58,12 +56,12 @@ else if (TempData["ErrorMessage"] != null)
     {
         <tr>
             <td>@Html.DisplayFor(modelItem => item.Nombre)</td>
-            <td>@Html.DisplayFor(modelItem => item.Salario)</td>
+            <td>@Html.DisplayFor(modelItem => item.ValorDocumentoIdentidad)</td>
 
             <td>
-                @Html.ActionLink("Consulta", "Read", "Employee", new { nombre = item.Nombre, salario = item.Salario}, new { @class = "btn btn-primary btn-sm" })
-                @Html.ActionLink("Editar", "Create", "Employee", new { @class = "btn btn-success btn-sm" })
-                @Html.ActionLink("Borrar", "Create", "Employee", new { @class = "btn btn-danger btn-sm" })
+                @Html.ActionLink("Consulta", "Read", "Employee", new { Nombre = item.Nombre, ValorDocumentoIdentidad = item.ValorDocumentoIdentidad}, new { @class = "btn btn-primary btn-sm" })
+                @Html.ActionLink("Editar", "Edit", "Employee", new { Nombre = item.Nombre, ValorDocumentoIdentidad = item.ValorDocumentoIdentidad }, new { @class = "btn btn-success btn-sm" })
+                @Html.ActionLink("Borrar", "Delete", "Employee", new { Nombre = item.Nombre, ValorDocumentoIdentidad = item.ValorDocumentoIdentidad }, new { @class = "btn btn-danger btn-sm" })
             </td>
         </tr>
     }

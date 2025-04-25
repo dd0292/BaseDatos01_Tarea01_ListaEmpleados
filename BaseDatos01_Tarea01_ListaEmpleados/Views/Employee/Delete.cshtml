@@ -1,0 +1,24 @@
+﻿@model BaseDatos01_Tarea01_ListaEmpleados.Models.Employee
+
+@{
+    ViewBag.Title = "Eliminar Empleado";
+}
+
+<h2>Eliminar Empleado</h2>
+
+<h4>¿Está seguro de que desea eliminar este empleado?</h4>
+<div class="alert alert-warning">
+    <strong>Nombre:</strong> @Model.Nombre <br />
+    <strong>Documento de Identidad:</strong> @Model.ValorDocumentoIdentidad
+</div>
+
+@using (Html.BeginForm("Delete", "Employee", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+
+    @Html.HiddenFor(model => model.Nombre)
+    @Html.HiddenFor(model => model.ValorDocumentoIdentidad)
+
+    <input type="submit" value="Eliminar" class="btn btn-danger" />
+    @Html.ActionLink("Cancelar", "Index", null, new { @class = "btn btn-secondary ml-2" })
+}

@@ -1,0 +1,71 @@
+﻿@model BaseDatos01_Tarea01_ListaEmpleados.Models.Employee
+
+@{
+    ViewBag.Title = "Editar Empleado";
+}
+
+<h2>Editar Empleado</h2>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        <strong>ERROR:</strong> @TempData["ErrorMessage"]
+    </div>
+}
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+<div class="form-horizontal">
+    <h4>Datos A Editar Del Empleado</h4>
+    <hr />
+
+    @Html.Hidden("nombreAntiguo", Model.Nombre)
+    @Html.Hidden("docAntiguo", Model.ValorDocumentoIdentidad)
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Nombre, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.Nombre, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.Nombre, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.ValorDocumentoIdentidad, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.ValorDocumentoIdentidad, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.ValorDocumentoIdentidad, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.Label("Puesto", new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.DropDownList("puestoNombre", (SelectList)ViewBag.Puestos, "Seleccione un puesto", new { @class = "form-control" })
+            <span id="puestoError" class="text-danger"></span>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+    @Html.ActionLink("Cancelar", "Index", null, new { @class = "btn btn-secondary ml-2" })
+</div>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script>
+        document.querySelector("form").addEventListener("submit", function (e) {
+            const ddl = document.querySelector("select[name='puestoNombre']");
+            const errorDiv = document.getElementById("puestoError");
+            errorDiv.textContent = "";
+
+            if (!ddl.value || ddl.value === "Seleccione un puesto") {
+                e.preventDefault();
+                errorDiv.textContent = "Debe seleccionar un puesto válido.";
+            }
+        });
+    </script>
+}

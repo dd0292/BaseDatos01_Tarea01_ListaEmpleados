@@ -10,44 +10,36 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Models
 	public class Employee
 	{
         [Key]
-        [DisplayName("ID")]
-        public int id { get; set; }
+        [DisplayName("Id")]
+        public int Id { get; set; }
+
+        [Required]
+        [DisplayName("IdPuesto")]
+        public int IdPuesto { get; set; }
+
+        [Required]
+        [DisplayName("ValorDocumentoIdentidad")]
+        public int ValorDocumentoIdentidad { get; set; }
 
         [Required]
         [DisplayName("Nombre")]
         public string Nombre { get; set; }
 
         [Required]
-        [DisplayName("Salario")]
-        public decimal Salario { get; set; }
+        [DisplayName("FechaContratacion")]
+        public string FechaContratacion { get; set; }
 
-        //[Key]
-        //[DisplayName("Id")]
-        //public decimal Id { get; set; }
+        [Required]
+        [DisplayName("SaldoVacaciones")]
+        public decimal SaldoVacaciones { get; set; }
 
-        //[Required]
-        //[DisplayName("IdPuesto")]
-        //public decimal IdPuesto { get; set; }
+        [Required]
+        [DisplayName("EsActivo")]
+        public bool EsActivo { get; set; }
 
-        //[Required]
-        //[DisplayName("ValorDocumentoIdentidad")]
-        //public decimal ValorDocumentoIdentidad { get; set; }
-
-        //[Required]
-        //[DisplayName("Nombre")]
-        //public decimal Nombre { get; set; }
-
-        //[Required]
-        //[DisplayName("FechaContratacion")]
-        //public decimal FechaContratacion { get; set; }
-
-        //[Required]
-        //[DisplayName("SaldoVacaciones")]
-        //public decimal SaldoVacaciones { get; set; }
-
-        //[Required]
-        //[DisplayName("EsActivo")]
-        //public decimal EsActivo { get; set; }
+        [Required]
+        [DisplayName("NombrePuesto")]
+        public string NombrePuesto { get; set; }
 
 
     }

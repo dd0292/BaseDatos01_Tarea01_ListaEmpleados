@@ -198,6 +198,8 @@
     <Content Include="Views\Employee\Create.cshtml" />
     <Content Include="Views\Employee\Read.cshtml" />
     <Content Include="Views\Movement\Index.cshtml" />
+    <Content Include="Views\Employee\Delete.cshtml" />
+    <Content Include="Views\Employee\Edit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
