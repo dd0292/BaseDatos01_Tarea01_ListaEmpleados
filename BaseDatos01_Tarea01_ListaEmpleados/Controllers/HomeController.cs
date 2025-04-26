@@ -10,7 +10,11 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
     {
         public ActionResult Index()
         {
-            return View();
+            if (User.Identity.IsAuthenticated)  // Esto podría saltarse si hay una cookie vieja
+            {
+                return View();
+            }
+            return RedirectToAction("Login", "Account");
         }
 
         public ActionResult About()
