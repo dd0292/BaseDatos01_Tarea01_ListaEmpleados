@@ -21,8 +21,8 @@ namespace BaseDatos01_Tarea01_ListaEmpleados
             string username = Login1.UserName;
             string password = Login1.Password;
 
-            string connectionString = ConfigurationManager.ConnectionStrings["adoConnectionString"].ToString();
-            string query = "SELECT Id, Username FROM Usuario WHERE Username = @Username AND Password = @Password";
+            string connectionString = "Server=mssql-196050-0.cloudclusters.net,10264;Database=Empleado;User Id=Fabricio;Password=Tareabd2;TrustServerCertificate=true;";
+            string query = "SELECT Id, Username,Pass FROM Usuario WHERE Username = @Username AND Pass = @Password";
 
             using (SqlConnection con = new SqlConnection(connectionString))
             {
@@ -42,12 +42,11 @@ namespace BaseDatos01_Tarea01_ListaEmpleados
                             // Guardamos datos importantes en Session
                             Session["UserId"] = reader["Id"];
                             Session["Username"] = username;
-                           // Session["NombreCompleto"] = reader["Nombre"];
-                           // Session["Rol"] = reader["Rol"];
-
                             // Ejemplo adicional: hora de login
                             Session["LastLogin"] = DateTime.Now;
-                            Response.Redirect("~/Home/Index");
+                            Response.Redirect("~/Home/Index", false);
+                            Context.ApplicationInstance.CompleteRequest(); // Finaliza la petición
+                            return;
                         }
                         else
                         {
@@ -58,6 +57,7 @@ namespace BaseDatos01_Tarea01_ListaEmpleados
                     {
 
                         Console.WriteLine("Error SQL: " + ex.Message);
+                        e.Authenticated = false;
                     }
                 }
             }
