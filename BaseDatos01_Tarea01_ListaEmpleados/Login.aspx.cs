@@ -44,7 +44,7 @@ namespace BaseDatos01_Tarea01_ListaEmpleados
                             Session["Username"] = username;
                             // Ejemplo adicional: hora de login
                             Session["LastLogin"] = DateTime.Now;
-                            Response.Redirect("~/Home/Index");
+                            Response.Redirect("~/Home/Index", false);
                             Context.ApplicationInstance.CompleteRequest(); // Finaliza la petición
                             return;
                         }

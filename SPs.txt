@@ -252,7 +252,7 @@ BEGIN
     END CATCH;
 
     SET NOCOUNT OFF;
-END
+END;
 
 ---------------------------------------------------------------------------------------------------
 
@@ -364,9 +364,10 @@ BEGIN
     END CATCH;
 
     SET NOCOUNT OFF;
-END
+END;
 
 ---------------------------------------------------------------------------------------------------
+
 CREATE PROCEDURE dbo.FiltrarEmpleados
     @inFiltro VARCHAR(100),
     @inEsNumero BIT,
@@ -449,6 +450,7 @@ BEGIN
 
     SET NOCOUNT OFF;
 END;
+
 ---------------------------------------------------------------------------------------------------
 
 CREATE PROCEDURE dbo.InsertarEmpleado
@@ -735,7 +737,7 @@ END;
 
 ---------------------------------------------------------------------------------------------------
 
-ALTER PROCEDURE dbo.ObtenerEmpleadoPorNombreYDocumento
+CREATE PROCEDURE dbo.ObtenerEmpleadoPorNombreYDocumento
     @inNombre NVARCHAR(100)
     , @inValorDocumentoIdentidad INT
 AS
@@ -791,7 +793,7 @@ BEGIN
 
     BEGIN TRY
         SELECT 
-            p.id AS Id
+            p.Id AS Id
         FROM dbo.Puesto AS p
         WHERE p.Nombre = @inNombrePuesto;
     END TRY

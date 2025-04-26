@@ -140,7 +140,7 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
             return RedirectToAction("Index");
         }
 
-        [HttpPost]
+        [HttpGet]
         public ActionResult DeleteCancel(string Nombre, int ValorDocumentoIdentidad)
         {
             int resultado = _employeeDAL.EliminarEmpleadoCancelar(Nombre, ValorDocumentoIdentidad);

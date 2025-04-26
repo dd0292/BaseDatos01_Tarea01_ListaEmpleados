@@ -40,6 +40,7 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.DAL // Data Access Layer
                 cmd.Parameters.AddWithValue("@inNuevoNombre", nuevoEmpleado.Nombre);
                 cmd.Parameters.AddWithValue("@inNuevoValorDocumentoIdentidad", nuevoEmpleado.ValorDocumentoIdentidad);
                 cmd.Parameters.AddWithValue("@inIdPuesto", idPuesto);
+
                 cmd.Parameters.AddWithValue("@inUserName", UserName);
                 cmd.Parameters.AddWithValue("@inIdPostByUser", UserId);
                 cmd.Parameters.AddWithValue("@inPostInIP", ClientIp);
@@ -151,9 +152,9 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.DAL // Data Access Layer
                 {
                     list.Add(new Employee
                     {
-                        Id = Convert.ToInt32(dr["Id"]),
-                        ValorDocumentoIdentidad = Convert.ToInt32(dr["ValorDocumentoIdentidad"]),
-                        Nombre = dr["Nombre"].ToString(),
+                        Id = Convert.ToInt32(dr["IdEmpleado"]),
+                        ValorDocumentoIdentidad = Convert.ToInt32(dr["DocumentoEmpleado"]),
+                        Nombre = dr["NombreEmpleado"].ToString(),
                     });
                 }
 
@@ -171,14 +172,14 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.DAL // Data Access Layer
                 SqlCommand cmd = new SqlCommand("InsertarEmpleado", connection);
                 cmd.CommandType = CommandType.StoredProcedure;
 
-
-                cmd.Parameters.AddWithValue("@Nombre", employee.Nombre);
-                cmd.Parameters.AddWithValue("@ValorDocumentoIdentidad", employee.ValorDocumentoIdentidad);
-                
-
                 int puestoId = ObtenerIdPuestoPorNombre(puestoNombre);
-                cmd.Parameters.AddWithValue("@IdPuesto", puestoId);
+                cmd.Parameters.AddWithValue("@inIdPuesto", puestoId);
+                cmd.Parameters.AddWithValue("@inValorDocumentoIdentidad", employee.ValorDocumentoIdentidad);
+                cmd.Parameters.AddWithValue("@inNombre", employee.Nombre);
 
+                cmd.Parameters.AddWithValue("@inUserName", UserName);
+                cmd.Parameters.AddWithValue("@inIdPostByUser", UserId);
+                cmd.Parameters.AddWithValue("@inPostInIP", ClientIp);
 
                 SqlParameter outputParam = new SqlParameter("@outResultCode", SqlDbType.Int);
                 outputParam.Direction = ParameterDirection.Output;
@@ -293,7 +294,7 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.DAL // Data Access Layer
             {
                 SqlCommand cmd = new SqlCommand("ObtenerIdPuestoPorNombre", conn);
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@NombrePuesto", nombrePuesto);
+                cmd.Parameters.AddWithValue("@inNombrePuesto", nombrePuesto);
 
                 conn.Open();
                 object result = cmd.ExecuteScalar();
