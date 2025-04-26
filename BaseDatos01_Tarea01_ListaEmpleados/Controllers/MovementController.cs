@@ -25,75 +25,40 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
             return View(viewModel);
         }
 
-        // GET: Movement/Details/5
-        public ActionResult Details(int id)
+        [HttpGet]
+        public ActionResult Create(string Nombre, int ValorDocumentoIdentidad)
         {
+            var tiposMovimiento = _employeeDAL.GetTiposMovimiento();
+            ViewBag.TiposMovimiento = new SelectList(tiposMovimiento);
+
+            Employee empleado = _employeeDAL.ObtenerEmpleadoPorNombreYDocumento(Nombre, ValorDocumentoIdentidad);
+            ViewBag.Empleado = empleado;
+
             return View();
         }
 
-        // GET: Movement/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Movement/Create
         [HttpPost]
-        public ActionResult Create(FormCollection collection)
+        public ActionResult Create(string Nombre, int ValorDocumentoIdentidad, string TipoMovimiento, Movement move)
         {
-            try
-            {
-                // TODO: Add insert logic here
+            Console.WriteLine("Nombre: " + Nombre);
+            int outCode;
 
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
-        }
+            outCode = _employeeDAL.InsertarMovimiento(
+                ValorDocumentoIdentidad,
+                TipoMovimiento,
+                move.Monto
+            );
 
-        // GET: Movement/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: Movement/Edit/5
-        [HttpPost]
-        public ActionResult Edit(int id, FormCollection collection)
-        {
-            try
+            if (outCode == 0)
             {
-                // TODO: Add update logic here
-                return RedirectToAction("Index");
+                TempData["SuccessMessage"] = "Movimiento registrado correctamente.";
             }
-            catch
+            else
             {
-                return View();
+                TempData["ErrorMessage"] = _employeeDAL.ObtenerDescripcionError(outCode);
             }
-        }
+            return RedirectToAction("Index", "Movement", new { Nombre = Nombre, ValorDocumentoIdentidad = ValorDocumentoIdentidad });
 
-        // GET: Movement/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: Movement/Delete/5
-        [HttpPost]
-        public ActionResult Delete(int id, FormCollection collection)
-        {
-            try
-            {
-                // TODO: Add delete logic here
-
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
         }
     }
 }

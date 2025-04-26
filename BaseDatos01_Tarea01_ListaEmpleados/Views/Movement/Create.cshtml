@@ -1,0 +1,56 @@
+﻿@model BaseDatos01_Tarea01_ListaEmpleados.Models.MovimientoViewModel
+
+@{
+    ViewBag.Title = "Insertar Movimiento";
+}
+
+<h2>Insertar Movimiento</h2>
+
+@if (ViewBag.Empleado != null)
+{
+    <div>
+        <p><strong>Nombre:</strong> @ViewBag.Empleado.Nombre</p>
+        <p><strong>Valor Documento Identidad:</strong> @ViewBag.Empleado.ValorDocumentoIdentidad</p>
+        <p><strong>Saldo Vacaciones:</strong> @ViewBag.Empleado.SaldoVacaciones</p>
+    </div>
+}
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <input type="hidden" name="Nombre" value="@Html.Encode(ViewBag.Empleado.Nombre)" />
+    <input type="hidden" name="ValorDocumentoIdentidad" value="@ViewBag.Empleado.ValorDocumentoIdentidad" />
+
+    <div class="form-group">
+        @Html.Label("Tipo de Movimiento")
+        @Html.DropDownList("TipoMovimiento", (SelectList)ViewBag.TiposMovimiento, "Seleccione un tipo", new { @class = "form-control" })
+        <span id="puestoError" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Monto)
+        @Html.TextBoxFor(m => m.Monto, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.Monto, "", new { @class = "text-danger" })
+    </div>
+
+    <button type="submit" class="btn btn-primary">Guardar Movimiento</button>
+    @Html.ActionLink("Canelar", "Index", "Movement", new { Nombre = @ViewBag.Empleado.Nombre, ValorDocumentoIdentidad = @ViewBag.Empleado.ValorDocumentoIdentidad }, new { @class = "btn btn-success" })
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script>
+        document.querySelector("form").addEventListener("submit", function (e) {
+            const ddl = document.querySelector("select[name='TipoMovimiento']");
+            const errorDiv = document.getElementById("puestoError");
+            errorDiv.textContent = "";
+
+            if (!ddl.value || ddl.value === "Seleccione un tipo") {
+                e.preventDefault();
+                errorDiv.textContent = "Debe seleccionar un puesto válido.";
+            }
+        });
+    </script>
+}

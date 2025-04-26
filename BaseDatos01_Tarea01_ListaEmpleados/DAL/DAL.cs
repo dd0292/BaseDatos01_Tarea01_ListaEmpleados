@@ -5,6 +5,7 @@ using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Mvc;
 
@@ -25,6 +26,25 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.DAL // Data Access Layer
                    context.Request.ServerVariables["REMOTE_ADDR"]).Split(',')[0].Trim();
         }
 
+        private static int? ExtractIntFromBrackets(string input)
+        {
+            if (string.IsNullOrEmpty(input))
+                return null;
+
+            var pattern = @"\[(\d+)\]";
+            var match = Regex.Match(input, pattern);
+
+            if (match.Success && match.Groups.Count > 1)
+            {
+
+                if (int.TryParse(match.Groups[1].Value, out int result))
+                {
+                    return result;
+                }
+            }
+
+            return null; 
+        }
 
         public int ActualizarEmpleado(string nombreAntiguo, int docAntiguo, Employee nuevoEmpleado, int idPuesto)
         {
@@ -335,6 +355,61 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.DAL // Data Access Layer
 
             return puestos;
         }
+
+        public int InsertarMovimiento(int valorDocumentoIdentidad, string idTipoMovimiento, decimal monto)
+        {
+            int resultado = -1;
+
+            using (SqlConnection conn = new SqlConnection(conString))
+            {
+                SqlCommand cmd = new SqlCommand("InsertarMovimiento", conn);
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                cmd.Parameters.AddWithValue("@ValorDocumentoIdentidad", valorDocumentoIdentidad);
+                cmd.Parameters.AddWithValue("@IdTipoMovimiento", ExtractIntFromBrackets(idTipoMovimiento));
+                cmd.Parameters.AddWithValue("@Monto", monto);
+                
+                cmd.Parameters.AddWithValue("@inUserName", UserName);
+                cmd.Parameters.AddWithValue("@IdUsuario", UserId);
+                cmd.Parameters.AddWithValue("@IP", ClientIp);
+
+                SqlParameter outParam = new SqlParameter("@outResultCode", SqlDbType.Int)
+                {
+                    Direction = ParameterDirection.Output
+                };
+                cmd.Parameters.Add(outParam);
+
+                conn.Open();
+                cmd.ExecuteNonQuery();
+
+                resultado = (int)cmd.Parameters["@outResultCode"].Value;
+            }
+
+            return resultado;
+        }
+
+
+        public List<string> GetTiposMovimiento()
+        {
+            List<string> tiposMovimiento = new List<string>();
+
+            using (SqlConnection conn = new SqlConnection(conString))
+            {
+                SqlCommand cmd = new SqlCommand("ObtenerTiposMovimiento", conn);
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                conn.Open();
+                SqlDataReader reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    tiposMovimiento.Add($"[{reader["Id"].ToString()}] {reader["Nombre"].ToString()}");
+                }
+            }
+
+            return tiposMovimiento;
+        }
+
 
     }
 }

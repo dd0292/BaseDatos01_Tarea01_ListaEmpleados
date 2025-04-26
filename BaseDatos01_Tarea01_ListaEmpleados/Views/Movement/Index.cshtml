@@ -6,6 +6,25 @@
 
 <h2>Movimientos de @Model.Empleado.Nombre</h2>
 
+@if (TempData["InfoMessage"] != null)
+{
+    <div class="alert  alert-info">
+        <strong>Informacion: </strong>  @TempData["InfoMessage"]
+    </div>
+}
+else if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert  alert-success">
+        <strong>Informacion: </strong>  @TempData["SuccessMessage"]
+    </div>
+}
+else if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert  alert-danger">
+        <strong>ERROR: </strong>  @TempData["ErrorMessage"]
+    </div>
+}
+
 <div class="mb-3">
     <strong>Documento de Identidad:</strong> @Model.Empleado.ValorDocumentoIdentidad <br />
     <strong>Saldo de Vacaciones:</strong> @Model.Empleado.SaldoVacaciones
@@ -40,6 +59,6 @@
 </table>
 
 <div class="mt-3">
-    @Html.ActionLink("Insertar Movimiento", "Create", "Movimiento", new { valorDocumentoIdentidad = Model.Empleado.ValorDocumentoIdentidad }, new { @class = "btn btn-success" })
+    @Html.ActionLink("Insertar Movimiento", "Create", "Movement", new { Nombre = Model.Empleado.Nombre, ValorDocumentoIdentidad = Model.Empleado.ValorDocumentoIdentidad }, new { @class = "btn btn-success" })
     @Html.ActionLink("Volver", "Index", "Employee", null, new { @class = "btn btn-secondary ml-2" })
 </div>
