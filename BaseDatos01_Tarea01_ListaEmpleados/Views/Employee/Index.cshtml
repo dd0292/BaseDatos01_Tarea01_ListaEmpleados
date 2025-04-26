@@ -49,6 +49,9 @@ else if (TempData["ErrorMessage"] != null)
         <th>
             Consulta, Borrado o Editar
         </th>
+        <th>
+            Listar Movimientos
+        </th>
         <th></th>
     </tr>
 
@@ -59,9 +62,13 @@ else if (TempData["ErrorMessage"] != null)
             <td>@Html.DisplayFor(modelItem => item.ValorDocumentoIdentidad)</td>
 
             <td>
-                @Html.ActionLink("Consulta", "Read", "Employee", new { Nombre = item.Nombre, ValorDocumentoIdentidad = item.ValorDocumentoIdentidad}, new { @class = "btn btn-primary btn-sm" })
+                @Html.ActionLink("Consulta", "Read", "Employee", new { Nombre = item.Nombre, ValorDocumentoIdentidad = item.ValorDocumentoIdentidad }, new { @class = "btn btn-primary btn-sm" })
                 @Html.ActionLink("Editar", "Edit", "Employee", new { Nombre = item.Nombre, ValorDocumentoIdentidad = item.ValorDocumentoIdentidad }, new { @class = "btn btn-success btn-sm" })
                 @Html.ActionLink("Borrar", "Delete", "Employee", new { Nombre = item.Nombre, ValorDocumentoIdentidad = item.ValorDocumentoIdentidad }, new { @class = "btn btn-danger btn-sm" })
+            </td>
+
+            <td>
+                @Html.ActionLink("Movimientos", "Index", "Movement", new { Nombre = item.Nombre, ValorDocumentoIdentidad = item.ValorDocumentoIdentidad }, new { @class = "btn btn-primary btn-sm" })
             </td>
         </tr>
     }

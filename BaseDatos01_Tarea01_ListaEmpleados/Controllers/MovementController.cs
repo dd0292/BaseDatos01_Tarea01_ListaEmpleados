@@ -1,4 +1,6 @@
-﻿using System;
+﻿using BaseDatos01_Tarea01_ListaEmpleados.DAL;
+using BaseDatos01_Tarea01_ListaEmpleados.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -8,10 +10,19 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
 {
     public class MovementController : Controller
     {
+        _DAL _employeeDAL = new _DAL();
         // GET: Movement
-        public ActionResult Index()
+        public ActionResult Index(string Nombre, int ValorDocumentoIdentidad)
         {
-            return View();
+            var empleado = _employeeDAL.ObtenerEmpleadoPorNombreYDocumento(Nombre, ValorDocumentoIdentidad);
+            var movimientos = _employeeDAL.ListarMovimientosEmpleado(ValorDocumentoIdentidad);
+
+            var viewModel = new EmployeeMovementsViewModel
+            {
+                Empleado = empleado,
+                Movimientos = movimientos
+            };
+            return View(viewModel);
         }
 
         // GET: Movement/Details/5
@@ -55,7 +66,6 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
             try
             {
                 // TODO: Add update logic here
-
                 return RedirectToAction("Index");
             }
             catch

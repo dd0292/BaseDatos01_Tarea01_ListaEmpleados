@@ -10,21 +10,9 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Models
     public class Movement
     {
 
-        [Key]
-        [DisplayName("Id")]
-        public decimal Id { get; set; }
-
-        [Required]
-        [DisplayName("IdEmpleado ")]
-        public decimal IdEmpleado { get; set; }
-
-        [Required]
-        [DisplayName("IdTipoMovimiento")]
-        public decimal IdTipoMovimiento { get; set; }
-
         [Required]
         [DisplayName("Fecha")]
-        public decimal Fecha { get; set; }
+        public DateTime Fecha { get; set; }
 
         [Required]
         [DisplayName("Monto")]
@@ -36,15 +24,19 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Models
 
         [Required]
         [DisplayName("IdPostByUser")]
-        public decimal IdPostByUser { get; set; }
-
-        [Required]
-        [DisplayName("PostInIP")]
-        public decimal PostInIP { get; set; }
+        public string IdPostByUser { get; set; }
 
         [Required]
         [DisplayName("PostTime")]
-        public decimal PostTime { get; set; }
+        public DateTime PostTime { get; set; }
+
+        [Required]
+        [DisplayName("NombreTipo")]
+        public string NombreTipo { get; set; }
+
+        [Required]
+        [DisplayName("NombreUsuario")]
+        public string NombreUsuario { get; set; }
 
     }
 }

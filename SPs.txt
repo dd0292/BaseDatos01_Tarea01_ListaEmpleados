@@ -1,0 +1,867 @@
+SPs:
+---------------------------------------------------------------------------------------------------
+CREATE PROCEDURE dbo.ActualizarEmpleado
+    @inNombre VARCHAR(100),
+    @inValorDocumentoIdentidad INT,
+    @inNuevoNombre VARCHAR(100),
+    @inNuevoValorDocumentoIdentidad INT,
+    @inIdPuesto INT,
+    @outResultCode INT OUTPUT,
+    @inUserName VARCHAR(100),
+    @inIdPostByUser INT,
+    @inPostInIP VARCHAR(49)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @idTipoEvento INT = 8;
+	DECLARE @nombrePuestoAntes VARCHAR(100);
+	DECLARE @nombrePuestoDespues VARCHAR(100);
+    DECLARE @saldoVacaciones INT;
+
+    BEGIN TRY
+        -- Validación por documento
+        IF EXISTS (
+            SELECT 1
+            FROM dbo.Empleado
+            WHERE ValorDocumentoIdentidad = @inNuevoValorDocumentoIdentidad
+              AND NOT (Nombre = @inNombre 
+			  AND ValorDocumentoIdentidad = @inValorDocumentoIdentidad)
+        )
+        BEGIN
+            SET @outResultCode = 50006;
+
+            INSERT INTO dbo.BitacoraEvento (
+                IdTipoEvento, Descripcion, IdPostByUser, PostInIP, PostTime
+            )
+            VALUES (
+                7,
+                'Empleado con ValorDocumentoIdentidad ya existe en actualización: '
+                    + @inValorDocumentoIdentidad + ',' + @inNombre + ' -> '
+                    + @inNuevoValorDocumentoIdentidad + ',' + @inNuevoNombre,
+                @inIdPostByUser,
+                @inPostInIP,
+                GETDATE()
+            );
+
+            INSERT INTO dbo.DBError (
+                UserName
+				, Number_
+				, State_
+				, Severity_
+				, Line_
+				, Procedure_
+				, Message_
+				, DateTime_
+            )
+            VALUES (
+                @inUserName,
+                50006, 0, 0, ERROR_LINE(), 'dbo.ActualizarEmpleado',
+                'Empleado con ValorDocumentoIdentidad ya existe en actualización.',
+                GETDATE()
+            );
+
+            RETURN;
+        END
+
+        IF EXISTS (
+            SELECT 1
+            FROM dbo.Empleado
+            WHERE Nombre = @inNuevoNombre
+              AND NOT (Nombre = @inNombre 
+			  AND ValorDocumentoIdentidad = @inValorDocumentoIdentidad)
+        )
+        BEGIN
+            SET @outResultCode = 50007;
+
+            INSERT INTO dbo.BitacoraEvento (
+                IdTipoEvento
+				, Descripcion
+				, IdPostByUser
+				, PostInIP
+				, PostTime
+            )
+            VALUES (
+                7,
+                'Empleado con mismo nombre ya existe en actualización: '
+                    + @inValorDocumentoIdentidad + ',' + @inNombre + ' -> '
+                    + @inNuevoValorDocumentoIdentidad + ',' + @inNuevoNombre,
+                @inIdPostByUser,
+                @inPostInIP,
+                GETDATE()
+            );
+
+            INSERT INTO dbo.DBError (
+                UserName
+				, Number_
+				, State_
+				, Severity_
+				, Line_
+				, Procedure_
+				, Message_
+				, DateTime_
+            )
+            VALUES (
+                @inUserName,
+                50007, 0, 0, ERROR_LINE(), 'dbo.ActualizarEmpleado',
+                'Empleado con mismo nombre ya existe en actualización.',
+                GETDATE()
+            );
+
+            RETURN;
+        END
+
+        SELECT 
+            @nombrePuestoAntes = p.Nombre,
+            @saldoVacaciones = e.SaldoVacaciones
+        FROM dbo.Empleado e
+        INNER JOIN dbo.Puesto p ON p.Id = e.IdPuesto
+        WHERE e.Nombre = @inNombre
+          AND e.ValorDocumentoIdentidad = @inValorDocumentoIdentidad;
+
+        SELECT @nombrePuestoDespues = Nombre
+        FROM dbo.Puesto
+        WHERE Id = @inIdPuesto;
+
+        UPDATE dbo.Empleado
+        SET Nombre = @inNuevoNombre,
+            ValorDocumentoIdentidad = @inNuevoValorDocumentoIdentidad,
+            IdPuesto = @inIdPuesto
+        WHERE Nombre = @inNombre
+          AND ValorDocumentoIdentidad = @inValorDocumentoIdentidad;
+
+        SET @outResultCode = 0;
+
+        INSERT INTO dbo.BitacoraEvento (
+            IdTipoEvento,
+            Descripcion,
+            IdPostByUser,
+            PostInIP,
+            PostTime
+        )
+        VALUES (
+            @idTipoEvento,
+            'Empleado actualizado: Antes -> [' +
+                'DocID: ' + @inValorDocumentoIdentidad + ', ' +
+                'Nombre: ' + @inNombre + ', ' +
+                'Puesto: ' + @nombrePuestoAntes + '] | Después -> [' +
+                'DocID: ' + @inNuevoValorDocumentoIdentidad + ', ' +
+                'Nombre: ' + @inNuevoNombre + ', ' +
+                'Puesto: ' + @nombrePuestoDespues + '] | SaldoVacaciones: ' +
+                @saldoVacaciones,
+            @inIdPostByUser,
+            @inPostInIP,
+            GETDATE()
+        );
+    END TRY
+    BEGIN CATCH
+        INSERT INTO dbo.DBError (
+            UserName
+			, Number_
+			, State_
+			, Severity_
+			, Line_
+			, Procedure_
+			, Message_
+			, DateTime_
+        )
+        VALUES (
+            @inUserName,
+            ERROR_NUMBER(),
+            ERROR_STATE(),
+            ERROR_SEVERITY(),
+            ERROR_LINE(),
+            ERROR_PROCEDURE(),
+            ERROR_MESSAGE(),
+            GETDATE()
+        );
+
+        SET @outResultCode = ERROR_NUMBER();
+    END CATCH;
+
+    SET NOCOUNT OFF;
+END;
+---------------------------------------------------------------------------------------------------
+CREATE PROCEDURE dbo.EliminarEmpleadoCancelar
+    @inNombre NVARCHAR(100),
+    @inValorDocumentoIdentidad INT,
+    @outResultCode INT OUTPUT,
+    @inUserName VARCHAR(100),
+    @inIdPostByUser INT,
+    @inPostInIP VARCHAR(49)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @idTipoEvento INT = 9;
+    DECLARE @nombrePuesto NVARCHAR(100);
+    DECLARE @saldoVacaciones INT;
+
+    BEGIN TRY
+		SELECT 
+			@nombrePuesto = p.Nombre,
+			@saldoVacaciones = e.SaldoVacaciones
+         FROM dbo.Empleado e
+            INNER JOIN dbo.Puesto p ON e.IdPuesto = p.Id
+         WHERE e.Nombre = @inNombre 
+            AND e.ValorDocumentoIdentidad = @inValorDocumentoIdentidad;
+
+            SET @outResultCode = 0;
+
+            INSERT INTO dbo.BitacoraEvento (
+                IdTipoEvento
+                , Descripcion
+                , IdPostByUser
+                , PostInIP
+                , PostTime
+            )
+            VALUES (
+                @idTipoEvento,
+                @inValorDocumentoIdentidad + ', ' 
+                + @inNombre + ', ' 
+                + @nombrePuesto + ', ' 
+                + @saldoVacaciones,
+                @inIdPostByUser,
+                @inPostInIP,
+                GETDATE()
+            );
+    END TRY
+    BEGIN CATCH
+        INSERT INTO dbo.DBError (
+            UserName
+            , Number_
+            , State_
+            , Severity_
+            , Line_
+            , Procedure_
+            , Message_
+            , DateTime_
+        )
+        VALUES (
+            @inUserName,
+            ERROR_NUMBER(),
+            ERROR_STATE(),
+            ERROR_SEVERITY(),
+            ERROR_LINE(),
+            ERROR_PROCEDURE(),
+            ERROR_MESSAGE(),
+            GETDATE()
+        );
+
+        SET @outResultCode = ERROR_NUMBER();
+    END CATCH;
+
+    SET NOCOUNT OFF;
+END
+
+---------------------------------------------------------------------------------------------------
+
+CREATE PROCEDURE dbo.EliminarEmpleadoLogicamente
+    @inNombre NVARCHAR(100),
+    @inValorDocumentoIdentidad INT,
+    @outResultCode INT OUTPUT,
+    @inUserName VARCHAR(100),
+    @inIdPostByUser INT,
+    @inPostInIP VARCHAR(49)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @idTipoEvento INT = 10;
+    DECLARE @nombrePuesto NVARCHAR(100);
+    DECLARE @saldoVacaciones INT;
+
+    BEGIN TRY
+        IF EXISTS (
+            SELECT 1 
+            FROM dbo.Empleado 
+            WHERE Nombre = @inNombre 
+              AND ValorDocumentoIdentidad = @inValorDocumentoIdentidad
+        )
+        BEGIN
+            SELECT 
+                @nombrePuesto = p.Nombre,
+                @saldoVacaciones = e.SaldoVacaciones
+            FROM dbo.Empleado e
+            INNER JOIN dbo.Puesto p ON e.IdPuesto = p.Id
+            WHERE e.Nombre = @inNombre 
+              AND e.ValorDocumentoIdentidad = @inValorDocumentoIdentidad;
+
+            UPDATE dbo.Empleado
+            SET EsActivo = 0
+            WHERE Nombre = @inNombre 
+              AND ValorDocumentoIdentidad = @inValorDocumentoIdentidad;
+
+            SET @outResultCode = 0;
+
+            INSERT INTO dbo.BitacoraEvento (
+                IdTipoEvento,
+                Descripcion,
+                IdPostByUser,
+                PostInIP,
+                PostTime
+            )
+            VALUES (
+                @idTipoEvento,
+                @inValorDocumentoIdentidad + ', ' 
+                + @inNombre + ', ' 
+                + @nombrePuesto + ', ' 
+                + @saldoVacaciones,
+                @inIdPostByUser,
+                @inPostInIP,
+                GETDATE()
+            );
+        END
+        ELSE
+        BEGIN
+            SET @outResultCode = 50008;
+
+            INSERT INTO dbo.DBError (
+                UserName,
+                Number_,
+                State_,
+                Severity_,
+                Line_,
+                Procedure_,
+                Message_,
+                DateTime_
+            )
+            VALUES (
+                @inUserName,
+                50008,
+                0,
+                0,
+                ERROR_LINE(),
+                'dbo.EliminarEmpleadoLogicamente',
+                'Error de base de datos',
+                GETDATE()
+            );
+        END
+    END TRY
+    BEGIN CATCH
+        INSERT INTO dbo.DBError (
+            UserName,
+            Number_,
+            State_,
+            Severity_,
+            Line_,
+            Procedure_,
+            Message_,
+            DateTime_
+        )
+        VALUES (
+            @inUserName,
+            ERROR_NUMBER(),
+            ERROR_STATE(),
+            ERROR_SEVERITY(),
+            ERROR_LINE(),
+            ERROR_PROCEDURE(),
+            ERROR_MESSAGE(),
+            GETDATE()
+        );
+
+        SET @outResultCode = ERROR_NUMBER();
+    END CATCH;
+
+    SET NOCOUNT OFF;
+END
+
+---------------------------------------------------------------------------------------------------
+CREATE PROCEDURE dbo.FiltrarEmpleados
+    @inFiltro VARCHAR(100),
+    @inEsNumero BIT,
+    @outResultCode INT OUTPUT,
+    @inUserName VARCHAR(100),
+    @inIdPostByUser INT,
+    @inPostInIP VARCHAR(49)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @idTipoEvento INT;
+
+    BEGIN TRY
+        IF @inEsNumero = 1
+        BEGIN
+            SET @idTipoEvento = 12;
+        END
+        ELSE
+        BEGIN
+            SET @idTipoEvento = 11;
+        END
+
+        SELECT 
+            e.Id AS IdEmpleado,
+            e.Nombre AS NombreEmpleado,
+            e.ValorDocumentoIdentidad AS DocumentoEmpleado,
+            p.Nombre AS NombrePuesto
+        FROM dbo.Empleado AS e
+        INNER JOIN dbo.Puesto AS p 
+            ON p.Id = e.IdPuesto
+        WHERE e.EsActivo = 1
+            AND (
+                e.Nombre LIKE '%' + @inFiltro + '%'
+                OR e.ValorDocumentoIdentidad LIKE '%' + @inFiltro + '%'
+            )
+        ORDER BY e.Nombre ASC;
+
+        SET @outResultCode = 0;
+
+        INSERT INTO dbo.BitacoraEvento (
+            IdTipoEvento
+            , Descripcion
+            , IdPostByUser
+            , PostInIP
+            , PostTime
+        )
+        VALUES (
+            @idTipoEvento
+            , @inFiltro
+            , @inIdPostByUser
+            , @inPostInIP
+            , GETDATE()
+        );
+    END TRY
+    BEGIN CATCH
+        INSERT INTO dbo.DBError (
+            UserName
+            , Number_
+            , State_
+            , Severity_
+            , Line_
+            , Procedure_
+            , Message_
+            , DateTime_
+        )
+        VALUES (
+            @inUserName
+            , ERROR_NUMBER()
+            , ERROR_STATE()
+            , ERROR_SEVERITY()
+            , ERROR_LINE()
+            , ERROR_PROCEDURE()
+            , ERROR_MESSAGE()
+            , GETDATE()
+        );
+
+        SET @outResultCode = ERROR_NUMBER();
+    END CATCH;
+
+    SET NOCOUNT OFF;
+END;
+---------------------------------------------------------------------------------------------------
+
+CREATE PROCEDURE dbo.InsertarEmpleado
+    @inIdPuesto INT,
+    @inValorDocumentoIdentidad NVARCHAR(50),
+    @inNombre NVARCHAR(100),
+    @inUserName VARCHAR(100),
+    @inIdPostByUser INT,
+    @inPostInIP VARCHAR(49),
+    @outResultCode INT OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @idTipoEvento INT;
+    DECLARE @nombrePuesto NVARCHAR(100);
+    DECLARE @salarioPuesto DECIMAL(10,2);
+    DECLARE @descripcionError NVARCHAR(500);
+
+	SET @idTipoEvento = 6;
+    BEGIN TRY
+        SELECT 
+            @nombrePuesto = Nombre,
+            @salarioPuesto = SalarioxHora
+        FROM Puesto
+        WHERE Id = @inIdPuesto;
+
+        IF EXISTS (SELECT 1 FROM Empleado WHERE ValorDocumentoIdentidad = @inValorDocumentoIdentidad)
+        BEGIN
+            SET @outResultCode = 50004;
+
+            SELECT @descripcionError = Descripcion 
+            FROM Error 
+            WHERE Codigo = @outResultCode;
+
+            INSERT INTO DBError (
+                UserName
+				, Number_
+				, State_
+				, Severity_
+				, Line_
+				, Procedure_
+				, Message_
+				, DateTime_
+            )
+            VALUES (
+                @inUserName
+				, @outResultCode
+				, 0
+				, 0
+				, ERROR_LINE()
+				, 'dbo.InsertarEmpleado'
+				, 'Empleado con ValorDocumentoIdentidad ya existe en inserción.'
+				, GETDATE()
+            );
+
+            INSERT INTO BitacoraEvento (
+                IdTipoEvento
+				, Descripcion
+				, IdPostByUser
+				, PostInIP
+				, PostTime
+            )
+            VALUES (
+                5
+				, @inValorDocumentoIdentidad + ', ' + @inNombre + ', ' + 
+				@nombrePuesto + ', ' + @descripcionError
+				, @inIdPostByUser
+				, @inPostInIP
+				, GETDATE()
+            );
+
+            RETURN;
+        END
+
+        IF EXISTS (SELECT 1 FROM Empleado WHERE Nombre = @inNombre)
+        BEGIN
+            SET @outResultCode = 50005;
+
+            SELECT @descripcionError = Descripcion 
+            FROM Error 
+            WHERE Codigo = @outResultCode;
+
+            INSERT INTO DBError (
+                UserName
+				, Number_
+				, State_
+				, Severity_
+				, Line_
+				, Procedure_
+				, Message_
+				, DateTime_
+            )
+            VALUES (
+                @inUserName
+				, @outResultCode
+				, 0
+				, 0
+				, ERROR_LINE()
+				, 'dbo.InsertarEmpleado'
+				,
+                'Empleado con mismo nombre ya existe en inserción.'
+				, GETDATE()
+            );
+
+            INSERT INTO BitacoraEvento (
+                IdTipoEvento
+				, Descripcion
+				, IdPostByUser
+				, PostInIP
+				, PostTime
+            )
+            VALUES (
+                5
+				, @inValorDocumentoIdentidad + ', ' + @inNombre + ', ' + 
+				@nombrePuesto + ', ' + @descripcionError
+				, @inIdPostByUser
+				, @inPostInIP
+				, GETDATE()
+            );
+
+            RETURN;
+        END
+
+        INSERT INTO Empleado (
+            IdPuesto
+			, ValorDocumentoIdentidad
+			, Nombre
+			, FechaContratacion
+			, SaldoVacaciones
+			, EsActivo
+        )
+        VALUES (
+            @inIdPuesto
+			, @inValorDocumentoIdentidad
+			, @inNombre
+			, GETDATE()
+			, @salarioPuesto
+			, 1
+        );
+
+        SET @outResultCode = 0;
+
+        INSERT INTO BitacoraEvento (
+            IdTipoEvento
+			, Descripcion
+			, IdPostByUser
+			, PostInIP
+			, PostTime
+        )
+        VALUES (
+            @idTipoEvento
+			, @inValorDocumentoIdentidad + ', ' + @inNombre + ', ' + @nombrePuesto + ', ' + @salarioPuesto
+			, @inIdPostByUser
+			, @inPostInIP
+			, GETDATE()
+        );
+
+    END TRY
+    BEGIN CATCH
+        SET @outResultCode = ERROR_NUMBER();
+
+        INSERT INTO DBError (
+            UserName
+			, Number_
+			, State_
+			, Severity_
+			, Line_
+			, Procedure_
+			, Message_
+			, DateTime_
+        )
+        VALUES (
+            @inUserName
+			, ERROR_NUMBER()
+			, ERROR_STATE()
+			, ERROR_SEVERITY()
+			, ERROR_LINE()
+			, ERROR_PROCEDURE()
+			, ERROR_MESSAGE()
+			, GETDATE()
+        );
+    END CATCH;
+
+    SET NOCOUNT OFF;
+END;
+
+---------------------------------------------------------------------------------------------------
+
+CREATE PROCEDURE dbo.ListarMovimientosEmpleado
+    @inValorDocumentoIdentidad INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    BEGIN TRY
+        SELECT 
+            m.Fecha AS Fecha
+            , tm.Nombre AS NombreTipo
+            , m.Monto AS Monto
+            , m.NuevoSaldo AS NuevoSaldo
+            , u.UserName AS NombreUsuario
+            , m.IdPostByUser AS IdPostByUser
+            , m.PostTime AS PostTime
+        FROM dbo.Movimiento AS m
+        INNER JOIN dbo.Empleado AS e 
+            ON m.idEmpleado = e.id
+        INNER JOIN dbo.TipoMovimiento AS tm 
+            ON m.idTipoMovimiento = tm.id
+        INNER JOIN dbo.Usuario AS u 
+            ON m.idPostByUser = u.id
+        WHERE e.ValorDocumentoIdentidad = @inValorDocumentoIdentidad
+        ORDER BY m.Fecha DESC;
+    END TRY
+    BEGIN CATCH
+        INSERT INTO dbo.DBError (
+            UserName
+            , Number_
+            , State_
+            , Severity_
+            , Line_
+            , Procedure_
+            , Message_
+            , DateTime_
+        )
+        VALUES (
+            SUSER_SNAME()
+            , ERROR_NUMBER()
+            , ERROR_STATE()
+            , ERROR_SEVERITY()
+            , ERROR_LINE()
+            , ERROR_PROCEDURE()
+            , ERROR_MESSAGE()
+            , GETDATE()
+        );
+    END CATCH;
+
+    SET NOCOUNT OFF;
+END;
+
+
+---------------------------------------------------------------------------------------------------
+
+CREATE PROCEDURE dbo.ObtenerDescripcionError
+    @inCodigoError INT
+    , @outDescripcion NVARCHAR(250) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    BEGIN TRY
+        SELECT 
+            @outDescripcion = ce.Descripcion
+        FROM dbo.Error AS ce
+        WHERE ce.Codigo = @inCodigoError;
+    END TRY
+    BEGIN CATCH
+        INSERT INTO dbo.DBError (
+            UserName
+            , Number_
+            , State_
+            , Severity_
+            , Line_
+            , Procedure_
+            , Message_
+            , DateTime_
+        )
+        VALUES (
+            SUSER_SNAME()
+            , ERROR_NUMBER()
+            , ERROR_STATE()
+            , ERROR_SEVERITY()
+            , ERROR_LINE()
+            , ERROR_PROCEDURE()
+            , ERROR_MESSAGE()
+            , GETDATE()
+        );
+
+        SET @outDescripcion = 'Error al obtener descripción.';
+    END CATCH;
+
+    SET NOCOUNT OFF;
+END;
+
+---------------------------------------------------------------------------------------------------
+
+ALTER PROCEDURE dbo.ObtenerEmpleadoPorNombreYDocumento
+    @inNombre NVARCHAR(100)
+    , @inValorDocumentoIdentidad INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    BEGIN TRY
+        SELECT 
+            e.Nombre AS Nombre
+            , e.ValorDocumentoIdentidad AS ValorDocumentoIdentidad
+            , e.SaldoVacaciones AS SaldoVacaciones
+            , e.FechaContratacion AS FechaContratacion
+            , p.Nombre AS NombrePuesto
+        FROM dbo.Empleado AS e
+        INNER JOIN dbo.Puesto AS p 
+            ON e.idPuesto = p.id
+        WHERE e.Nombre = @inNombre 
+          AND e.ValorDocumentoIdentidad = @inValorDocumentoIdentidad;
+    END TRY
+    BEGIN CATCH
+        INSERT INTO dbo.DBError (
+            UserName
+            , Number_
+            , State_
+            , Severity_
+            , Line_
+            , Procedure_
+            , Message_
+            , DateTime_
+        )
+        VALUES (
+            SUSER_SNAME()
+            , ERROR_NUMBER()
+            , ERROR_STATE()
+            , ERROR_SEVERITY()
+            , ERROR_LINE()
+            , ERROR_PROCEDURE()
+            , ERROR_MESSAGE()
+            , GETDATE()
+        );
+    END CATCH;
+
+    SET NOCOUNT OFF;
+END;
+
+---------------------------------------------------------------------------------------------------
+
+CREATE PROCEDURE dbo.ObtenerIdPuestoPorNombre
+    @inNombrePuesto NVARCHAR(100)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    BEGIN TRY
+        SELECT 
+            p.id AS Id
+        FROM dbo.Puesto AS p
+        WHERE p.Nombre = @inNombrePuesto;
+    END TRY
+    BEGIN CATCH
+        INSERT INTO dbo.DBError (
+            UserName
+            , Number_
+            , State_
+            , Severity_
+            , Line_
+            , Procedure_
+            , Message_
+            , DateTime_
+        )
+        VALUES (
+            SUSER_SNAME()
+            , ERROR_NUMBER()
+            , ERROR_STATE()
+            , ERROR_SEVERITY()
+            , ERROR_LINE()
+            , ERROR_PROCEDURE()
+            , ERROR_MESSAGE()
+            , GETDATE()
+        );
+    END CATCH;
+
+    SET NOCOUNT OFF;
+END;
+
+---------------------------------------------------------------------------------------------------
+
+CREATE PROCEDURE dbo.ObtenerListaPuestos
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    BEGIN TRY
+        SELECT 
+            p.Id AS Id
+            , p.Nombre AS Nombre
+            , p.SalarioxHora AS SalarioxHora
+        FROM dbo.Puesto AS p
+        ORDER BY p.Nombre;
+    END TRY
+    BEGIN CATCH
+        INSERT INTO dbo.DBError (
+            UserName
+            , Number_
+            , State_
+            , Severity_
+            , Line_
+            , Procedure_
+            , Message_
+            , DateTime_
+        )
+        VALUES (
+            SUSER_SNAME()
+            , ERROR_NUMBER()
+            , ERROR_STATE()
+            , ERROR_SEVERITY()
+            , ERROR_LINE()
+            , ERROR_PROCEDURE()
+            , ERROR_MESSAGE()
+            , GETDATE()
+        );
+    END CATCH;
+
+    SET NOCOUNT OFF;
+END;
+
+
+---------------------------------------------------------------------------------------------------
+

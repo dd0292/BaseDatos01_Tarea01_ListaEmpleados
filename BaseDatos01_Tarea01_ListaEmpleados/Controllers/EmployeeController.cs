@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection.Emit;
 using System.Web;
 using System.Web.Mvc;
 
@@ -12,11 +13,11 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
     public class EmployeeController : Controller
     {
 
-        Employee_DAL _employeeDAL = new Employee_DAL();
+        _DAL _employeeDAL = new _DAL();
 
         public ActionResult Index(string filtro = "")
         {
-            var employeeList = _employeeDAL.GetEmployeesList(filtro);
+            var employeeList = _employeeDAL.FiltrarEmpleados(filtro);
 
             if (employeeList.Count == 0)
             {
@@ -26,16 +27,14 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
             return View(employeeList);
         }
 
-        // GET: Employee/Create
         [HttpGet]
         public ActionResult Create()
         {
-            var listaPuestos = _employeeDAL.GetJobList();
+            var listaPuestos = _employeeDAL.ObtenerListaPuestos();
             ViewBag.Puestos = new SelectList(listaPuestos);
             return View();
         }
 
-        // POST: Employee/Create
         [HttpPost]
         public ActionResult Create(Employee employee, string puestoNombre)
         {
@@ -44,7 +43,7 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
             {
 
                 if (true) {
-                    outCode = _employeeDAL.InsertEmployee(employee, puestoNombre);
+                    outCode = _employeeDAL.InsertarEmpleado(employee, puestoNombre);
 
                     if (outCode == 0) 
                     {
@@ -52,7 +51,7 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
                     } 
                     else
                     {
-                        string errorDescription = _employeeDAL.GetErrorFromCode(outCode);
+                        string errorDescription = _employeeDAL.ObtenerDescripcionError(outCode);
                         TempData["ErrorMessage"] = $"[ERROR0 {outCode}] {errorDescription}";
                     }
                 }
@@ -66,7 +65,6 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
             }
         }
 
-        // GET: Emplyee/Read
         [HttpGet]
         public ActionResult Read(string Nombre, int ValorDocumentoIdentidad)
         {
@@ -92,7 +90,7 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
                 return RedirectToAction("Index");
             }
 
-            ViewBag.Puestos = new SelectList(_employeeDAL.GetJobList(), empleado.NombrePuesto);
+            ViewBag.Puestos = new SelectList(_employeeDAL.ObtenerListaPuestos(), empleado.NombrePuesto);
             return View(empleado);
         }
 
@@ -104,10 +102,14 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
             int resultado = _employeeDAL.ActualizarEmpleado(nombreAntiguo, docAntiguo, empleadoEditado, idPuesto);
 
             if (resultado == 0)
+            {
                 TempData["SuccessMessage"] = "Empleado actualizado correctamente.";
+            }
             else
-                TempData["ErrorMessage"] = "Ya existe un empleado con ese nombre o documento.";
-
+            {
+                string errorDescription = _employeeDAL.ObtenerDescripcionError(resultado);
+                TempData["ErrorMessage"] = $"[ERROR0 {resultado}] {errorDescription}";
+            }
             return RedirectToAction("Index");
         }
 
@@ -126,7 +128,6 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
         }
 
         [HttpPost]
-        [ActionName("Delete")]
         public ActionResult DeleteConfirmed(string Nombre, int ValorDocumentoIdentidad)
         {
             int resultado = _employeeDAL.EliminarEmpleadoLogicamente(Nombre, ValorDocumentoIdentidad);
@@ -134,6 +135,17 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
             if (resultado == 0)
                 TempData["SuccessMessage"] = "Empleado eliminado correctamente.";
             else
+                TempData["ErrorMessage"] = "Error al eliminar el empleado.";
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public ActionResult DeleteCancel(string Nombre, int ValorDocumentoIdentidad)
+        {
+            int resultado = _employeeDAL.EliminarEmpleadoCancelar(Nombre, ValorDocumentoIdentidad);
+
+            if (resultado != 0)
                 TempData["ErrorMessage"] = "Error al eliminar el empleado.";
 
             return RedirectToAction("Index");

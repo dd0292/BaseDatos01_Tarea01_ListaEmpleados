@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
@@ -20,8 +21,8 @@ namespace BaseDatos01_Tarea01_ListaEmpleados
             string username = Login1.UserName;
             string password = Login1.Password;
 
-            string connectionString = "Server=mssql-196050-0.cloudclusters.net,10264;Database=Empleado;User Id=Fabricio;Password=Tareabd2;TrustServerCertificate=true;";
-            string query = "SELECT Id, Username FROM Usuarios WHERE Username = @Username AND Password = @Password";
+            string connectionString = ConfigurationManager.ConnectionStrings["adoConnectionString"].ToString();
+            string query = "SELECT Id, Username FROM Usuario WHERE Username = @Username AND Password = @Password";
 
             using (SqlConnection con = new SqlConnection(connectionString))
             {
