@@ -101,14 +101,15 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
 
             int resultado = _employeeDAL.ActualizarEmpleado(nombreAntiguo, docAntiguo, empleadoEditado, idPuesto);
 
-            if (resultado == 0)
-            {
-                TempData["SuccessMessage"] = "Empleado actualizado correctamente.";
-            }
-            else
+            if (resultado != 0)
             {
                 string errorDescription = _employeeDAL.ObtenerDescripcionError(resultado);
                 TempData["ErrorMessage"] = $"[ERROR0 {resultado}] {errorDescription}";
+            }
+            else
+            {
+                TempData["SuccessMessage"] = "Empleado actualizado correctamente.";
+                
             }
             return RedirectToAction("Index");
         }
