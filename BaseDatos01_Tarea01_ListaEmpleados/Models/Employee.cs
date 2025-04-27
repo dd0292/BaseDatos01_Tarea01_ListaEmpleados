@@ -14,11 +14,11 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Models
         public int Id { get; set; }
 
         [Required]
-        [DisplayName("IdPuesto")]
+        [DisplayName("Id Puesto")]
         public int IdPuesto { get; set; }
 
         [Required]
-        [DisplayName("ValorDocumentoIdentidad")]
+        [DisplayName("Documento Identidad")]
         public int ValorDocumentoIdentidad { get; set; }
 
         [Required]
@@ -26,19 +26,19 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Models
         public string Nombre { get; set; }
 
         [Required]
-        [DisplayName("FechaContratacion")]
+        [DisplayName("Fecha Contratacion")]
         public string FechaContratacion { get; set; }
 
         [Required]
-        [DisplayName("SaldoVacaciones")]
+        [DisplayName("Saldo Vacaciones")]
         public decimal SaldoVacaciones { get; set; }
 
         [Required]
-        [DisplayName("EsActivo")]
+        [DisplayName("Es Activo")]
         public bool EsActivo { get; set; }
 
         [Required]
-        [DisplayName("NombrePuesto")]
+        [DisplayName("Nombre Puesto")]
         public string NombrePuesto { get; set; }
 
 

@@ -19,24 +19,28 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Models
         public decimal Monto { get; set; }
 
         [Required]
-        [DisplayName("NuevoSaldo")]
+        [DisplayName("Nuevo Saldo")]
         public decimal NuevoSaldo { get; set; }
 
         [Required]
-        [DisplayName("IdPostByUser")]
+        [DisplayName("Id Post By User")]
         public string IdPostByUser { get; set; }
 
         [Required]
-        [DisplayName("PostTime")]
+        [DisplayName("Post Time")]
         public DateTime PostTime { get; set; }
 
         [Required]
-        [DisplayName("NombreTipo")]
+        [DisplayName("Nombre Tipo")]
         public string NombreTipo { get; set; }
 
         [Required]
-        [DisplayName("NombreUsuario")]
+        [DisplayName("Nombre Usuario")]
         public string NombreUsuario { get; set; }
+
+        [Required]
+        [DisplayName("IP")]
+        public string PostInIP { get; set; }
 
     }
 }

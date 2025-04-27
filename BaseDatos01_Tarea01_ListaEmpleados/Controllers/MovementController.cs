@@ -14,8 +14,8 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
         // GET: Movement
         public ActionResult Index(string Nombre, int ValorDocumentoIdentidad)
         {
-            var empleado = _employeeDAL.ObtenerEmpleadoPorNombreYDocumento(Nombre, ValorDocumentoIdentidad);
-            var movimientos = _employeeDAL.ListarMovimientosEmpleado(ValorDocumentoIdentidad);
+            Employee empleado = _employeeDAL.ObtenerEmpleadoPorNombreYDocumento(Nombre, ValorDocumentoIdentidad);
+            List<Movement> movimientos = _employeeDAL.ListarMovimientosEmpleado(ValorDocumentoIdentidad);
 
             var viewModel = new EmployeeMovementsViewModel
             {
@@ -28,7 +28,7 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
         [HttpGet]
         public ActionResult Create(string Nombre, int ValorDocumentoIdentidad)
         {
-            var tiposMovimiento = _employeeDAL.GetTiposMovimiento();
+            var tiposMovimiento = _employeeDAL.ObtenerTiposMovimiento();
             ViewBag.TiposMovimiento = new SelectList(tiposMovimiento);
 
             Employee empleado = _employeeDAL.ObtenerEmpleadoPorNombreYDocumento(Nombre, ValorDocumentoIdentidad);
@@ -55,7 +55,8 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
             }
             else
             {
-                TempData["ErrorMessage"] = _employeeDAL.ObtenerDescripcionError(outCode);
+                string errorDescription = _employeeDAL.ObtenerDescripcionError(outCode);
+                TempData["ErrorMessage"] = $"[ERROR {outCode}] {errorDescription}";
             }
             return RedirectToAction("Index", "Movement", new { Nombre = Nombre, ValorDocumentoIdentidad = ValorDocumentoIdentidad });
 

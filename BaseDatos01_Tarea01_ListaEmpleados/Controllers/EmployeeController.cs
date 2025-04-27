@@ -21,7 +21,7 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
 
             if (employeeList.Count == 0)
             {
-                TempData["InfoMessage"] = "No hay empleados registrados actualmente en la base de Datos...";
+                TempData["InfoMessage"] = "No hay empleados registrados actualmente en la Base de Datos con dicha informacion...";
             }
 
             return View(employeeList);
@@ -52,7 +52,7 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
                     else
                     {
                         string errorDescription = _employeeDAL.ObtenerDescripcionError(outCode);
-                        TempData["ErrorMessage"] = $"[ERROR0 {outCode}] {errorDescription}";
+                        TempData["ErrorMessage"] = $"[ERROR {outCode}] {errorDescription}";
                     }
                 }
 
@@ -104,7 +104,7 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
             if (resultado != 0)
             {
                 string errorDescription = _employeeDAL.ObtenerDescripcionError(resultado);
-                TempData["ErrorMessage"] = $"[ERROR0 {resultado}] {errorDescription}";
+                TempData["ErrorMessage"] = $"[ERROR {resultado}] {errorDescription}";
             }
             else
             {

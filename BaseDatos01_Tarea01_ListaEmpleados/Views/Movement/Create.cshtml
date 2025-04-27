@@ -34,6 +34,8 @@
         @Html.ValidationMessageFor(m => m.Monto, "", new { @class = "text-danger" })
     </div>
 
+    <h3></h3>
+
     <button type="submit" class="btn btn-primary">Guardar Movimiento</button>
     @Html.ActionLink("Canelar", "Index", "Movement", new { Nombre = @ViewBag.Empleado.Nombre, ValorDocumentoIdentidad = @ViewBag.Empleado.ValorDocumentoIdentidad }, new { @class = "btn btn-success" })
 }

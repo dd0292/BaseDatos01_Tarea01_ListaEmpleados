@@ -214,6 +214,44 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.DAL // Data Access Layer
             return resultado;
         }
 
+        public int InsertarMovimiento(int valorDocumentoIdentidad, string idTipoMovimiento, decimal monto)
+        {
+            int resultado = -1;
+
+            using (SqlConnection conn = new SqlConnection(conString))
+            {
+                SqlCommand cmd = new SqlCommand("InsertarMovimiento", conn);
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                cmd.Parameters.AddWithValue("@inValorDocumentoIdentidad", valorDocumentoIdentidad);
+                cmd.Parameters.AddWithValue("@inIdTipoMovimiento", ExtractIntFromBrackets(idTipoMovimiento));
+                cmd.Parameters.AddWithValue("@inMonto", monto);
+
+                cmd.Parameters.AddWithValue("@inUserName", UserName);
+                cmd.Parameters.AddWithValue("@inIdPostByUser", UserId);
+                cmd.Parameters.AddWithValue("@inPostInIP", ClientIp);
+
+                SqlParameter outParam = new SqlParameter("@outResultCode", SqlDbType.Int)
+                {
+                    Direction = ParameterDirection.Output
+                };
+                cmd.Parameters.Add(outParam);
+
+                conn.Open();
+                cmd.ExecuteNonQuery();
+
+                resultado = (int)cmd.Parameters["@outResultCode"].Value;
+            }
+
+            return resultado;
+        }
+
+
+
+
+
+
+        //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         public List<Movement> ListarMovimientosEmpleado(int valorDocumentoIdentidad)
         {
             List<Movement> lista = new List<Movement>();
@@ -223,6 +261,11 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.DAL // Data Access Layer
             {
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@inValorDocumentoIdentidad", valorDocumentoIdentidad);
+
+                SqlParameter outputParam = new SqlParameter("@outResultCode", SqlDbType.Int);
+                outputParam.Direction = ParameterDirection.Output;
+                cmd.Parameters.Add(outputParam);
+
                 conn.Open();
 
                 using (SqlDataReader reader = cmd.ExecuteReader())
@@ -237,7 +280,8 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.DAL // Data Access Layer
                             NuevoSaldo = Convert.ToDecimal(reader["NuevoSaldo"]),
                             NombreUsuario = reader["NombreUsuario"].ToString(),
                             IdPostByUser = reader["IdPostByUser"].ToString(),
-                            PostTime = Convert.ToDateTime(reader["PostTime"])
+                            PostTime = Convert.ToDateTime(reader["PostTime"]),
+                            PostInIP = reader["PostInIP"].ToString()
                         };
                         lista.Add(mov);
                     }
@@ -262,6 +306,10 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.DAL // Data Access Layer
                 outputDescripcion.Direction = ParameterDirection.Output;
                 cmd.Parameters.Add(outputDescripcion);
 
+                SqlParameter outputParam = new SqlParameter("@outResultCode", SqlDbType.Int);
+                outputParam.Direction = ParameterDirection.Output;
+                cmd.Parameters.Add(outputParam);
+
                 connection.Open();
                 cmd.ExecuteNonQuery();
                 connection.Close();
@@ -283,6 +331,10 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.DAL // Data Access Layer
 
                 cmd.Parameters.AddWithValue("@inNombre", nombre);
                 cmd.Parameters.AddWithValue("@inValorDocumentoIdentidad", valorDocumento);
+
+                SqlParameter outputParam = new SqlParameter("@outResultCode", SqlDbType.Int);
+                outputParam.Direction = ParameterDirection.Output;
+                cmd.Parameters.Add(outputParam);
 
                 conn.Open();
                 SqlDataReader reader = cmd.ExecuteReader();
@@ -316,6 +368,10 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.DAL // Data Access Layer
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@inNombrePuesto", nombrePuesto);
 
+                SqlParameter outputParam = new SqlParameter("@outResultCode", SqlDbType.Int);
+                outputParam.Direction = ParameterDirection.Output;
+                cmd.Parameters.Add(outputParam);
+
                 conn.Open();
                 object result = cmd.ExecuteScalar();
 
@@ -339,6 +395,10 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.DAL // Data Access Layer
                 SqlCommand cmd = new SqlCommand("ObtenerListaPuestos", conn);
                 cmd.CommandType = CommandType.StoredProcedure;
 
+                SqlParameter outputParam = new SqlParameter("@outResultCode", SqlDbType.Int);
+                outputParam.Direction = ParameterDirection.Output;
+                cmd.Parameters.Add(outputParam);
+
                 conn.Open();
                 SqlDataReader reader = cmd.ExecuteReader();
 
@@ -356,40 +416,7 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.DAL // Data Access Layer
             return puestos;
         }
 
-        public int InsertarMovimiento(int valorDocumentoIdentidad, string idTipoMovimiento, decimal monto)
-        {
-            int resultado = -1;
-
-            using (SqlConnection conn = new SqlConnection(conString))
-            {
-                SqlCommand cmd = new SqlCommand("InsertarMovimiento", conn);
-                cmd.CommandType = CommandType.StoredProcedure;
-
-                cmd.Parameters.AddWithValue("@ValorDocumentoIdentidad", valorDocumentoIdentidad);
-                cmd.Parameters.AddWithValue("@IdTipoMovimiento", ExtractIntFromBrackets(idTipoMovimiento));
-                cmd.Parameters.AddWithValue("@Monto", monto);
-                
-                cmd.Parameters.AddWithValue("@inUserName", UserName);
-                cmd.Parameters.AddWithValue("@IdUsuario", UserId);
-                cmd.Parameters.AddWithValue("@IP", ClientIp);
-
-                SqlParameter outParam = new SqlParameter("@outResultCode", SqlDbType.Int)
-                {
-                    Direction = ParameterDirection.Output
-                };
-                cmd.Parameters.Add(outParam);
-
-                conn.Open();
-                cmd.ExecuteNonQuery();
-
-                resultado = (int)cmd.Parameters["@outResultCode"].Value;
-            }
-
-            return resultado;
-        }
-
-
-        public List<string> GetTiposMovimiento()
+        public List<string> ObtenerTiposMovimiento()
         {
             List<string> tiposMovimiento = new List<string>();
 
@@ -397,6 +424,12 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.DAL // Data Access Layer
             {
                 SqlCommand cmd = new SqlCommand("ObtenerTiposMovimiento", conn);
                 cmd.CommandType = CommandType.StoredProcedure;
+
+                SqlParameter outParam = new SqlParameter("@outResultCode", SqlDbType.Int)
+                {
+                    Direction = ParameterDirection.Output
+                };
+                cmd.Parameters.Add(outParam);
 
                 conn.Open();
                 SqlDataReader reader = cmd.ExecuteReader();

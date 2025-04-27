@@ -1,6 +1,4 @@
-SPs:
----------------------------------------------------------------------------------------------------
-CREATE PROCEDURE dbo.ActualizarEmpleado
+ALTER PROCEDURE [dbo].[ActualizarEmpleado]
     @inNombre VARCHAR(100),
     @inValorDocumentoIdentidad INT,
     @inNuevoNombre VARCHAR(100),
@@ -20,7 +18,6 @@ BEGIN
     DECLARE @saldoVacaciones INT;
 
     BEGIN TRY
-        -- Validación por documento
         IF EXISTS (
             SELECT 1
             FROM dbo.Empleado
@@ -29,6 +26,8 @@ BEGIN
 			  AND ValorDocumentoIdentidad = @inValorDocumentoIdentidad)
         )
         BEGIN
+			BEGIN TRANSACTION;
+
             SET @outResultCode = 50006;
 
             INSERT INTO dbo.BitacoraEvento (
@@ -37,8 +36,8 @@ BEGIN
             VALUES (
                 7,
                 'Empleado con ValorDocumentoIdentidad ya existe en actualización: '
-                    + @inValorDocumentoIdentidad + ',' + @inNombre + ' -> '
-                    + @inNuevoValorDocumentoIdentidad + ',' + @inNuevoNombre,
+                    + Cast(@inValorDocumentoIdentidad AS VARCHAR) + ',' + @inNombre + ' -> '
+                    + Cast(@inNuevoValorDocumentoIdentidad AS VARCHAR) + ',' + @inNuevoNombre,
                 @inIdPostByUser,
                 @inPostInIP,
                 GETDATE()
@@ -61,9 +60,9 @@ BEGIN
                 GETDATE()
             );
 
+			COMMIT TRANSACTION;
             RETURN;
         END
-
         IF EXISTS (
             SELECT 1
             FROM dbo.Empleado
@@ -72,6 +71,8 @@ BEGIN
 			  AND ValorDocumentoIdentidad = @inValorDocumentoIdentidad)
         )
         BEGIN
+			BEGIN TRANSACTION;
+
             SET @outResultCode = 50007;
 
             INSERT INTO dbo.BitacoraEvento (
@@ -82,13 +83,13 @@ BEGIN
 				, PostTime
             )
             VALUES (
-                7,
-                'Empleado con mismo nombre ya existe en actualización: '
-                    + @inValorDocumentoIdentidad + ',' + @inNombre + ' -> '
-                    + @inNuevoValorDocumentoIdentidad + ',' + @inNuevoNombre,
-                @inIdPostByUser,
-                @inPostInIP,
-                GETDATE()
+                7
+				, 'Empleado con mismo nombre ya existe en actualización: '
+                    +  Cast(@inValorDocumentoIdentidad AS VARCHAR) + ',' + @inNombre + ' -> '
+                    + Cast(@inNuevoValorDocumentoIdentidad AS VARCHAR) + ',' + @inNuevoNombre
+				, @inIdPostByUser
+				, @inPostInIP
+				, GETDATE()
             );
 
             INSERT INTO dbo.DBError (
@@ -102,59 +103,76 @@ BEGIN
 				, DateTime_
             )
             VALUES (
-                @inUserName,
-                50007, 0, 0, ERROR_LINE(), 'dbo.ActualizarEmpleado',
-                'Empleado con mismo nombre ya existe en actualización.',
-                GETDATE()
+                @inUserName
+				, 50007
+				, 0
+				, 0
+				, ERROR_LINE()
+				, 'dbo.ActualizarEmpleado'
+				, 'Empleado con mismo nombre ya existe en actualización.'
+				, GETDATE()
             );
 
+			COMMIT TRANSACTION;
             RETURN;
         END
+		ELSE
+		BEGIN
+			BEGIN TRANSACTION;
 
-        SELECT 
-            @nombrePuestoAntes = p.Nombre,
-            @saldoVacaciones = e.SaldoVacaciones
-        FROM dbo.Empleado e
-        INNER JOIN dbo.Puesto p ON p.Id = e.IdPuesto
-        WHERE e.Nombre = @inNombre
-          AND e.ValorDocumentoIdentidad = @inValorDocumentoIdentidad;
+			SELECT 
+				@nombrePuestoAntes = p.Nombre,
+				@saldoVacaciones = e.SaldoVacaciones
+			FROM dbo.Empleado e
+			INNER JOIN dbo.Puesto p ON p.Id = e.IdPuesto
+			WHERE e.Nombre = @inNombre
+			  AND e.ValorDocumentoIdentidad = @inValorDocumentoIdentidad;
 
-        SELECT @nombrePuestoDespues = Nombre
-        FROM dbo.Puesto
-        WHERE Id = @inIdPuesto;
+			SELECT @nombrePuestoDespues = Nombre
+			FROM dbo.Puesto
+			WHERE Id = @inIdPuesto;
 
-        UPDATE dbo.Empleado
-        SET Nombre = @inNuevoNombre,
-            ValorDocumentoIdentidad = @inNuevoValorDocumentoIdentidad,
-            IdPuesto = @inIdPuesto
-        WHERE Nombre = @inNombre
-          AND ValorDocumentoIdentidad = @inValorDocumentoIdentidad;
+			UPDATE dbo.Empleado
+			SET Nombre = @inNuevoNombre,
+				ValorDocumentoIdentidad = @inNuevoValorDocumentoIdentidad,
+				IdPuesto = @inIdPuesto
+			WHERE Nombre = @inNombre
+			  AND ValorDocumentoIdentidad = @inValorDocumentoIdentidad;
 
-        SET @outResultCode = 0;
+			SET @outResultCode = 0;
 
-        INSERT INTO dbo.BitacoraEvento (
-            IdTipoEvento,
-            Descripcion,
-            IdPostByUser,
-            PostInIP,
-            PostTime
-        )
-        VALUES (
-            @idTipoEvento,
-            'Empleado actualizado: Antes -> [' +
-                'DocID: ' + @inValorDocumentoIdentidad + ', ' +
-                'Nombre: ' + @inNombre + ', ' +
-                'Puesto: ' + @nombrePuestoAntes + '] | Después -> [' +
-                'DocID: ' + @inNuevoValorDocumentoIdentidad + ', ' +
-                'Nombre: ' + @inNuevoNombre + ', ' +
-                'Puesto: ' + @nombrePuestoDespues + '] | SaldoVacaciones: ' +
-                @saldoVacaciones,
-            @inIdPostByUser,
-            @inPostInIP,
-            GETDATE()
-        );
+			INSERT INTO dbo.BitacoraEvento (
+				IdTipoEvento
+				, Descripcion
+				, IdPostByUser
+				, PostInIP
+				, PostTime
+			)
+			VALUES (
+				@idTipoEvento
+				, 'Empleado actualizado: Antes -> [' +
+					'DocID: ' + CAST(@inValorDocumentoIdentidad AS varchar) + ', ' +
+					'Nombre: ' + @inNombre + ', ' +
+					'Puesto: ' + @nombrePuestoAntes + '] | Después -> [' +
+					'DocID: ' + CAST(@inNuevoValorDocumentoIdentidad AS varchar) + ', ' +
+					'Nombre: ' + @inNuevoNombre + ', ' +
+					'Puesto: ' + @nombrePuestoDespues + '] | SaldoVacaciones: ' +
+					CAST(@saldoVacaciones AS varchar)
+				, @inIdPostByUser
+				, @inPostInIP
+				, GETDATE()
+			);
+			
+			COMMIT TRANSACTION;
+		END;
     END TRY
     BEGIN CATCH
+		
+		IF @@TRANCOUNT > 0
+        BEGIN
+            ROLLBACK TRANSACTION;
+        END;
+
         INSERT INTO dbo.DBError (
             UserName
 			, Number_
@@ -166,14 +184,14 @@ BEGIN
 			, DateTime_
         )
         VALUES (
-            @inUserName,
-            ERROR_NUMBER(),
-            ERROR_STATE(),
-            ERROR_SEVERITY(),
-            ERROR_LINE(),
-            ERROR_PROCEDURE(),
-            ERROR_MESSAGE(),
-            GETDATE()
+            @inUserName
+			, ERROR_NUMBER()
+			, ERROR_STATE()
+			, ERROR_SEVERITY()
+			, ERROR_LINE()
+			, ERROR_PROCEDURE()
+			, ERROR_MESSAGE()
+			, GETDATE()
         );
 
         SET @outResultCode = ERROR_NUMBER();
@@ -181,8 +199,8 @@ BEGIN
 
     SET NOCOUNT OFF;
 END;
----------------------------------------------------------------------------------------------------
-CREATE PROCEDURE dbo.EliminarEmpleadoCancelar
+================================================================================================================================
+ALTER PROCEDURE [dbo].[EliminarEmpleadoCancelar]
     @inNombre NVARCHAR(100),
     @inValorDocumentoIdentidad INT,
     @outResultCode INT OUTPUT,
@@ -216,14 +234,14 @@ BEGIN
                 , PostTime
             )
             VALUES (
-                @idTipoEvento,
-                @inValorDocumentoIdentidad + ', ' 
+                @idTipoEvento
+				, CAST(@inValorDocumentoIdentidad AS VARCHAR)+ ', ' 
                 + @inNombre + ', ' 
                 + @nombrePuesto + ', ' 
-                + @saldoVacaciones,
-                @inIdPostByUser,
-                @inPostInIP,
-                GETDATE()
+                + CAST(@saldoVacaciones AS VARCHAR)
+				, @inIdPostByUser
+				, @inPostInIP
+				, GETDATE()
             );
     END TRY
     BEGIN CATCH
@@ -238,14 +256,14 @@ BEGIN
             , DateTime_
         )
         VALUES (
-            @inUserName,
-            ERROR_NUMBER(),
-            ERROR_STATE(),
-            ERROR_SEVERITY(),
-            ERROR_LINE(),
-            ERROR_PROCEDURE(),
-            ERROR_MESSAGE(),
-            GETDATE()
+            @inUserName
+			, ERROR_NUMBER()
+			, ERROR_STATE()
+			, ERROR_SEVERITY()
+			, ERROR_LINE()
+			, ERROR_PROCEDURE()
+			, ERROR_MESSAGE()
+			, GETDATE()
         );
 
         SET @outResultCode = ERROR_NUMBER();
@@ -253,10 +271,8 @@ BEGIN
 
     SET NOCOUNT OFF;
 END;
-
----------------------------------------------------------------------------------------------------
-
-CREATE PROCEDURE dbo.EliminarEmpleadoLogicamente
+================================================================================================================================
+ALTER PROCEDURE [dbo].[EliminarEmpleadoLogicamente]
     @inNombre NVARCHAR(100),
     @inValorDocumentoIdentidad INT,
     @outResultCode INT OUTPUT,
@@ -279,6 +295,7 @@ BEGIN
               AND ValorDocumentoIdentidad = @inValorDocumentoIdentidad
         )
         BEGIN
+			BEGIN TRANSACTION;
             SELECT 
                 @nombrePuesto = p.Nombre,
                 @saldoVacaciones = e.SaldoVacaciones
@@ -303,17 +320,19 @@ BEGIN
             )
             VALUES (
                 @idTipoEvento,
-                @inValorDocumentoIdentidad + ', ' 
+                Cast(@inValorDocumentoIdentidad as varchar) + ', ' 
                 + @inNombre + ', ' 
                 + @nombrePuesto + ', ' 
-                + @saldoVacaciones,
+                + CAST(@saldoVacaciones AS VARCHAR),
                 @inIdPostByUser,
                 @inPostInIP,
                 GETDATE()
             );
+			COMMIT TRANSACTION;
         END
         ELSE
         BEGIN
+			BEGIN TRANSACTION;
             SET @outResultCode = 50008;
 
             INSERT INTO dbo.DBError (
@@ -336,9 +355,15 @@ BEGIN
                 'Error de base de datos',
                 GETDATE()
             );
+			COMMIT TRANSACTION;
         END
     END TRY
     BEGIN CATCH
+		IF @@TRANCOUNT > 0
+        BEGIN
+            ROLLBACK TRANSACTION;
+        END;
+
         INSERT INTO dbo.DBError (
             UserName,
             Number_,
@@ -365,10 +390,8 @@ BEGIN
 
     SET NOCOUNT OFF;
 END;
-
----------------------------------------------------------------------------------------------------
-
-CREATE PROCEDURE dbo.FiltrarEmpleados
+================================================================================================================================
+ALTER PROCEDURE [dbo].[FiltrarEmpleados]
     @inFiltro VARCHAR(100),
     @inEsNumero BIT,
     @outResultCode INT OUTPUT,
@@ -450,10 +473,8 @@ BEGIN
 
     SET NOCOUNT OFF;
 END;
-
----------------------------------------------------------------------------------------------------
-
-CREATE PROCEDURE dbo.InsertarEmpleado
+================================================================================================================================
+ALTER PROCEDURE [dbo].[InsertarEmpleado]
     @inIdPuesto INT,
     @inValorDocumentoIdentidad NVARCHAR(50),
     @inNombre NVARCHAR(100),
@@ -478,8 +499,10 @@ BEGIN
         FROM Puesto
         WHERE Id = @inIdPuesto;
 
-        IF EXISTS (SELECT 1 FROM Empleado WHERE ValorDocumentoIdentidad = @inValorDocumentoIdentidad)
+        IF EXISTS (SELECT 1 FROM Empleado 
+		WHERE ValorDocumentoIdentidad = @inValorDocumentoIdentidad)
         BEGIN
+			BEGIN TRANSACTION;
             SET @outResultCode = 50004;
 
             SELECT @descripcionError = Descripcion 
@@ -516,18 +539,20 @@ BEGIN
             )
             VALUES (
                 5
-				, @inValorDocumentoIdentidad + ', ' + @inNombre + ', ' + 
+				,CAST(@inValorDocumentoIdentidad AS VARCHAR) + ', ' + @inNombre + ', ' + 
 				@nombrePuesto + ', ' + @descripcionError
 				, @inIdPostByUser
 				, @inPostInIP
 				, GETDATE()
             );
-
+			COMMIT TRANSACTION;
             RETURN;
         END
 
-        IF EXISTS (SELECT 1 FROM Empleado WHERE Nombre = @inNombre)
+        IF EXISTS (SELECT 1 FROM Empleado 
+		WHERE Nombre = @inNombre)
         BEGIN
+			BEGIN TRANSACTION;
             SET @outResultCode = 50005;
 
             SELECT @descripcionError = Descripcion 
@@ -565,52 +590,62 @@ BEGIN
             )
             VALUES (
                 5
-				, @inValorDocumentoIdentidad + ', ' + @inNombre + ', ' + 
+				, CAST(@inValorDocumentoIdentidad AS varchar) + ', ' + @inNombre + ', ' + 
 				@nombrePuesto + ', ' + @descripcionError
 				, @inIdPostByUser
 				, @inPostInIP
 				, GETDATE()
             );
-
+			COMMIT TRANSACTION;
             RETURN;
         END
 
-        INSERT INTO Empleado (
-            IdPuesto
-			, ValorDocumentoIdentidad
-			, Nombre
-			, FechaContratacion
-			, SaldoVacaciones
-			, EsActivo
-        )
-        VALUES (
-            @inIdPuesto
-			, @inValorDocumentoIdentidad
-			, @inNombre
-			, GETDATE()
-			, @salarioPuesto
-			, 1
-        );
+		ELSE
+		BEGIN
+			BEGIN TRANSACTION;
+			INSERT INTO Empleado (
+				IdPuesto
+				, ValorDocumentoIdentidad
+				, Nombre
+				, FechaContratacion
+				, SaldoVacaciones
+				, EsActivo
+			)
+			VALUES (
+				@inIdPuesto
+				, @inValorDocumentoIdentidad
+				, @inNombre
+				, GETDATE()
+				, @salarioPuesto
+				, 1
+			);
 
-        SET @outResultCode = 0;
+			SET @outResultCode = 0;
 
-        INSERT INTO BitacoraEvento (
-            IdTipoEvento
-			, Descripcion
-			, IdPostByUser
-			, PostInIP
-			, PostTime
-        )
-        VALUES (
-            @idTipoEvento
-			, @inValorDocumentoIdentidad + ', ' + @inNombre + ', ' + @nombrePuesto + ', ' + @salarioPuesto
-			, @inIdPostByUser
-			, @inPostInIP
-			, GETDATE()
-        );
-
+			INSERT INTO BitacoraEvento (
+				IdTipoEvento
+				, Descripcion
+				, IdPostByUser
+				, PostInIP
+				, PostTime
+			)
+			VALUES (
+				@idTipoEvento
+				,CAST( @inValorDocumentoIdentidad AS VARCHAR) + ', ' + @inNombre + ', ' + @nombrePuesto + ', ' +CAST( @salarioPuesto AS VARCHAR)
+				, @inIdPostByUser
+				, @inPostInIP
+				, GETDATE()
+			);
+			COMMIT TRANSACTION;
+		END
     END TRY
     BEGIN CATCH
+
+		IF @@TRANCOUNT > 0
+        BEGIN
+            ROLLBACK TRANSACTION;
+        END;
+		
         SET @outResultCode = ERROR_NUMBER();
 
         INSERT INTO DBError (
@@ -637,11 +672,166 @@ BEGIN
 
     SET NOCOUNT OFF;
 END;
-
----------------------------------------------------------------------------------------------------
-
-CREATE PROCEDURE dbo.ListarMovimientosEmpleado
+================================================================================================================================
+ALTER PROCEDURE [dbo].[InsertarMovimiento]
     @inValorDocumentoIdentidad INT
+    , @inIdTipoMovimiento INT
+    , @inMonto DECIMAL(10, 2)
+    , @inPostInIP VARCHAR(50)
+    , @inUserName VARCHAR(100)
+    , @inIdPostByUser INT
+    , @outResultCode INT OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @idEmpleado INT;
+    DECLARE @saldoActual DECIMAL(10, 2);
+    DECLARE @nuevoSaldo DECIMAL(10, 2);
+
+    BEGIN TRY
+        SELECT 
+            @idEmpleado = e.Id
+            , @saldoActual = e.SaldoVacaciones
+        FROM dbo.Empleado AS e
+        WHERE e.ValorDocumentoIdentidad = @inValorDocumentoIdentidad 
+            AND e.EsActivo = 1;
+
+        SET @nuevoSaldo = @saldoActual + @inMonto;
+
+        IF @nuevoSaldo < 0
+        BEGIN
+			BEGIN TRANSACTION;
+            SET @outResultCode = 50011;
+
+			INSERT INTO dbo.BitacoraEvento (
+                IdTipoEvento
+				, Descripcion
+				, IdPostByUser
+				, PostInIP
+				, PostTime
+            )
+            VALUES (
+                13
+				, 'Monto del movimiento rechazado pues si se aplica, el saldo sería negativo.'
+                    + Cast(@inValorDocumentoIdentidad AS VARCHAR) + ',' + @inUserName + ' -> '
+                    + Cast(@saldoActual AS VARCHAR) + ',' + Cast(@inIdTipoMovimiento AS VARCHAR) 
+					+ ',' + Cast(@inMonto AS VARCHAR)
+				, @inIdPostByUser
+				, @inPostInIP
+				, GETDATE()
+            );
+
+			INSERT INTO dbo.DBError (
+				UserName
+				, Number_
+				, State_
+				, Severity_
+				, Line_
+				, Procedure_
+				, Message_
+				, DateTime_
+			)
+			VALUES (
+				@inUserName
+				, @outResultCode
+				, 0
+				, 0
+				, ERROR_LINE()
+				, 'dbo.InsertarMovimiento'
+				, 'Monto del movimiento rechazado pues si se aplica, el saldo sería negativo.'
+				, GETDATE()
+			);
+			COMMIT TRANSACTION;
+            RETURN;
+        END;
+		ELSE
+		BEGIN
+			BEGIN TRANSACTION;
+			INSERT INTO dbo.Movimiento (
+				IdEmpleado
+				, IdTipoMovimiento
+				, Fecha
+				, Monto
+				, NuevoSaldo
+				, IdPostByUser
+				, PostInIP
+				, PostTime
+			)
+			VALUES (
+				@idEmpleado
+				, @inIdTipoMovimiento
+				, GETDATE()
+				, @inMonto
+				, @nuevoSaldo
+				, @inIdPostByUser
+				, @inPostInIP
+				, GETDATE()
+			);
+
+			INSERT INTO dbo.BitacoraEvento (
+				IdTipoEvento
+				, Descripcion
+				, IdPostByUser
+				, PostInIP
+				, PostTime
+			)
+			VALUES (
+				14
+				, Cast(@inValorDocumentoIdentidad AS VARCHAR) + ',' + @inUserName + ' -> '
+					+ Cast(@nuevoSaldo AS VARCHAR) + ',' + Cast(@inIdTipoMovimiento AS VARCHAR) 
+					+ ',' + Cast(@inMonto AS VARCHAR)
+				, @inIdPostByUser
+				, @inPostInIP
+				, GETDATE()
+			);
+
+			UPDATE dbo.Empleado
+			SET SaldoVacaciones = @nuevoSaldo
+			WHERE Id = @idEmpleado;
+
+			SET @outResultCode = 0;
+			COMMIT TRANSACTION;
+		END;
+	
+    END TRY
+    BEGIN CATCH
+
+		IF @@TRANCOUNT > 0
+        BEGIN
+            ROLLBACK TRANSACTION;
+        END;
+
+        INSERT INTO dbo.DBError (
+            UserName
+            , Number_
+            , State_
+            , Severity_
+            , Line_
+            , Procedure_
+            , Message_
+            , DateTime_
+        )
+        VALUES (
+            @inUserName
+            , ERROR_NUMBER()
+            , ERROR_STATE()
+            , ERROR_SEVERITY()
+            , ERROR_LINE()
+            , ERROR_PROCEDURE()
+            , ERROR_MESSAGE()
+            , GETDATE()
+        );
+
+        SET @outResultCode = ERROR_NUMBER();
+    END CATCH;
+
+    SET NOCOUNT OFF;
+END;
+================================================================================================================================
+ALTER PROCEDURE [dbo].[ListarMovimientosEmpleado]
+    @inValorDocumentoIdentidad INT
+	, @outResultCode INT OUTPUT
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -655,6 +845,7 @@ BEGIN
             , u.UserName AS NombreUsuario
             , m.IdPostByUser AS IdPostByUser
             , m.PostTime AS PostTime
+			, m.PostInIP AS PostInIP
         FROM dbo.Movimiento AS m
         INNER JOIN dbo.Empleado AS e 
             ON m.idEmpleado = e.id
@@ -664,6 +855,7 @@ BEGIN
             ON m.idPostByUser = u.id
         WHERE e.ValorDocumentoIdentidad = @inValorDocumentoIdentidad
         ORDER BY m.Fecha DESC;
+		SET @outResultCode = 0;
     END TRY
     BEGIN CATCH
         INSERT INTO dbo.DBError (
@@ -686,17 +878,16 @@ BEGIN
             , ERROR_MESSAGE()
             , GETDATE()
         );
+		SET @outResultCode = ERROR_NUMBER();
     END CATCH;
 
     SET NOCOUNT OFF;
 END;
-
-
----------------------------------------------------------------------------------------------------
-
-CREATE PROCEDURE dbo.ObtenerDescripcionError
+================================================================================================================================
+ALTER PROCEDURE [dbo].[ObtenerDescripcionError]
     @inCodigoError INT
     , @outDescripcion NVARCHAR(250) OUTPUT
+	, @outResultCode INT OUTPUT
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -706,6 +897,7 @@ BEGIN
             @outDescripcion = ce.Descripcion
         FROM dbo.Error AS ce
         WHERE ce.Codigo = @inCodigoError;
+		SET @outResultCode = 0;
     END TRY
     BEGIN CATCH
         INSERT INTO dbo.DBError (
@@ -730,16 +922,16 @@ BEGIN
         );
 
         SET @outDescripcion = 'Error al obtener descripción.';
+		SET @outResultCode = ERROR_NUMBER();
     END CATCH;
 
     SET NOCOUNT OFF;
 END;
-
----------------------------------------------------------------------------------------------------
-
-CREATE PROCEDURE dbo.ObtenerEmpleadoPorNombreYDocumento
+================================================================================================================================
+ALTER PROCEDURE [dbo].[ObtenerEmpleadoPorNombreYDocumento]
     @inNombre NVARCHAR(100)
     , @inValorDocumentoIdentidad INT
+	, @outResultCode INT OUTPUT
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -756,6 +948,7 @@ BEGIN
             ON e.idPuesto = p.id
         WHERE e.Nombre = @inNombre 
           AND e.ValorDocumentoIdentidad = @inValorDocumentoIdentidad;
+		SET @outResultCode = 0;
     END TRY
     BEGIN CATCH
         INSERT INTO dbo.DBError (
@@ -778,15 +971,15 @@ BEGIN
             , ERROR_MESSAGE()
             , GETDATE()
         );
+		SET @outResultCode = ERROR_NUMBER();
     END CATCH;
 
     SET NOCOUNT OFF;
 END;
-
----------------------------------------------------------------------------------------------------
-
-CREATE PROCEDURE dbo.ObtenerIdPuestoPorNombre
+================================================================================================================================
+ALTER PROCEDURE [dbo].[ObtenerIdPuestoPorNombre]
     @inNombrePuesto NVARCHAR(100)
+	, @outResultCode INT OUTPUT
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -796,6 +989,7 @@ BEGIN
             p.Id AS Id
         FROM dbo.Puesto AS p
         WHERE p.Nombre = @inNombrePuesto;
+		SET @outResultCode = 0;
     END TRY
     BEGIN CATCH
         INSERT INTO dbo.DBError (
@@ -818,14 +1012,14 @@ BEGIN
             , ERROR_MESSAGE()
             , GETDATE()
         );
+		SET @outResultCode = ERROR_NUMBER();
     END CATCH;
 
     SET NOCOUNT OFF;
 END;
-
----------------------------------------------------------------------------------------------------
-
-CREATE PROCEDURE dbo.ObtenerListaPuestos
+================================================================================================================================
+ALTER PROCEDURE [dbo].[ObtenerListaPuestos]
+	@outResultCode INT OUTPUT
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -837,6 +1031,7 @@ BEGIN
             , p.SalarioxHora AS SalarioxHora
         FROM dbo.Puesto AS p
         ORDER BY p.Nombre;
+		SET @outResultCode = 0;
     END TRY
     BEGIN CATCH
         INSERT INTO dbo.DBError (
@@ -859,11 +1054,53 @@ BEGIN
             , ERROR_MESSAGE()
             , GETDATE()
         );
+		SET @outResultCode = ERROR_NUMBER();
     END CATCH;
 
     SET NOCOUNT OFF;
 END;
+================================================================================================================================
+ALTER PROCEDURE [dbo].[ObtenerTiposMovimiento]
+    @outResultCode INT OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
 
+    BEGIN TRY
+        SELECT 
+            tm.Id AS Id
+            , tm.Nombre AS Nombre
+        FROM dbo.TipoMovimiento AS tm
+        ORDER BY tm.Id ASC;
 
----------------------------------------------------------------------------------------------------
+        SET @outResultCode = 0;
+    END TRY
+    BEGIN CATCH
+        INSERT INTO dbo.DBError (
+            UserName
+            , Number_
+            , State_
+            , Severity_
+            , Line_
+            , Procedure_
+            , Message_
+            , DateTime_
+        )
+        VALUES (
+            SYSTEM_USER
+            , ERROR_NUMBER()
+            , ERROR_STATE()
+            , ERROR_SEVERITY()
+            , ERROR_LINE()
+            , ERROR_PROCEDURE()
+            , ERROR_MESSAGE()
+            , GETDATE()
+        );
+
+        SET @outResultCode = ERROR_NUMBER();
+    END CATCH;
+
+    SET NOCOUNT OFF;
+END;
+================================================================================================================================
 
