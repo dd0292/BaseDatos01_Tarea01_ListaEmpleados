@@ -884,6 +884,183 @@ BEGIN
     SET NOCOUNT OFF;
 END;
 ================================================================================================================================
+ALTER PROCEDURE [dbo].[LoginDeshabilitado]
+	@inUserName VARCHAR(100)
+	, @inPostInIP VARCHAR(49)
+	, @outResultCode INT OUTPUT
+AS
+BEGIN
+    BEGIN TRY
+        SET NOCOUNT ON;
+			BEGIN TRANSACTION;
+
+			DECLARE @IdPostByUser INT;
+
+			SELECT 
+				@IdPostByUser = U.Id
+			FROM dbo.Usuario AS U
+			WHERE U.Username = @inUserName;
+			
+			IF @IdPostByUser IS NULL
+			BEGIN
+				SET @outResultCode = 50001; 
+            
+				INSERT INTO dbo.DBError (
+					UserName
+					, Number_
+					, State_
+					, Severity_
+					, Line_
+					, Procedure_
+					, Message_
+					, DateTime_
+				)
+				VALUES (
+					@inUserName
+					, @outResultCode
+					, 0
+					, 0
+					, ERROR_LINE()
+					, 'dbo.PasswordNoExiste'
+					, 'Username no existe'
+					, GETDATE()
+				);
+
+				RETURN;
+			END;
+			ELSE
+			BEGIN
+				INSERT INTO dbo.BitacoraEvento (
+					IdTipoEvento
+					, Descripcion
+					, IdPostByUser
+					, PostInIP
+					, PostTime
+				)
+				VALUES (
+					3
+					, 'Numero de intentos: > 3, 50003'
+					, @IdPostByUser
+					, @inPostInIP
+					, GETDATE()
+				);
+
+				INSERT INTO dbo.DBError (
+					UserName
+					, Number_
+					, State_
+					, Severity_
+					, Line_
+					, Procedure_
+					, Message_
+					, DateTime_
+				)
+				VALUES (
+					@inUserName
+					, 50003
+					, 0
+					, 0
+					, ERROR_LINE()
+					, 'dbo.LoginDeshabilitado'
+					, 'Login deshabilitado'
+					, GETDATE()
+				);
+				SET @outResultCode = 0;
+			END;
+			COMMIT TRANSACTION;
+        SET NOCOUNT OFF;
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0
+        BEGIN
+            ROLLBACK TRANSACTION;
+        END;
+
+        INSERT INTO dbo.DBError (
+            UserName
+            , Number_
+            , State_
+            , Severity_
+            , Line_
+            , Procedure_
+            , Message_
+            , DateTime_
+        )
+        VALUES (
+            @inUserName
+            , ERROR_NUMBER()
+            , ERROR_STATE()
+            , ERROR_SEVERITY()
+            , ERROR_LINE()
+            , ERROR_PROCEDURE()
+            , ERROR_MESSAGE()
+            , GETDATE()
+        );
+
+		SET @outResultCode = ERROR_NUMBER();
+        SET NOCOUNT OFF;
+    END CATCH;
+END;
+================================================================================================================================
+ALTER PROCEDURE [dbo].[LoginExitoso]
+	@inUserName VARCHAR(100)
+	, @inIdPostByUser INT
+	, @inPostInIP VARCHAR(49)
+	, @outResultCode INT OUTPUT
+AS
+BEGIN
+    BEGIN TRY
+        SET NOCOUNT ON;
+
+			INSERT INTO dbo.BitacoraEvento (
+				IdTipoEvento
+				, Descripcion
+				, IdPostByUser
+				, PostInIP
+				, PostTime
+			)
+			VALUES (
+				1
+				, ' '
+				, @inIdPostByUser
+				, @inPostInIP
+				, GETDATE()
+			);
+
+
+			SET @outResultCode = 0;
+
+        SET NOCOUNT OFF;
+    END TRY
+    BEGIN CATCH
+
+
+        INSERT INTO dbo.DBError (
+            UserName
+            , Number_
+            , State_
+            , Severity_
+            , Line_
+            , Procedure_
+            , Message_
+            , DateTime_
+        )
+        VALUES (
+            @inUserName
+            , ERROR_NUMBER()
+            , ERROR_STATE()
+            , ERROR_SEVERITY()
+            , ERROR_LINE()
+            , ERROR_PROCEDURE()
+            , ERROR_MESSAGE()
+            , GETDATE()
+        );
+
+		SET @outResultCode = ERROR_NUMBER();
+        SET NOCOUNT OFF;
+    END CATCH;
+END;
+================================================================================================================================
 ALTER PROCEDURE [dbo].[ObtenerDescripcionError]
     @inCodigoError INT
     , @outDescripcion NVARCHAR(250) OUTPUT
@@ -1103,4 +1280,173 @@ BEGIN
     SET NOCOUNT OFF;
 END;
 ================================================================================================================================
+ALTER PROCEDURE [dbo].[PasswordNoExiste]
+    @inUserName VARCHAR(100)
+	, @inNumeroIntentos INT
+	, @inPostInIP VARCHAR(49)
+	, @outResultCode INT OUTPUT
+AS
+BEGIN
+    BEGIN TRY
+        SET NOCOUNT ON;
 
+        BEGIN TRANSACTION;
+
+			DECLARE @IdPostByUser INT;
+
+			SELECT 
+				@IdPostByUser = U.Id
+			FROM dbo.Usuario AS U
+			WHERE U.Username = @inUserName;
+
+			IF @IdPostByUser IS NULL
+			BEGIN
+				SET @outResultCode = 50001; 
+            
+				INSERT INTO dbo.DBError (
+					UserName
+					, Number_
+					, State_
+					, Severity_
+					, Line_
+					, Procedure_
+					, Message_
+					, DateTime_
+				)
+				VALUES (
+					@inUserName
+					, @outResultCode
+					, 0
+					, 0
+					, ERROR_LINE()
+					, 'dbo.PasswordNoExiste'
+					, 'Username no existe'
+					, GETDATE()
+				);
+
+				RETURN;
+			END;
+
+			ELSE 
+			BEGIN
+				INSERT INTO dbo.BitacoraEvento (
+					IdTipoEvento
+					, Descripcion
+					, IdPostByUser
+					, PostInIP
+					, PostTime
+				)
+				VALUES (
+					2
+					, 'Numero de intentos: ' + CAST(@inNumeroIntentos AS VARCHAR) + ', 50002'
+					, @IdPostByUser
+					, @inPostInIP
+					, GETDATE()
+				);
+
+				INSERT INTO dbo.DBError (
+					UserName
+					, Number_
+					, State_
+					, Severity_
+					, Line_
+					, Procedure_
+					, Message_
+					, DateTime_
+				)
+				VALUES (
+					@inUserName
+					, 50002
+					, 0
+					, 0
+					, ERROR_LINE()
+					, 'dbo.PasswordNoExiste'
+					, 'Password no existe'
+					, GETDATE()
+				);
+
+				SET @outResultCode = 0;
+			END;
+        COMMIT TRANSACTION;
+
+        SET NOCOUNT OFF;
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0
+        BEGIN
+            ROLLBACK TRANSACTION;
+        END;
+
+        INSERT INTO dbo.DBError (
+            UserName
+			, Number_
+			, State_
+			, Severity_
+			, Line_
+			, Procedure_
+			, Message_
+			, DateTime_
+        )
+        VALUES (
+            @inUserName
+			, ERROR_NUMBER()
+			, ERROR_STATE()
+			, ERROR_SEVERITY()
+			, ERROR_LINE()
+			, ERROR_PROCEDURE()
+			, ERROR_MESSAGE()
+			, GETDATE()
+        );
+
+        SET @outResultCode = ERROR_NUMBER();
+
+        SET NOCOUNT OFF;
+    END CATCH;
+END;
+================================================================================================================================
+ALTER PROCEDURE [dbo].[ValidarUsuario]
+    @inUsername NVARCHAR(50),
+    @inPassword NVARCHAR(50),
+    @outResultCode INT OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    BEGIN TRY
+        SELECT 
+            U.Id AS Id
+			, U.Username AS Username
+			, U.Pass AS Pass
+        FROM dbo.Usuario AS U
+        WHERE U.Username = @inUsername
+          AND U.Pass = @inPassword;
+
+        SET @outResultCode = 0;
+    END TRY
+    BEGIN CATCH
+        SET @outResultCode = ERROR_NUMBER();
+
+        INSERT INTO dbo.DBError (
+            UserName
+			, Number_
+			, State_
+			, Severity_
+			, Line_
+			, Procedure_
+			, Message_
+			, DateTime_
+        )
+        VALUES (
+            @inUsername
+			, ERROR_NUMBER()
+			, ERROR_STATE()
+			, ERROR_SEVERITY()
+			, ERROR_LINE()
+			, ERROR_PROCEDURE()
+			, ERROR_MESSAGE()
+			, GETDATE()
+        );
+    END CATCH;
+
+    SET NOCOUNT OFF;
+END;

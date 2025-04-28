@@ -246,12 +246,6 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.DAL // Data Access Layer
             return resultado;
         }
 
-
-
-
-
-
-        //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         public List<Movement> ListarMovimientosEmpleado(int valorDocumentoIdentidad)
         {
             List<Movement> lista = new List<Movement>();
@@ -442,7 +436,6 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.DAL // Data Access Layer
 
             return tiposMovimiento;
         }
-
 
     }
 }
