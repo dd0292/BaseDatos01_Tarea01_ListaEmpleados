@@ -1,0 +1,76 @@
+﻿@model IEnumerable<BaseDatos01_Tarea01_ListaEmpleados.Models.Employee>
+
+@{
+    ViewBag.Title = "Lista Empleados";
+}
+
+<h2>Lista de Empleados</h2>
+
+@if (TempData["InfoMessage"] != null)
+{
+    <div class="alert  alert-info">
+        <strong>Informacion: </strong>  @TempData["InfoMessage"]
+    </div>
+}
+else if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert  alert-success">
+        <strong>Informacion: </strong>  @TempData["SuccessMessage"]
+    </div>
+}
+else if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert  alert-danger">
+        <strong>ERROR: </strong>  @TempData["ErrorMessage"]
+    </div>
+}
+
+
+@using (Html.BeginForm("Index", "Employee", FormMethod.Get))
+{
+    <div class="d-flex justify-content-between mb-3">
+        <div class="d-flex" style="flex-grow: 1;">
+            <input type="text" name="filtro" class="form-control mr-2" placeholder="Buscar por nombre o documento" />
+            <button type="submit" class="btn btn-info">Filtrar</button>
+        </div>
+
+        @Html.ActionLink("Insertar Empleado", "Create", null, new { @class = "btn btn-primary" })
+    </div>
+}
+
+<table class="table table-hover">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Nombre)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ValorDocumentoIdentidad)
+        </th>
+        <th>
+            Consulta, Borrado o Editar
+        </th>
+        <th>
+            Listar Movimientos
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@Html.DisplayFor(modelItem => item.Nombre)</td>
+            <td>@Html.DisplayFor(modelItem => item.ValorDocumentoIdentidad)</td>
+
+            <td>
+                @Html.ActionLink("Consulta", "Read", "Employee", new { Nombre = item.Nombre, ValorDocumentoIdentidad = item.ValorDocumentoIdentidad }, new { @class = "btn btn-primary btn-sm" })
+                @Html.ActionLink("Editar", "Edit", "Employee", new { Nombre = item.Nombre, ValorDocumentoIdentidad = item.ValorDocumentoIdentidad }, new { @class = "btn btn-success btn-sm" })
+                @Html.ActionLink("Borrar", "Delete", "Employee", new { Nombre = item.Nombre, ValorDocumentoIdentidad = item.ValorDocumentoIdentidad }, new { @class = "btn btn-danger btn-sm" })
+            </td>
+
+            <td>
+                @Html.ActionLink("Movimientos", "Index", "Movement", new { Nombre = item.Nombre, ValorDocumentoIdentidad = item.ValorDocumentoIdentidad }, new { @class = "btn btn-secondary btn-sm" })
+            </td>
+        </tr>
+    }
+</table>
+

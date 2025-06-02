@@ -16,14 +16,16 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.DAL // Data Access Layer
         System.Web.HttpContext context = System.Web.HttpContext.Current;
 
         string conString = ConfigurationManager.ConnectionStrings["adoConnectionString"].ToString();
-        string UserName = HttpContext.Current.Session["Username"].ToString();
-        string UserId = HttpContext.Current.Session["UserId"].ToString();
+        // string UserName = HttpContext.Current.Session["Username"].ToString();
+        // string UserId = HttpContext.Current.Session["UserId"].ToString();
+
+        string UserName = "user"
+        string UserId = "192.ddddd.18.7"; 
         string ClientIp = "192.168.18.7"; 
 
         public _DAL() 
         {
-            ClientIp = (context.Request.ServerVariables["HTTP_X_FORWARDED_FOR"] ??
-                   context.Request.ServerVariables["REMOTE_ADDR"]).Split(',')[0].Trim();
+            ClientIp = (context.Request.ServerVariables["HTTP_X_FORWARDED_FOR"] ?? context.Request.ServerVariables["REMOTE_ADDR"]).Split(',')[0].Trim();
         }
 
         private static int? ExtractIntFromBrackets(string input)
