@@ -19,7 +19,7 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.DAL // Data Access Layer
         // string UserName = HttpContext.Current.Session["Username"].ToString();
         // string UserId = HttpContext.Current.Session["UserId"].ToString();
 
-        string UserName = "user"
+        string UserName = "user";
         string UserId = "192.ddddd.18.7"; 
         string ClientIp = "192.168.18.7"; 
 

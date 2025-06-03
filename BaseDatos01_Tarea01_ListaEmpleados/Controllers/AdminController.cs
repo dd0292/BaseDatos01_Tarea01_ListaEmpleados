@@ -3,8 +3,6 @@ using BaseDatos01_Tarea01_ListaEmpleados.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection.Emit;
 using System.Web;
 using System.Web.Mvc;
 
@@ -12,7 +10,6 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
 {
     public class AdminController : Controller
     {
-
         _DAL _employeeDAL = new _DAL();
 
         public ActionResult Index(string filtro = "")
@@ -42,13 +39,14 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
             try
             {
 
-                if (true) {
+                if (true)
+                {
                     outCode = _employeeDAL.InsertarEmpleado(employee, puestoNombre);
 
-                    if (outCode == 0) 
+                    if (outCode == 0)
                     {
                         TempData["SuccessMessage"] = "Inserción exitosa !!!";
-                    } 
+                    }
                     else
                     {
                         string errorDescription = _employeeDAL.ObtenerDescripcionError(outCode);
@@ -58,7 +56,7 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
 
                 return RedirectToAction("Index");
             }
-            catch(Exception ex) 
+            catch (Exception ex)
             {
                 TempData["ErrorMessage"] = ex.Message;
                 return View();
@@ -109,7 +107,7 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
             else
             {
                 TempData["SuccessMessage"] = "Empleado actualizado correctamente.";
-                
+
             }
             return RedirectToAction("Index");
         }
@@ -151,6 +149,5 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
 
             return RedirectToAction("Index");
         }
-
     }
 }
