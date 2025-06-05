@@ -3,17 +3,15 @@
     "secrets1": {
       "type": "secrets.user"
     },
-    "mssql1": {
-      "serviceConnectorResourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('serviceConnectorResourceGroupName')]/providers/Microsoft.ServiceLinker/locations/westus/connectors/ConnectionStringsDatabaseConnection_5B9E974C2D",
-      "secretStore": "LocalSecretsFile",
-      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.Sql/servers/tareabd/databases/Empleados",
-      "type": "mssql.azure",
-      "connectionId": "ConnectionStrings:DatabaseConnection"
-    },
     "mssql2": {
       "secretStore": "LocalSecretsFile",
       "type": "mssql.onprem",
       "connectionId": "Base_cloudcluster"
+    },
+    "mssql1": {
+      "secretStore": "LocalSecretsFile",
+      "type": "mssql.onprem",
+      "connectionId": "Cloudcluster_02"
     }
   }
 }
