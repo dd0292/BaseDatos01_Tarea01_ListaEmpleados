@@ -17,7 +17,8 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
 
         public ActionResult Index(string filtro = "")
         {
-            var employeeList = _employeeDAL.FiltrarEmpleados(filtro);
+            int outCode = 0;
+            var employeeList = _employeeDAL.FiltrarEmpleados(filtro, ref outCode);
 
             if (employeeList.Count == 0)
             {
@@ -90,7 +91,7 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
                 return RedirectToAction("Index");
             }
 
-            ViewBag.Puestos = new SelectList(_employeeDAL.ObtenerListaPuestos(), empleado.NombrePuesto);
+            ViewBag.Puestos = new SelectList(_employeeDAL.ObtenerListaPuestos(), empleado.Puesto);
             return View(empleado);
         }
 

@@ -26,7 +26,7 @@ else if (TempData["ErrorMessage"] != null)
 }
 
 
-@using (Html.BeginForm("Index", "Employee", FormMethod.Get))
+@using (Html.BeginForm("Index", "Admin", FormMethod.Get))
 {
     <div class="d-flex justify-content-between mb-3">
         <div class="d-flex" style="flex-grow: 1;">
@@ -40,18 +40,12 @@ else if (TempData["ErrorMessage"] != null)
 
 <table class="table table-hover">
     <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.Nombre)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.ValorDocumentoIdentidad)
-        </th>
-        <th>
-            Consulta, Borrado o Editar
-        </th>
-        <th>
-            Listar Movimientos
-        </th>
+        <th>@Html.DisplayNameFor(model => model.Nombre)</th>
+        <th>@Html.DisplayNameFor(model => model.ValorDocumento)</th>
+        <th>@Html.DisplayNameFor(model => model.Departamento)</th>
+        <th>@Html.DisplayNameFor(model => model.Puesto)</th>
+        <th>Consulta, Borrado o Editar</th>
+        <th>Impersonar</th>
         <th></th>
     </tr>
 
@@ -59,16 +53,18 @@ else if (TempData["ErrorMessage"] != null)
     {
         <tr>
             <td>@Html.DisplayFor(modelItem => item.Nombre)</td>
-            <td>@Html.DisplayFor(modelItem => item.ValorDocumentoIdentidad)</td>
+            <td>@Html.DisplayFor(modelItem => item.ValorDocumento)</td>
+            <td>@Html.DisplayFor(modelItem => item.Departamento)</td>
+            <td>@Html.DisplayFor(modelItem => item.Puesto)</td>
 
             <td>
-                @Html.ActionLink("Consulta", "Read", "Employee", new { Nombre = item.Nombre, ValorDocumentoIdentidad = item.ValorDocumentoIdentidad }, new { @class = "btn btn-primary btn-sm" })
-                @Html.ActionLink("Editar", "Edit", "Employee", new { Nombre = item.Nombre, ValorDocumentoIdentidad = item.ValorDocumentoIdentidad }, new { @class = "btn btn-success btn-sm" })
-                @Html.ActionLink("Borrar", "Delete", "Employee", new { Nombre = item.Nombre, ValorDocumentoIdentidad = item.ValorDocumentoIdentidad }, new { @class = "btn btn-danger btn-sm" })
+                @Html.ActionLink("Consulta", "Read", "Employee", new { employee_info = item }, new { @class = "btn btn-primary btn-sm" })
+                @Html.ActionLink("Editar", "Edit", "Employee", new { Nombre = item.Nombre, ValorDocumentoIdentidad = item.ValorDocumento }, new { @class = "btn btn-success btn-sm" })
+                @Html.ActionLink("Borrar", "Delete", "Employee", new { Nombre = item.Nombre, ValorDocumentoIdentidad = item.ValorDocumento }, new { @class = "btn btn-danger btn-sm" })
             </td>
 
             <td>
-                @Html.ActionLink("Movimientos", "Index", "Movement", new { Nombre = item.Nombre, ValorDocumentoIdentidad = item.ValorDocumentoIdentidad }, new { @class = "btn btn-secondary btn-sm" })
+                @Html.ActionLink("Movimientos", "Index", "Movement", new { Nombre = item.Nombre, ValorDocumentoIdentidad = item.ValorDocumento }, new { @class = "btn btn-secondary btn-sm" })
             </td>
         </tr>
     }

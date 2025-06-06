@@ -20,7 +20,7 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.DAL // Data Access Layer
         // string UserId = HttpContext.Current.Session["UserId"].ToString();
 
         string UserName = "user";
-        string UserId = "192.ddddd.18.7"; 
+        int UserId = 4; 
         string ClientIp = "192.168.18.7"; 
 
         public _DAL() 
@@ -60,7 +60,7 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.DAL // Data Access Layer
                 cmd.Parameters.AddWithValue("@inNombre", nombreAntiguo);
                 cmd.Parameters.AddWithValue("@inValorDocumentoIdentidad", docAntiguo);
                 cmd.Parameters.AddWithValue("@inNuevoNombre", nuevoEmpleado.Nombre);
-                cmd.Parameters.AddWithValue("@inNuevoValorDocumentoIdentidad", nuevoEmpleado.ValorDocumentoIdentidad);
+                cmd.Parameters.AddWithValue("@inNuevoValorDocumentoIdentidad", nuevoEmpleado.ValorDocumento);
                 cmd.Parameters.AddWithValue("@inIdPuesto", idPuesto);
 
                 cmd.Parameters.AddWithValue("@inUserName", UserName);
@@ -142,22 +142,18 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.DAL // Data Access Layer
             return resultCode;
         }
 
-        public List<Employee> FiltrarEmpleados(string filtro)
+        public List<Employee> FiltrarEmpleados(string filtro,ref int outResultCode)
         {
             List<Employee> list = new List<Employee>();
 
             using (SqlConnection connection = new SqlConnection(conString))
             {
-                SqlCommand cmd = new SqlCommand("FiltrarEmpleados", connection);
+                SqlCommand cmd = new SqlCommand("sp_FiltrarEmpleados", connection);
                 cmd.CommandType = CommandType.StoredProcedure;
 
-                int i = 0;
                 cmd.Parameters.AddWithValue("@inFiltro", filtro ?? "");
-                cmd.Parameters.AddWithValue("@inEsNumero", int.TryParse(filtro, out i));
-
-                cmd.Parameters.AddWithValue("@inUserName", UserName);
-                cmd.Parameters.AddWithValue("@inIdPostByUser", UserId);
-                cmd.Parameters.AddWithValue("@inPostInIP", ClientIp);
+                cmd.Parameters.AddWithValue("@inIdUsuario", UserId);
+                cmd.Parameters.AddWithValue("@inUserIP", ClientIp);
 
                 SqlParameter outParam = new SqlParameter("@outResultCode", SqlDbType.Int);
                 outParam.Direction = ParameterDirection.Output;
@@ -168,20 +164,26 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.DAL // Data Access Layer
 
                 connection.Open();
                 sqlData.Fill(dataTableEmployees);
+                outResultCode = Convert.ToInt32(cmd.Parameters["@outResultCode"].Value);
                 connection.Close();
 
                 foreach (DataRow dr in dataTableEmployees.Rows)
                 {
-                    list.Add(new Employee
-                    {
-                        Id = Convert.ToInt32(dr["IdEmpleado"]),
-                        ValorDocumentoIdentidad = Convert.ToInt32(dr["DocumentoEmpleado"]),
-                        Nombre = dr["NombreEmpleado"].ToString(),
-                    });
+                    list.Add(
+                        new Employee(
+                            Id: Convert.ToInt32(dr["IdEmpleado"]),
+                            Nombre: dr["NombreEmpleado"].ToString(),
+                            TipoDocumento: Convert.ToInt32(dr["TipoDocumento"]),
+                            ValorDocumento: dr["DocumentoEmpleado"].ToString(),
+                            Puesto: dr["NombrePuesto"].ToString(),
+                            Departamento: dr["Departamento"].ToString(),
+                            FechaNacimiento: dr["FechaNacimiento"].ToString(),
+                            IdUsuario: Convert.ToInt32(dr["IdUsuario"])
+                        )
+                    );
                 }
 
             }
-
             return list;
         }
 
@@ -196,7 +198,7 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.DAL // Data Access Layer
 
                 int puestoId = ObtenerIdPuestoPorNombre(puestoNombre);
                 cmd.Parameters.AddWithValue("@inIdPuesto", puestoId);
-                cmd.Parameters.AddWithValue("@inValorDocumentoIdentidad", employee.ValorDocumentoIdentidad);
+                cmd.Parameters.AddWithValue("@inValorDocumentoIdentidad", employee.ValorDocumento);
                 cmd.Parameters.AddWithValue("@inNombre", employee.Nombre);
 
                 cmd.Parameters.AddWithValue("@inUserName", UserName);
@@ -337,14 +339,7 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.DAL // Data Access Layer
 
                 if (reader.Read())
                 {
-                    empleado = new Employee
-                    {
-                        Nombre = reader["Nombre"].ToString(),
-                        ValorDocumentoIdentidad = Convert.ToInt32(reader["ValorDocumentoIdentidad"]),
-                        SaldoVacaciones = Convert.ToInt32(reader["SaldoVacaciones"]),
-                        FechaContratacion = reader["FechaContratacion"].ToString(),
-                        NombrePuesto = reader["NombrePuesto"].ToString()
-                    };
+                    //empleado = new Employee();
                 }
 
                 reader.Close();

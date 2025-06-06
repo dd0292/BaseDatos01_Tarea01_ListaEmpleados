@@ -3,6 +3,7 @@ using BaseDatos01_Tarea01_ListaEmpleados.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Web;
 using System.Web.Mvc;
 
@@ -14,12 +15,18 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
 
         public ActionResult Index(string filtro = "")
         {
-            var employeeList = _employeeDAL.FiltrarEmpleados(filtro);
+            int outResultCode = 0;
+            var employeeList = _employeeDAL.FiltrarEmpleados(filtro,ref outResultCode);
 
-            if (employeeList.Count == 0)
+            if (outResultCode != 0)
+            {
+                TempData["ErrorMessage"] = $"[ERROR {outResultCode}]";
+            }
+            else if (employeeList.Count == 0)
             {
                 TempData["InfoMessage"] = "No hay empleados registrados actualmente en la Base de Datos con dicha informacion...";
             }
+
 
             return View(employeeList);
         }
@@ -64,17 +71,17 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
         }
 
         [HttpGet]
-        public ActionResult Read(string Nombre, int ValorDocumentoIdentidad)
+        public ActionResult Read(Employee employee_info)
         {
-            var empleado = _employeeDAL.ObtenerEmpleadoPorNombreYDocumento(Nombre, ValorDocumentoIdentidad);
+            //var empleado = _employeeDAL.ObtenerEmpleadoPorNombreYDocumento(Nombre, ValorDocumentoIdentidad);
 
-            if (empleado == null)
+            if (employee_info == null)
             {
                 TempData["ErrorMessage"] = "Empleado no encontrado.";
                 return RedirectToAction("Index");
             }
 
-            return View(empleado);
+            return View(employee_info);
         }
 
         [HttpGet]
@@ -88,7 +95,7 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
                 return RedirectToAction("Index");
             }
 
-            ViewBag.Puestos = new SelectList(_employeeDAL.ObtenerListaPuestos(), empleado.NombrePuesto);
+            ViewBag.Puestos = new SelectList(_employeeDAL.ObtenerListaPuestos(), empleado.Puesto);
             return View(empleado);
         }
 
