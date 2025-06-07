@@ -1,5 +1,6 @@
 ﻿using BaseDatos01_Tarea01_ListaEmpleados.DAL;
 using BaseDatos01_Tarea01_ListaEmpleados.Models;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,21 +35,31 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
         [HttpGet]
         public ActionResult Create()
         {
-            var listaPuestos = _employeeDAL.ObtenerListaPuestos();
-            ViewBag.Puestos = new SelectList(listaPuestos);
+            List<TipoDocumento> listaTipoDocu = _employeeDAL.ObtenerListaTipoDocumentos();
+            List<Puesto> listaPuestos = _employeeDAL.ObtenerListaPuestos();
+            List<Departamento> listaDepartamentos = _employeeDAL.ObtenerListaDepartamentos();
+
+            ViewBag.TiposDocumento = new SelectList(listaTipoDocu, "Id", "Nombre");
+            ViewBag.Puestos = new SelectList(listaPuestos, "Id", "Nombre");
+            ViewBag.Departamentos = new SelectList(listaDepartamentos, "Id", "Nombre");
+
             return View();
         }
 
         [HttpPost]
-        public ActionResult Create(Employee employee, string puestoNombre)
+        [ValidateAntiForgeryToken]
+        public ActionResult Create(Employee employee, int tipoDocumentoId, int departamentoId, int puestoId)
         {
             int outCode = 0;
-            try
+            if (ModelState.IsValid)
             {
-
-                if (true)
+                try
                 {
-                    outCode = _employeeDAL.InsertarEmpleado(employee, puestoNombre);
+                    employee.TipoDocumento.Id = tipoDocumentoId;
+                    employee.Departamento.Id = departamentoId;
+                    employee.Puesto.Id = puestoId;
+
+                    outCode = _employeeDAL.InsertarEmpleado(employee);
 
                     if (outCode == 0)
                     {
@@ -56,102 +67,92 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
                     }
                     else
                     {
-                        string errorDescription = _employeeDAL.ObtenerDescripcionError(outCode);
-                        TempData["ErrorMessage"] = $"[ERROR {outCode}] {errorDescription}";
+                        TempData["ErrorMessage"] = $"[ERROR {outCode}]";
                     }
+
+                    return RedirectToAction("Index");
                 }
+                catch (Exception ex)
+                {
+                    TempData["ErrorMessage"] = "Error al insertar empleado: " + ex.Message;
+                }
+            }
 
-                return RedirectToAction("Index");
-            }
-            catch (Exception ex)
-            {
-                TempData["ErrorMessage"] = ex.Message;
-                return View();
-            }
+            var listaTiposDoc = _employeeDAL.ObtenerListaTipoDocumentos();
+            var listaPuestos = _employeeDAL.ObtenerListaPuestos();
+            var listaDepartamentos = _employeeDAL.ObtenerListaDepartamentos();
+
+            ViewBag.TiposDocumento = new SelectList(listaTiposDoc, "Id", "Nombre", tipoDocumentoId);
+            ViewBag.Puestos = new SelectList(listaPuestos, "Id", "Nombre", puestoId);
+            ViewBag.Departamentos = new SelectList(listaDepartamentos, "Id", "Nombre", departamentoId);
+
+            return View(employee);
         }
 
         [HttpGet]
-        public ActionResult Read(Employee employee_info)
+        public ActionResult Edit(Employee employee)
         {
-            //var empleado = _employeeDAL.ObtenerEmpleadoPorNombreYDocumento(Nombre, ValorDocumentoIdentidad);
-
-            if (employee_info == null)
+            if (employee == null)
             {
                 TempData["ErrorMessage"] = "Empleado no encontrado.";
                 return RedirectToAction("Index");
             }
 
-            return View(employee_info);
-        }
+            var listaTiposDoc = _employeeDAL.ObtenerListaTipoDocumentos();
+            var listaPuestos = _employeeDAL.ObtenerListaPuestos();
+            var listaDepartamentos = _employeeDAL.ObtenerListaDepartamentos();
 
-        [HttpGet]
-        public ActionResult Edit(string Nombre, int ValorDocumentoIdentidad)
-        {
-            var empleado = _employeeDAL.ObtenerEmpleadoPorNombreYDocumento(Nombre, ValorDocumentoIdentidad);
+            var model = new EmployeeEditViewModel(
+                employee: employee,
+                TiposDocumento: new SelectList(listaTiposDoc, "Id", "Nombre", employee.TipoDocumento.Id),
+                Puestos: new SelectList(listaPuestos, "Id", "Nombre", employee.Puesto.Id),
+                Departamentos: new SelectList(listaDepartamentos, "Id", "Nombre", employee.Departamento.Id)
+                );
 
-            if (empleado == null)
-            {
-                TempData["ErrorMessage"] = "Empleado no encontrado.";
-                return RedirectToAction("Index");
-            }
-
-            ViewBag.Puestos = new SelectList(_employeeDAL.ObtenerListaPuestos(), empleado.Puesto);
-            return View(empleado);
+            return View(model);
         }
 
         [HttpPost]
-        public ActionResult Edit(string nombreAntiguo, int docAntiguo, Employee empleadoEditado, string puestoNombre)
+        public ActionResult Edit(EmployeeEditViewModel model)
         {
-            int idPuesto = _employeeDAL.ObtenerIdPuestoPorNombre(puestoNombre);
+            Employee empleadoOriginal = JsonConvert.DeserializeObject<Employee>(model.EstadoOriginalJson);
 
-            int resultado = _employeeDAL.ActualizarEmpleado(nombreAntiguo, docAntiguo, empleadoEditado, idPuesto);
+            int resultado = _employeeDAL.ActualizarEmpleado(model, empleadoOriginal);
 
-            if (resultado != 0)
-            {
-                string errorDescription = _employeeDAL.ObtenerDescripcionError(resultado);
-                TempData["ErrorMessage"] = $"[ERROR {resultado}] {errorDescription}";
-            }
-            else
+            if (resultado == 0)
             {
                 TempData["SuccessMessage"] = "Empleado actualizado correctamente.";
 
             }
+            else
+            {
+                TempData["ErrorMessage"] = $"[ERROR {resultado}]";
+
+            }
             return RedirectToAction("Index");
         }
 
         [HttpGet]
-        public ActionResult Delete(string Nombre, int ValorDocumentoIdentidad)
+        public ActionResult Delete(Employee employee)
         {
-            var empleado = _employeeDAL.ObtenerEmpleadoPorNombreYDocumento(Nombre, ValorDocumentoIdentidad);
 
-            if (empleado == null)
+            if (employee == null)
             {
                 TempData["ErrorMessage"] = "Empleado no encontrado.";
                 return RedirectToAction("Index");
             }
 
-            return View(empleado);
+            return View(employee);
         }
 
         [HttpPost]
-        public ActionResult DeleteConfirmed(string Nombre, int ValorDocumentoIdentidad)
+        public ActionResult Delete(int employeeId)
         {
-            int resultado = _employeeDAL.EliminarEmpleadoLogicamente(Nombre, ValorDocumentoIdentidad);
+            int resultado = _employeeDAL.EliminarEmpleadoLogicamente(employeeId);
 
             if (resultado == 0)
                 TempData["SuccessMessage"] = "Empleado eliminado correctamente.";
             else
-                TempData["ErrorMessage"] = "Error al eliminar el empleado.";
-
-            return RedirectToAction("Index");
-        }
-
-        [HttpGet]
-        public ActionResult DeleteCancel(string Nombre, int ValorDocumentoIdentidad)
-        {
-            int resultado = _employeeDAL.EliminarEmpleadoCancelar(Nombre, ValorDocumentoIdentidad);
-
-            if (resultado != 0)
                 TempData["ErrorMessage"] = "Error al eliminar el empleado.";
 
             return RedirectToAction("Index");

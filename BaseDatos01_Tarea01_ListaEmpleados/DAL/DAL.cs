@@ -48,70 +48,6 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.DAL // Data Access Layer
             return null; 
         }
 
-        public int ActualizarEmpleado(string nombreAntiguo, int docAntiguo, Employee nuevoEmpleado, int idPuesto)
-        {
-            int resultCode;
-
-            using (SqlConnection conn = new SqlConnection(conString))
-            {
-                SqlCommand cmd = new SqlCommand("ActualizarEmpleado", conn);
-                cmd.CommandType = CommandType.StoredProcedure;
-
-                cmd.Parameters.AddWithValue("@inNombre", nombreAntiguo);
-                cmd.Parameters.AddWithValue("@inValorDocumentoIdentidad", docAntiguo);
-                cmd.Parameters.AddWithValue("@inNuevoNombre", nuevoEmpleado.Nombre);
-                cmd.Parameters.AddWithValue("@inNuevoValorDocumentoIdentidad", nuevoEmpleado.ValorDocumento);
-                cmd.Parameters.AddWithValue("@inIdPuesto", idPuesto);
-
-                cmd.Parameters.AddWithValue("@inUserName", UserName);
-                cmd.Parameters.AddWithValue("@inIdPostByUser", UserId);
-                cmd.Parameters.AddWithValue("@inPostInIP", ClientIp);
-
-                SqlParameter outParam = new SqlParameter("@outResultCode", SqlDbType.Int)
-                {
-                    Direction = ParameterDirection.Output
-                };
-                cmd.Parameters.Add(outParam);
-
-                conn.Open();
-                cmd.ExecuteNonQuery();
-                resultCode = Convert.ToInt32(outParam.Value);
-                conn.Close();
-            }
-
-            return resultCode;
-        }
-
-        public int EliminarEmpleadoLogicamente(string nombre, int valorDocumento)
-        {
-            int resultCode;
-
-            using (SqlConnection conn = new SqlConnection(conString))
-            {
-                SqlCommand cmd = new SqlCommand("EliminarEmpleadoLogicamente", conn);
-                cmd.CommandType = CommandType.StoredProcedure;
-
-                cmd.Parameters.AddWithValue("@inNombre", nombre);
-                cmd.Parameters.AddWithValue("@inValorDocumentoIdentidad", valorDocumento);
-                cmd.Parameters.AddWithValue("@inUserName", UserName);
-                cmd.Parameters.AddWithValue("@inIdPostByUser", UserId);
-                cmd.Parameters.AddWithValue("@inPostInIP", ClientIp);
-
-                SqlParameter outParam = new SqlParameter("@outResultCode", SqlDbType.Int)
-                {
-                    Direction = ParameterDirection.Output
-                };
-                cmd.Parameters.Add(outParam);
-
-                conn.Open();
-                cmd.ExecuteNonQuery();
-                resultCode = Convert.ToInt32(outParam.Value);
-                conn.Close();
-            }
-
-            return resultCode;
-        }
-
         public int EliminarEmpleadoCancelar(string nombre, int valorDocumento)
         {
             int resultCode;
@@ -140,37 +76,6 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.DAL // Data Access Layer
             }
 
             return resultCode;
-        }
-
-        public int InsertarEmpleado(Employee employee, string puestoNombre)
-        {
-            int resultado;
-
-            using (SqlConnection connection = new SqlConnection(conString))
-            {
-                SqlCommand cmd = new SqlCommand("InsertarEmpleado", connection);
-                cmd.CommandType = CommandType.StoredProcedure;
-
-                int puestoId = ObtenerIdPuestoPorNombre(puestoNombre);
-                cmd.Parameters.AddWithValue("@inIdPuesto", puestoId);
-                cmd.Parameters.AddWithValue("@inValorDocumentoIdentidad", employee.ValorDocumento);
-                cmd.Parameters.AddWithValue("@inNombre", employee.Nombre);
-
-                cmd.Parameters.AddWithValue("@inUserName", UserName);
-                cmd.Parameters.AddWithValue("@inIdPostByUser", UserId);
-                cmd.Parameters.AddWithValue("@inPostInIP", ClientIp);
-
-                SqlParameter outputParam = new SqlParameter("@outResultCode", SqlDbType.Int);
-                outputParam.Direction = ParameterDirection.Output;
-                cmd.Parameters.Add(outputParam);
-
-                connection.Open();
-                cmd.ExecuteNonQuery(); 
-                resultado = Convert.ToInt32(cmd.Parameters["@outResultCode"].Value);
-                connection.Close();
-            }
-
-            return resultado;
         }
 
         public int InsertarMovimiento(int valorDocumentoIdentidad, string idTipoMovimiento, decimal monto)
@@ -392,17 +297,31 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.DAL // Data Access Layer
                         new Employee(
                             Id: Convert.ToInt32(dr["IdEmpleado"]),
                             Nombre: dr["NombreEmpleado"].ToString(),
+
+                            IdTipoDocumento: Convert.ToInt32(dr["IdTipoDocumento"]),
                             TipoDocumento: dr["TipoDocumento"].ToString(),
+
                             ValorDocumento: dr["DocumentoEmpleado"].ToString(),
-                            Puesto: dr["NombrePuesto"].ToString(),
+
+                            IdPuesto: Convert.ToInt32(dr["IdPuesto"]),
+                            NombrePuesto: dr["NombrePuesto"].ToString(),
+                            SalarioPorHora: Convert.ToDecimal(dr["SalarioPorHora"]),
+
+                            IdDepartamento: Convert.ToInt32(dr["IdDepartamento"]),
                             Departamento: dr["Departamento"].ToString(),
+
                             FechaNacimiento: dr["FechaNacimiento"].ToString(),
-                            IdUsuario: Convert.ToInt32(dr["IdUsuario"])
+
+                            IdUsuario: Convert.ToInt32(dr["IdUsuario"]),
+                            Username: dr["Usuario"].ToString(),
+                            Password: dr["Passphrase"].ToString(),
+                            Estado: dr["Estado"].ToString()
                         )
                     );
                 }
 
             }
+
             return list;
         }
 
@@ -505,7 +424,96 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.DAL // Data Access Layer
             return departamentos;
         }
 
+        public int InsertarEmpleado(Employee employee)
+        {
+            int resultado;
 
+            using (SqlConnection connection = new SqlConnection(conString))
+            {
+                SqlCommand cmd = new SqlCommand("sp_InsertarEmpleado", connection);
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                cmd.Parameters.AddWithValue("@inValorDocumentoIdentidad", employee.ValorDocumento);
+                cmd.Parameters.AddWithValue("@inNombre", employee.Nombre);
+
+                cmd.Parameters.AddWithValue("@inUserName", UserName);
+                cmd.Parameters.AddWithValue("@inIdPostByUser", UserId);
+                cmd.Parameters.AddWithValue("@inPostInIP", ClientIp);
+
+                SqlParameter outputParam = new SqlParameter("@outResultCode", SqlDbType.Int);
+                outputParam.Direction = ParameterDirection.Output;
+                cmd.Parameters.Add(outputParam);
+
+                connection.Open();
+                cmd.ExecuteNonQuery();
+                resultado = Convert.ToInt32(cmd.Parameters["@outResultCode"].Value);
+                connection.Close();
+            }
+
+            return resultado;
+        }
+
+        public int ActualizarEmpleado(EmployeeEditViewModel newEmpleado, Employee oldEmpleado)
+        {
+            int resultCode;
+
+            using (SqlConnection conn = new SqlConnection(conString))
+            {
+                SqlCommand cmd = new SqlCommand("ActualizarEmpleado", conn);
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                //cmd.Parameters.AddWithValue("@inNombre", nombreAntiguo);
+                //cmd.Parameters.AddWithValue("@inValorDocumentoIdentidad", docAntiguo);
+                //cmd.Parameters.AddWithValue("@inNuevoNombre", nuevoEmpleado.Nombre);
+                //cmd.Parameters.AddWithValue("@inNuevoValorDocumentoIdentidad", nuevoEmpleado.ValorDocumento);
+                //cmd.Parameters.AddWithValue("@inIdPuesto", idPuesto);
+
+                cmd.Parameters.AddWithValue("@inUserName", UserName);
+                cmd.Parameters.AddWithValue("@inIdPostByUser", UserId);
+                cmd.Parameters.AddWithValue("@inPostInIP", ClientIp);
+
+                SqlParameter outParam = new SqlParameter("@outResultCode", SqlDbType.Int)
+                {
+                    Direction = ParameterDirection.Output
+                };
+                cmd.Parameters.Add(outParam);
+
+                conn.Open();
+                cmd.ExecuteNonQuery();
+                resultCode = Convert.ToInt32(outParam.Value);
+                conn.Close();
+            }
+
+            return resultCode;
+        }
+
+        public int EliminarEmpleadoLogicamente(int employeeId)
+        {
+            int resultCode;
+
+            using (SqlConnection conn = new SqlConnection(conString))
+            {
+                SqlCommand cmd = new SqlCommand("EliminarEmpleadoLogicamente", conn);
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                cmd.Parameters.AddWithValue("@inUserName", UserName);
+                cmd.Parameters.AddWithValue("@inIdPostByUser", UserId);
+                cmd.Parameters.AddWithValue("@inPostInIP", ClientIp);
+
+                SqlParameter outParam = new SqlParameter("@outResultCode", SqlDbType.Int)
+                {
+                    Direction = ParameterDirection.Output
+                };
+                cmd.Parameters.Add(outParam);
+
+                conn.Open();
+                cmd.ExecuteNonQuery();
+                resultCode = Convert.ToInt32(outParam.Value);
+                conn.Close();
+            }
+
+            return resultCode;
+        }
     }
 }
 

@@ -9,19 +9,26 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Models
 {
 	public class Employee
 	{
-        public Employee(int Id, string Nombre, int TipoDocumento, 
-            string ValorDocumento, string FechaNacimiento, string Departamento, 
-            string Puesto, int IdUsuario) {
+        public Employee(int Id, string Nombre, 
+            int IdTipoDocumento, string TipoDocumento, 
+            string ValorDocumento,
+            int IdPuesto, string NombrePuesto, decimal SalarioPorHora,
+            int IdDepartamento, string Departamento,
+            string FechaNacimiento, 
+            int IdUsuario, string Username, 
+            string Password,
+            string Estado
+            ) {
             this.Id = Id;
             this.Nombre = Nombre;
-            this.TipoDocumento = TipoDocumento;
+            this.TipoDocumento = new TipoDocumento() {Id = IdTipoDocumento, Nombre = TipoDocumento} ;
             this.ValorDocumento = ValorDocumento;
-            this.Puesto = Puesto;
-            this.IdUsuario = IdUsuario;
-            this.Departamento = Departamento;
+            this.Puesto = new Puesto() {Id = IdPuesto ,Nombre = NombrePuesto, SalarioXHora = SalarioPorHora};
+            this.Departamento = new Departamento() {Id = IdDepartamento ,Nombre = Departamento};
             this.FechaNacimiento = FechaNacimiento;
-            Activo = true;
-        }   
+            this.Usuario = new Usuario() {Id = IdUsuario, Nombre = Username, Contrasena = Password};
+            this.Estado = Estado;
+        }
 
         [Key]
         [DisplayName("Id")]
@@ -31,33 +38,30 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Models
         [DisplayName("Nombre")]
         public string Nombre { get; set; }
 
-        [Required]
         [DisplayName("Tipo Documento")]
-        public int  TipoDocumento { get; set; }
+        public TipoDocumento TipoDocumento { get; set; }
 
         [Required]
         [DisplayName("Documento")]
         public string ValorDocumento { get; set; }
 
-        [Required]
-        [DisplayName("Puesto")]
-        public string Puesto { get; set; }
-
-        [Required]
         [DisplayName("Departamento")]
-        public string Departamento { get; set; }
+        public Departamento Departamento { get; set; }
+
+        [DisplayName("Puesto")]
+        public Puesto Puesto { get; set; }
 
         [Required]
         [DisplayName("FechaNacimiento")]
         public string FechaNacimiento { get; set; }
 
         [Required]
-        [DisplayName("Activo")]
-        public bool Activo { get; set; }
+        [DisplayName("Estado")]
+        public string Estado { get; set; }
 
-        [Required]
-        [DisplayName("IdUsuario")]
-        public int IdUsuario { get; set; }
+
+        [DisplayName("Usuario")]
+        public Usuario Usuario { get; set; }
 
 
     }
