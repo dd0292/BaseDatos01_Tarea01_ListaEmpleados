@@ -10,7 +10,6 @@ CREATE TABLE TiposJornada (
     HoraFin TIME NOT NULL
 );
 
--- Tabla de Puesto
 CREATE TABLE Puesto (
     Id INT IDENTITY(1,1) PRIMARY KEY,
     Nombre VARCHAR(100) NOT NULL UNIQUE,

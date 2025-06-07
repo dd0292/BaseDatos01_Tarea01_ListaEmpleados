@@ -142,51 +142,6 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.DAL // Data Access Layer
             return resultCode;
         }
 
-        public List<Employee> FiltrarEmpleados(string filtro,ref int outResultCode)
-        {
-            List<Employee> list = new List<Employee>();
-
-            using (SqlConnection connection = new SqlConnection(conString))
-            {
-                SqlCommand cmd = new SqlCommand("sp_FiltrarEmpleados", connection);
-                cmd.CommandType = CommandType.StoredProcedure;
-
-                cmd.Parameters.AddWithValue("@inFiltro", filtro ?? "");
-                cmd.Parameters.AddWithValue("@inIdUsuario", UserId);
-                cmd.Parameters.AddWithValue("@inUserIP", ClientIp);
-
-                SqlParameter outParam = new SqlParameter("@outResultCode", SqlDbType.Int);
-                outParam.Direction = ParameterDirection.Output;
-                cmd.Parameters.Add(outParam);
-
-                SqlDataAdapter sqlData = new SqlDataAdapter(cmd);
-                DataTable dataTableEmployees = new DataTable();
-
-                connection.Open();
-                sqlData.Fill(dataTableEmployees);
-                outResultCode = Convert.ToInt32(cmd.Parameters["@outResultCode"].Value);
-                connection.Close();
-
-                foreach (DataRow dr in dataTableEmployees.Rows)
-                {
-                    list.Add(
-                        new Employee(
-                            Id: Convert.ToInt32(dr["IdEmpleado"]),
-                            Nombre: dr["NombreEmpleado"].ToString(),
-                            TipoDocumento: Convert.ToInt32(dr["TipoDocumento"]),
-                            ValorDocumento: dr["DocumentoEmpleado"].ToString(),
-                            Puesto: dr["NombrePuesto"].ToString(),
-                            Departamento: dr["Departamento"].ToString(),
-                            FechaNacimiento: dr["FechaNacimiento"].ToString(),
-                            IdUsuario: Convert.ToInt32(dr["IdUsuario"])
-                        )
-                    );
-                }
-
-            }
-            return list;
-        }
-
         public int InsertarEmpleado(Employee employee, string puestoNombre)
         {
             int resultado;
@@ -377,35 +332,6 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.DAL // Data Access Layer
             return idPuesto;
         }
 
-        public List<string> ObtenerListaPuestos()
-        {
-            List<string> puestos = new List<string>();
-
-            using (SqlConnection conn = new SqlConnection(conString))
-            {
-                SqlCommand cmd = new SqlCommand("ObtenerListaPuestos", conn);
-                cmd.CommandType = CommandType.StoredProcedure;
-
-                SqlParameter outputParam = new SqlParameter("@outResultCode", SqlDbType.Int);
-                outputParam.Direction = ParameterDirection.Output;
-                cmd.Parameters.Add(outputParam);
-
-                conn.Open();
-                SqlDataReader reader = cmd.ExecuteReader();
-
-                while (reader.Read())
-                {
-                    puestos.Add(
-                        reader["Nombre"].ToString()
-                    );
-                }
-
-                reader.Close();
-                conn.Close();
-            }
-
-            return puestos;
-        }
 
         public List<string> ObtenerTiposMovimiento()
         {
@@ -433,6 +359,152 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.DAL // Data Access Layer
 
             return tiposMovimiento;
         }
+        //-----------------------------------------------------------------------------------------
+
+        public List<Employee> FiltrarEmpleados(string filtro, ref int outResultCode)
+        {
+            List<Employee> list = new List<Employee>();
+
+            using (SqlConnection connection = new SqlConnection(conString))
+            {
+                SqlCommand cmd = new SqlCommand("sp_FiltrarEmpleados", connection);
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                cmd.Parameters.AddWithValue("@inFiltro", filtro ?? "");
+                cmd.Parameters.AddWithValue("@inIdUsuario", UserId);
+                cmd.Parameters.AddWithValue("@inUserIP", ClientIp);
+
+                SqlParameter outParam = new SqlParameter("@outResultCode", SqlDbType.Int);
+                outParam.Direction = ParameterDirection.Output;
+                cmd.Parameters.Add(outParam);
+
+                SqlDataAdapter sqlData = new SqlDataAdapter(cmd);
+                DataTable dataTableEmployees = new DataTable();
+
+                connection.Open();
+                sqlData.Fill(dataTableEmployees);
+                outResultCode = Convert.ToInt32(cmd.Parameters["@outResultCode"].Value);
+                connection.Close();
+
+                foreach (DataRow dr in dataTableEmployees.Rows)
+                {
+                    list.Add(
+                        new Employee(
+                            Id: Convert.ToInt32(dr["IdEmpleado"]),
+                            Nombre: dr["NombreEmpleado"].ToString(),
+                            TipoDocumento: dr["TipoDocumento"].ToString(),
+                            ValorDocumento: dr["DocumentoEmpleado"].ToString(),
+                            Puesto: dr["NombrePuesto"].ToString(),
+                            Departamento: dr["Departamento"].ToString(),
+                            FechaNacimiento: dr["FechaNacimiento"].ToString(),
+                            IdUsuario: Convert.ToInt32(dr["IdUsuario"])
+                        )
+                    );
+                }
+
+            }
+            return list;
+        }
+
+        public List<Puesto> ObtenerListaPuestos()
+        {
+            List<Puesto> puestos = new List<Puesto>();
+
+            using (SqlConnection conn = new SqlConnection(conString))
+            {
+                SqlCommand cmd = new SqlCommand("sp_ObtenerListaPuestos", conn);
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                SqlParameter outputParam = new SqlParameter("@outResultCode", SqlDbType.Int);
+                outputParam.Direction = ParameterDirection.Output;
+                cmd.Parameters.Add(outputParam);
+
+                conn.Open();
+                SqlDataReader reader = cmd.ExecuteReader();
+                reader.Close();
+                conn.Close();
+
+                while (reader.Read())
+                {
+                    puestos.Add(new Puesto() {
+                            Id = Convert.ToInt32(reader["Id"]),
+                            Nombre = reader["Nombre"].ToString(),
+                            SalarioXHora = Convert.ToDecimal(reader["SalarioXHora"])
+                        }
+                    );
+                }
+
+            }
+
+            return puestos;
+        }
+
+        public List<TipoDocumento> ObtenerListaTipoDocumentos()
+        {
+            List<TipoDocumento> tipoDocumentos = new List<TipoDocumento>();
+
+            using (SqlConnection conn = new SqlConnection(conString))
+            {
+                SqlCommand cmd = new SqlCommand("sp_ObtenerListaPuestos", conn);
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                SqlParameter outputParam = new SqlParameter("@outResultCode", SqlDbType.Int);
+                outputParam.Direction = ParameterDirection.Output;
+                cmd.Parameters.Add(outputParam);
+
+                conn.Open();
+                SqlDataReader reader = cmd.ExecuteReader();
+                reader.Close();
+                conn.Close();
+
+                while (reader.Read())
+                {
+                    tipoDocumentos.Add(new TipoDocumento()
+                    {
+                        Id = Convert.ToInt32(reader["Id"]),
+                        Nombre = reader["Nombre"].ToString(),
+                    }
+                    );
+                }
+
+            }
+
+            return tipoDocumentos;
+        }
+
+        public List<Departamento> ObtenerListaDepartamentos()
+        {
+            List<Departamento> departamentos = new List<Departamento>();
+
+            using (SqlConnection conn = new SqlConnection(conString))
+            {
+                SqlCommand cmd = new SqlCommand("sp_ObtenerListaPuestos", conn);
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                SqlParameter outputParam = new SqlParameter("@outResultCode", SqlDbType.Int);
+                outputParam.Direction = ParameterDirection.Output;
+                cmd.Parameters.Add(outputParam);
+
+                conn.Open();
+                SqlDataReader reader = cmd.ExecuteReader();
+                reader.Close();
+                conn.Close();
+
+                while (reader.Read())
+                {
+                    departamentos.Add(new Departamento()
+                    {
+                        Id = Convert.ToInt32(reader["Id"]),
+                        Nombre = reader["Nombre"].ToString(),
+                    }
+                    );
+                }
+
+            }
+
+            return departamentos;
+        }
+
 
     }
 }
