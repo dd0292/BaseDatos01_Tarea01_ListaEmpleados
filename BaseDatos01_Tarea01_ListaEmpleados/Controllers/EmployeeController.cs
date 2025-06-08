@@ -44,7 +44,7 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
             {
 
                 if (true) {
-                    outCode = _employeeDAL.InsertarEmpleado(employee, puestoNombre);
+                   // outCode = _employeeDAL.InsertarEmpleado(employee, puestoNombre);
 
                     if (outCode == 0) 
                     {
@@ -96,24 +96,24 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
         }
 
         [HttpPost]
-        public ActionResult Edit(string nombreAntiguo, int docAntiguo, Employee empleadoEditado, string puestoNombre)
-        {
-            int idPuesto = _employeeDAL.ObtenerIdPuestoPorNombre(puestoNombre);
+       // public ActionResult Edit(string nombreAntiguo, int docAntiguo, Employee empleadoEditado, string puestoNombre)
+      //  {
+        //    int idPuesto = _employeeDAL.ObtenerIdPuestoPorNombre(puestoNombre);
 
-            int resultado = _employeeDAL.ActualizarEmpleado(nombreAntiguo, docAntiguo, empleadoEditado, idPuesto);
+            //int resultado = _employeeDAL.ActualizarEmpleado(nombreAntiguo, docAntiguo, empleadoEditado, idPuesto);
 
-            if (resultado != 0)
-            {
-                string errorDescription = _employeeDAL.ObtenerDescripcionError(resultado);
-                TempData["ErrorMessage"] = $"[ERROR {resultado}] {errorDescription}";
-            }
-            else
-            {
-                TempData["SuccessMessage"] = "Empleado actualizado correctamente.";
-                
-            }
-            return RedirectToAction("Index");
-        }
+       //     if (resultado != 0)
+       //     {
+       //         string errorDescription = _employeeDAL.ObtenerDescripcionError(resultado);
+      //          TempData["ErrorMessage"] = $"[ERROR {resultado}] {errorDescription}";
+       //     }
+       //     else
+       //     {
+       //         TempData["SuccessMessage"] = "Empleado actualizado correctamente.";
+      //          
+       //     }
+       //     return RedirectToAction("Index");
+      //  }
 
         [HttpGet]
         public ActionResult Delete(string Nombre, int ValorDocumentoIdentidad)
@@ -130,17 +130,17 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
         }
 
         [HttpPost]
-        public ActionResult DeleteConfirmed(string Nombre, int ValorDocumentoIdentidad)
-        {
-            int resultado = _employeeDAL.EliminarEmpleadoLogicamente(Nombre, ValorDocumentoIdentidad);
+       // public ActionResult DeleteConfirmed(string Nombre, int ValorDocumentoIdentidad)
+       // {
+           // int resultado = _employeeDAL.EliminarEmpleadoLogicamente(Nombre, ValorDocumentoIdentidad);
 
-            if (resultado == 0)
-                TempData["SuccessMessage"] = "Empleado eliminado correctamente.";
-            else
-                TempData["ErrorMessage"] = "Error al eliminar el empleado.";
+        //    if (resultado == 0)
+          //      TempData["SuccessMessage"] = "Empleado eliminado correctamente.";
+          //  else
+           //     TempData["ErrorMessage"] = "Error al eliminar el empleado.";
 
-            return RedirectToAction("Index");
-        }
+           // return RedirectToAction("Index");
+      //  }
 
         [HttpGet]
         public ActionResult DeleteCancel(string Nombre, int ValorDocumentoIdentidad)
