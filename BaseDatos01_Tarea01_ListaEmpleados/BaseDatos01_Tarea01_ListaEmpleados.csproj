@@ -139,6 +139,7 @@
     <Compile Include="Controllers\MovementController.cs" />
     <Compile Include="DAL\DAL.cs" />
     <Compile Include="DAL\DALBeforeLogIn.cs" />
+    <Compile Include="DAL\DatabaseHelper.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>

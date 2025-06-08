@@ -23,32 +23,81 @@
 
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
+        <!-- Campo Nombre -->
         <div class="form-group">
             @Html.LabelFor(model => model.Nombre, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.Nombre, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.EditorFor(model => model.Nombre, new { htmlAttributes = new { @class = "form-control", placeholder = "Nombre completo del empleado" } })
                 @Html.ValidationMessageFor(model => model.Nombre, "", new { @class = "text-danger" })
             </div>
         </div>
 
+        <!-- DropDown para Tipo de Documento -->
+        <div class="form-group">
+            @Html.Label("Tipo de Documento", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownList("tipoDocumentoId", (SelectList)ViewBag.TiposDocumento, "Seleccione tipo documento", new { @class = "form-control", id = "ddlTipoDocumento" })
+                <span id="tipoDocError" class="text-danger"></span>
+            </div>
+        </div>
+
+        <!-- Campo Valor Documento -->
         <div class="form-group">
             @Html.LabelFor(model => model.ValorDocumento, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.ValorDocumento, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.EditorFor(model => model.ValorDocumento, new { htmlAttributes = new { @class = "form-control", placeholder = "Ej: 1-2345-6789" } })
                 @Html.ValidationMessageFor(model => model.ValorDocumento, "", new { @class = "text-danger" })
             </div>
         </div>
 
+        <!-- Campo Fecha de Nacimiento -->
         <div class="form-group">
-            @Html.Label("Puesto", new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.FechaNacimiento, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.DropDownList("puestoNombre", (SelectList)ViewBag.Puestos, "Seleccione un puesto", new { @class = "form-control" })
+                @Html.EditorFor(model => model.FechaNacimiento, new { htmlAttributes = new { @class = "form-control", type = "date" } })
+                @Html.ValidationMessageFor(model => model.FechaNacimiento, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <!-- DropDown para Departamento -->
+        <div class="form-group">
+            @Html.Label("Departamento", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownList("departamentoId", (SelectList)ViewBag.Departamentos, "Seleccione departamento", new { @class = "form-control", id = "ddlDepartamento" })
+                <span id="departamentoError" class="text-danger"></span>
+            </div>
+        </div>
+
+        <!-- DropDown para Puesto -->
+        <div class="form-group">
+            @Html.Label("Puesto", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownList("puestoId", (SelectList)ViewBag.Puestos, "Seleccione un puesto", new { @class = "form-control", id = "ddlPuesto" })
                 <span id="puestoError" class="text-danger"></span>
             </div>
         </div>
 
-        <h3></h3>
+        <!-- Sección para crear usuario asociado -->
+        <h4>Datos de Usuario</h4>
+        <hr />
 
+        <div class="form-group">
+            @Html.Label("Nombre de Usuario", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBox("username", null, new { @class = "form-control", placeholder = "Nombre de usuario para login" })
+                <span id="usernameError" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.Label("Contraseña", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.Password("password", null, new { @class = "form-control", placeholder = "Contraseña para el usuario" })
+                <span id="passwordError" class="text-danger"></span>
+            </div>
+        </div>
+
+        <!-- Botones -->
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <input type="submit" value="Insertar" class="btn btn-primary" />
@@ -63,13 +112,91 @@
 
     <script>
         document.querySelector("form").addEventListener("submit", function (e) {
-            const ddl = document.querySelector("select[name='puestoNombre']");
-            const errorDiv = document.getElementById("puestoError");
-            errorDiv.textContent = "";
+            let isValid = true;
 
-            if (!ddl.value || ddl.value === "Seleccione un puesto") {
+            // Validar Tipo Documento
+            const ddlTipoDoc = document.getElementById("ddlTipoDocumento");
+            const errorTipoDoc = document.getElementById("tipoDocError");
+            errorTipoDoc.textContent = "";
+            if (!ddlTipoDoc.value) {
+                isValid = false;
+                errorTipoDoc.textContent = "Debe seleccionar un tipo de documento.";
+            }
+
+            // Validar Departamento
+            const ddlDepto = document.getElementById("ddlDepartamento");
+            const errorDepto = document.getElementById("departamentoError");
+            errorDepto.textContent = "";
+            if (!ddlDepto.value) {
+                isValid = false;
+                errorDepto.textContent = "Debe seleccionar un departamento.";
+            }
+
+            // Validar Puesto
+            const ddlPuesto = document.getElementById("ddlPuesto");
+            const errorPuesto = document.getElementById("puestoError");
+            errorPuesto.textContent = "";
+            if (!ddlPuesto.value) {
+                isValid = false;
+                errorPuesto.textContent = "Debe seleccionar un puesto válido.";
+            }
+
+            // Validar Username
+            const txtUsername = document.querySelector("input[name='username']");
+            const errorUsername = document.getElementById("usernameError");
+            errorUsername.textContent = "";
+            if (!txtUsername.value || txtUsername.value.trim() === "") {
+                isValid = false;
+                errorUsername.textContent = "Debe ingresar un nombre de usuario.";
+            }
+
+            // Validar Password
+            const txtPassword = document.querySelector("input[name='password']");
+            const errorPassword = document.getElementById("passwordError");
+            errorPassword.textContent = "";
+            if (!txtPassword.value || txtPassword.value.trim() === "") {
+                isValid = false;
+                errorPassword.textContent = "Debe ingresar una contraseña.";
+            } else if (txtPassword.value.length < 4) {
+                isValid = false;
+                errorPassword.textContent = "La contraseña debe tener al menos 4 caracteres.";
+            }
+
+            if (!isValid) {
                 e.preventDefault();
-                errorDiv.textContent = "Debe seleccionar un puesto válido.";
+
+                // Desplazarse al primer error
+                const firstError = document.querySelector(".text-danger:not(:empty)");
+                if (firstError) {
+                    firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+        });
+
+        // Generar username automático basado en el nombre
+        document.querySelector("input[name='Nombre']").addEventListener("blur", function () {
+            const nombreInput = this.value.trim();
+            const usernameInput = document.querySelector("input[name='username']");
+
+            if (nombreInput && (!usernameInput.value || usernameInput.value.trim() === "")) {
+                // Generar username: primera letra nombre + apellido completo (ej: Juan Perez → jperez)
+                const partesNombre = nombreInput.toLowerCase().split(' ');
+                let usernameGenerado = '';
+
+                if (partesNombre.length > 0) {
+                    usernameGenerado = partesNombre[0].charAt(0); // Primera letra del nombre
+                }
+
+                if (partesNombre.length > 1) {
+                    usernameGenerado += partesNombre[1]; // Primer apellido completo
+                } else if (partesNombre.length === 1) {
+                    usernameGenerado = partesNombre[0]; // Si solo tiene nombre, usarlo completo
+                }
+
+                // Limpiar caracteres especiales
+                usernameGenerado = usernameGenerado.replace(/[^a-z0-9]/g, '');
+
+                usernameInput.value = usernameGenerado;
             }
         });
     </script>

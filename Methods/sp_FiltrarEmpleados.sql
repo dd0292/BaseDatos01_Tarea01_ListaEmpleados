@@ -2,7 +2,8 @@ ALTER PROCEDURE [dbo].[sp_FiltrarEmpleados]
     @inFiltro VARCHAR(100) = NULL,
     @inIdUsuario INT,
     @inUserIP VARCHAR(64),
-    @outResultCode INT OUTPUT
+    @outResultCode INT OUTPUT,
+	@outResultDescription Nvarchar(529) OUTPUT
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -65,6 +66,7 @@ BEGIN
             e.Nombre ASC;
         
         SET @outResultCode = 0;
+		SET @outResultDescription = '';
         
         INSERT INTO dbo.BitacoraEventos (
             IdUsuario,
@@ -83,6 +85,7 @@ BEGIN
     END TRY
     BEGIN CATCH
         SET @outResultCode = ERROR_NUMBER();
+		SET @outResultDescription = ERROR_MESSAGE();
 
         INSERT INTO dbo.BitacoraEventos (
             IdUsuario,

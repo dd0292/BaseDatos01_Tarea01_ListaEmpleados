@@ -14,25 +14,27 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
     {
 
         _DAL _employeeDAL = new _DAL();
-
+        string sss;
         public ActionResult Index(string filtro = "")
         {
             int outCode = 0;
-            var employeeList = _employeeDAL.FiltrarEmpleados(filtro, ref outCode);
+            /*
+            var employeeList = _employeeDAL.FiltrarEmpleados(filtro, ref outCode, ref sss);
 
             if (employeeList.Count == 0)
             {
                 TempData["InfoMessage"] = "No hay empleados registrados actualmente en la Base de Datos con dicha informacion...";
             }
+            */
 
-            return View(employeeList);
+            return View();
         }
 
         [HttpGet]
         public ActionResult Create()
         {
-            var listaPuestos = _employeeDAL.ObtenerListaPuestos();
-            ViewBag.Puestos = new SelectList(listaPuestos);
+            //var listaPuestos = _employeeDAL.ObtenerListaPuestos(ref outCode, ref sss);
+            //ViewBag.Puestos = new SelectList(listaPuestos);
             return View();
         }
 
@@ -91,7 +93,7 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
                 return RedirectToAction("Index");
             }
 
-            ViewBag.Puestos = new SelectList(_employeeDAL.ObtenerListaPuestos(), empleado.Puesto);
+            //ViewBag.Puestos = new SelectList(_employeeDAL.ObtenerListaPuestos(ref outCode, ''), empleado.Puesto);
             return View(empleado);
         }
 

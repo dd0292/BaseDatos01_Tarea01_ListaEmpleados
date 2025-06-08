@@ -13,15 +13,17 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
     public class AdminController : Controller
     {
         _DAL _employeeDAL = new _DAL();
+        int outResultCode = 0;
+        string outResultDescription = string.Empty;
 
         public ActionResult Index(string filtro = "")
         {
-            int outResultCode = 0;
-            var employeeList = _employeeDAL.FiltrarEmpleados(filtro,ref outResultCode);
+    
+            var employeeList = _employeeDAL.FiltrarEmpleados(filtro,ref outResultCode,ref outResultDescription);
 
             if (outResultCode != 0)
             {
-                TempData["ErrorMessage"] = $"[ERROR {outResultCode}]";
+                TempData["ErrorMessage"] = $"[ERROR {outResultCode}] : {outResultDescription}";
             }
             else if (employeeList.Count == 0)
             {
@@ -35,9 +37,14 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
         [HttpGet]
         public ActionResult Create()
         {
-            List<TipoDocumento> listaTipoDocu = _employeeDAL.ObtenerListaTipoDocumentos();
-            List<Puesto> listaPuestos = _employeeDAL.ObtenerListaPuestos();
-            List<Departamento> listaDepartamentos = _employeeDAL.ObtenerListaDepartamentos();
+            List<TipoDocumento> listaTipoDocu = _employeeDAL.ObtenerListaTipoDocumentos(ref outResultCode, ref outResultDescription);
+            List<Puesto> listaPuestos = _employeeDAL.ObtenerListaPuestos(ref outResultCode, ref outResultDescription);
+            List<Departamento> listaDepartamentos = _employeeDAL.ObtenerListaDepartamentos(ref outResultCode, ref outResultDescription);
+
+            if (outResultCode != 0)
+            {
+                TempData["ErrorMessage"] = $"[ERROR {outResultCode}] : {outResultDescription}";
+            }
 
             ViewBag.TiposDocumento = new SelectList(listaTipoDocu, "Id", "Nombre");
             ViewBag.Puestos = new SelectList(listaPuestos, "Id", "Nombre");
@@ -50,7 +57,6 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(Employee employee, int tipoDocumentoId, int departamentoId, int puestoId)
         {
-            int outCode = 0;
             if (ModelState.IsValid)
             {
                 try
@@ -59,15 +65,15 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
                     employee.Departamento.Id = departamentoId;
                     employee.Puesto.Id = puestoId;
 
-                    outCode = _employeeDAL.InsertarEmpleado(employee);
+                    _employeeDAL.InsertarEmpleado(employee, ref outResultCode, ref outResultDescription);
 
-                    if (outCode == 0)
+                    if (outResultCode == 0)
                     {
                         TempData["SuccessMessage"] = "Inserción exitosa !!!";
                     }
                     else
                     {
-                        TempData["ErrorMessage"] = $"[ERROR {outCode}]";
+                        TempData["ErrorMessage"] = $"[ERROR {outResultCode}] : {outResultDescription}";
                     }
 
                     return RedirectToAction("Index");
@@ -78,9 +84,14 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
                 }
             }
 
-            var listaTiposDoc = _employeeDAL.ObtenerListaTipoDocumentos();
-            var listaPuestos = _employeeDAL.ObtenerListaPuestos();
-            var listaDepartamentos = _employeeDAL.ObtenerListaDepartamentos();
+            var listaTiposDoc = _employeeDAL.ObtenerListaTipoDocumentos(ref outResultCode, ref outResultDescription);
+            var listaPuestos = _employeeDAL.ObtenerListaPuestos(ref outResultCode, ref outResultDescription);
+            var listaDepartamentos = _employeeDAL.ObtenerListaDepartamentos(ref outResultCode, ref outResultDescription);
+
+            if (outResultCode != 0)
+            {
+                TempData["ErrorMessage"] = $"[ERROR {outResultCode}] : {outResultDescription}";
+            }
 
             ViewBag.TiposDocumento = new SelectList(listaTiposDoc, "Id", "Nombre", tipoDocumentoId);
             ViewBag.Puestos = new SelectList(listaPuestos, "Id", "Nombre", puestoId);
@@ -98,9 +109,14 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
                 return RedirectToAction("Index");
             }
 
-            var listaTiposDoc = _employeeDAL.ObtenerListaTipoDocumentos();
-            var listaPuestos = _employeeDAL.ObtenerListaPuestos();
-            var listaDepartamentos = _employeeDAL.ObtenerListaDepartamentos();
+            var listaTiposDoc = _employeeDAL.ObtenerListaTipoDocumentos(ref outResultCode, ref outResultDescription);
+            var listaPuestos = _employeeDAL.ObtenerListaPuestos(ref outResultCode, ref outResultDescription);
+            var listaDepartamentos = _employeeDAL.ObtenerListaDepartamentos(ref outResultCode, ref outResultDescription);
+
+            if (outResultCode != 0)
+            {
+                TempData["ErrorMessage"] = $"[ERROR {outResultCode}] : {outResultDescription}";
+            }
 
             var model = new EmployeeEditViewModel(
                 employee: employee,
@@ -115,19 +131,15 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
         [HttpPost]
         public ActionResult Edit(EmployeeEditViewModel model)
         {
-            Employee empleadoOriginal = JsonConvert.DeserializeObject<Employee>(model.EstadoOriginalJson);
+            _employeeDAL.ActualizarEmpleado(model, ref outResultCode, ref outResultDescription);
 
-            int resultado = _employeeDAL.ActualizarEmpleado(model, empleadoOriginal);
-
-            if (resultado == 0)
+            if (outResultCode == 0)
             {
                 TempData["SuccessMessage"] = "Empleado actualizado correctamente.";
-
             }
             else
             {
-                TempData["ErrorMessage"] = $"[ERROR {resultado}]";
-
+                TempData["ErrorMessage"] = $"[ERROR {outResultCode}] {outResultDescription}";
             }
             return RedirectToAction("Index");
         }
@@ -148,12 +160,12 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
         [HttpPost]
         public ActionResult Delete(int employeeId)
         {
-            int resultado = _employeeDAL.EliminarEmpleadoLogicamente(employeeId);
+            _employeeDAL.EliminarEmpleadoLogicamente(employeeId, ref outResultCode, ref outResultDescription);
 
-            if (resultado == 0)
+            if (outResultCode == 0)
                 TempData["SuccessMessage"] = "Empleado eliminado correctamente.";
             else
-                TempData["ErrorMessage"] = "Error al eliminar el empleado.";
+                TempData["ErrorMessage"] = $"[ERROR {outResultCode}] {outResultDescription}";
 
             return RedirectToAction("Index");
         }

@@ -44,7 +44,8 @@ else if (TempData["ErrorMessage"] != null)
         <th>@Html.DisplayNameFor(model => model.ValorDocumento)</th>
         <th>@Html.DisplayNameFor(model => model.Departamento)</th>
         <th>@Html.DisplayNameFor(model => model.Puesto)</th>
-        <th>Consulta, Borrado o Editar</th>
+        <th>Editar</th>
+        <th>Borrar</th>
         <th>Impersonar</th>
         <th></th>
     </tr>
@@ -57,11 +58,8 @@ else if (TempData["ErrorMessage"] != null)
             <td>@Html.DisplayFor(modelItem => item.Departamento.Nombre)</td>
             <td>@Html.DisplayFor(modelItem => item.Puesto.Nombre)</td>
 
-            <td>
-                @Html.ActionLink("Consulta", "Read", "Employee", new { employee_info = item }, new { @class = "btn btn-primary btn-sm" })
-                @Html.ActionLink("Editar", "Edit", "Employee", new { Nombre = item.Nombre, ValorDocumentoIdentidad = item.ValorDocumento }, new { @class = "btn btn-success btn-sm" })
-                @Html.ActionLink("Borrar", "Delete", "Employee", new { Nombre = item.Nombre, ValorDocumentoIdentidad = item.ValorDocumento }, new { @class = "btn btn-danger btn-sm" })
-            </td>
+            <td>@Html.ActionLink("Editar", "Edit", "Employee", new { Nombre = item.Nombre, ValorDocumentoIdentidad = item.ValorDocumento }, new { @class = "btn btn-success btn-sm" })</td>
+            <td>@Html.ActionLink("Borrar", "Delete", "Employee", new { Nombre = item.Nombre, ValorDocumentoIdentidad = item.ValorDocumento }, new { @class = "btn btn-danger btn-sm" })</td>
 
             <td>
                 @Html.ActionLink("Movimientos", "Index", "Movement", new { Nombre = item.Nombre, ValorDocumentoIdentidad = item.ValorDocumento }, new { @class = "btn btn-secondary btn-sm" })

@@ -14,17 +14,17 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Models
             string ValorDocumento,
             int IdPuesto, string NombrePuesto, decimal SalarioPorHora,
             int IdDepartamento, string Departamento,
-            string FechaNacimiento, 
+            DateTime FechaNacimiento, 
             int IdUsuario, string Username, 
             string Password,
             string Estado
             ) {
             this.Id = Id;
             this.Nombre = Nombre;
-            this.TipoDocumento = new TipoDocumento() {Id = IdTipoDocumento, Nombre = TipoDocumento} ;
+            this.TipoDocumento = new TipoDocumento(Id: IdTipoDocumento, Nombre: TipoDocumento) ;
             this.ValorDocumento = ValorDocumento;
-            this.Puesto = new Puesto() {Id = IdPuesto ,Nombre = NombrePuesto, SalarioXHora = SalarioPorHora};
-            this.Departamento = new Departamento() {Id = IdDepartamento ,Nombre = Departamento};
+            this.Puesto = new Puesto(Id: IdPuesto , Nombre: NombrePuesto, SalarioXHora: SalarioPorHora);
+            this.Departamento = new Departamento(Id: IdDepartamento , Nombre: Departamento);
             this.FechaNacimiento = FechaNacimiento;
             this.Usuario = new Usuario() {Id = IdUsuario, Nombre = Username, Contrasena = Password};
             this.Estado = Estado;
@@ -52,13 +52,13 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Models
         public Puesto Puesto { get; set; }
 
         [Required]
-        [DisplayName("FechaNacimiento")]
-        public string FechaNacimiento { get; set; }
+        [DataType(DataType.Date)]
+        [Display(Name = "Fecha de Nacimiento")]
+        public DateTime FechaNacimiento { get; set; }
 
         [Required]
         [DisplayName("Estado")]
         public string Estado { get; set; }
-
 
         [DisplayName("Usuario")]
         public Usuario Usuario { get; set; }

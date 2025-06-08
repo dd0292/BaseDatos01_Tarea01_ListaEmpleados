@@ -1,4 +1,4 @@
-﻿@model BaseDatos01_Tarea01_ListaEmpleados.Models.Employee
+﻿@model BaseDatos01_Tarea01_ListaEmpleados.Models.EmployeeEditViewModel
 
 @{
     ViewBag.Title = "Editar Empleado";
@@ -16,58 +16,122 @@
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.EstadoOriginalJson)
 
-<div class="form-horizontal">
-    <h4>Datos A Editar Del Empleado</h4>
-    <hr />
+    <div class="form-horizontal">
+        <h4>Datos del Empleado</h4>
+        <hr />
 
-    @Html.Hidden("nombreAntiguo", Model.Nombre)
-    @Html.Hidden("docAntiguo", Model.ValorDocumento)
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
-    <div class="form-group">
-        @Html.LabelFor(model => model.Nombre, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.EditorFor(model => model.Nombre, new { htmlAttributes = new { @class = "form-control" } })
-            @Html.ValidationMessageFor(model => model.Nombre, "", new { @class = "text-danger" })
+        <!-- Campo Nombre -->
+        <div class="form-group">
+            @Html.LabelFor(model => model.Nombre, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Nombre, new { htmlAttributes = new { @class = "form-control", placeholder = "Nombre completo" } })
+                @Html.ValidationMessageFor(model => model.Nombre, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <!-- DropDown para Tipo de Documento -->
+        <div class="form-group">
+            @Html.LabelFor(model => model.IdTipoDocumento, "Tipo de Documento", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.IdTipoDocumento, Model.TiposDocumento, "Seleccione tipo documento", new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.IdTipoDocumento, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <!-- Campo Valor Documento -->
+        <div class="form-group">
+            @Html.LabelFor(model => model.ValorDocumento, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.ValorDocumento, new { htmlAttributes = new { @class = "form-control", placeholder = "Ej: 1-2345-6789" } })
+                @Html.ValidationMessageFor(model => model.ValorDocumento, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <!-- Campo Fecha de Nacimiento -->
+        <div class="form-group">
+            @Html.LabelFor(model => model.FechaNacimiento, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.FechaNacimiento, new { htmlAttributes = new { @class = "form-control", type = "date" } })
+                @Html.ValidationMessageFor(model => model.FechaNacimiento, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <!-- DropDown para Puesto -->
+        <div class="form-group">
+            @Html.LabelFor(model => model.IdPuesto, "Puesto", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.IdPuesto, Model.Puestos, "Seleccione un puesto", new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.IdPuesto, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <!-- DropDown para Departamento -->
+        <div class="form-group">
+            @Html.LabelFor(model => model.IdDepartamento, "Departamento", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.IdDepartamento, Model.Departamentos, "Seleccione departamento", new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.IdDepartamento, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <!-- Botones -->
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                @Html.ActionLink("Cancelar", "Index", null, new { @class = "btn btn-secondary ml-2" })
+            </div>
         </div>
     </div>
-
-    <div class="form-group">
-        @Html.LabelFor(model => model.ValorDocumento, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10" ValorDocumento
-             @Html.EditorFor(model => model.ValorDocumento, new { htmlAttributes = new { @class = "form-control" } })
-             @Html.ValidationMessageFor(model => model.ValorDocumento, "", new { @class = "text-danger" })
-        </div>
-    </div>
-
-    <div class="form-group">
-        @Html.Label("Puesto", new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.DropDownList("puestoNombre", (SelectList)ViewBag.Puestos, "Seleccione un puesto", new { @class = "form-control" })
-            <span id="puestoError" class="text-danger"></span>
-        </div>
-    </div>
-
-    <h3></h3>
-
-    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-    @Html.ActionLink("Cancelar", "Index", null, new { @class = "btn btn-secondary ml-2" })
-</div>
 }
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
 
     <script>
-        document.querySelector("form").addEventListener("submit", function (e) {
-            const ddl = document.querySelector("select[name='puestoNombre']");
-            const errorDiv = document.getElementById("puestoError");
-            errorDiv.textContent = "";
+        $(document).ready(function () {
+            // Validación del formulario
+            $("form").submit(function (e) {
+                let isValid = true;
 
-            if (!ddl.value || ddl.value === "Seleccione un puesto") {
-                e.preventDefault();
-                errorDiv.textContent = "Debe seleccionar un puesto válido.";
-            }
+                // Validar dropdowns
+                $('select').each(function () {
+                    const $this = $(this);
+                    if (!$this.val()) {
+                        isValid = false;
+                        $this.siblings('.text-danger').text('Este campo es requerido.');
+                    }
+                });
+
+                // Validar fecha de nacimiento
+                const fechaNacimiento = new Date($('#FechaNacimiento').val());
+                const hoy = new Date();
+                const edadMinima = new Date();
+                edadMinima.setFullYear(hoy.getFullYear() - 18);
+
+                if (fechaNacimiento > edadMinima) {
+                    isValid = false;
+                    $('#FechaNacimiento').siblings('.text-danger').text('El empleado debe ser mayor de 18 años.');
+                }
+
+                if (!isValid) {
+                    e.preventDefault();
+
+                    // Desplazarse al primer error
+                    $('html, body').animate({
+                        scrollTop: $('.text-danger:visible:first').offset().top - 100
+                    }, 500);
+                }
+            });
+
+            // Limpiar mensajes de error al cambiar
+            $('input, select').on('change keyup', function () {
+                $(this).siblings('.text-danger').text('');
+            });
         });
     </script>
 }

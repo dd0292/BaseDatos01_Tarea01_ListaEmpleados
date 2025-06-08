@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -24,9 +25,28 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Models
         }
 
         public int Id { get; set; }
+
+        [Required(ErrorMessage = "El nombre es requerido")]
+        [StringLength(100, ErrorMessage = "El nombre no puede exceder 100 caracteres")]
         public string Nombre { get; set; }
+
+        [Required(ErrorMessage = "El tipo de documento es requerido")]
+        public int IdTipoDocumento { get; set; }
+
+        [Required(ErrorMessage = "El valor del documento es requerido")]
+        [StringLength(50, ErrorMessage = "El documento no puede exceder 50 caracteres")]
         public string ValorDocumento { get; set; }
-        public string FechaNacimiento { get; set; }
+
+        [Required(ErrorMessage = "La fecha de nacimiento es requerida")]
+        [DataType(DataType.Date)]
+        [Display(Name = "Fecha de Nacimiento")]
+        public DateTime FechaNacimiento { get; set; }
+
+        [Required(ErrorMessage = "El puesto es requerido")]
+        public int IdPuesto { get; set; }
+
+        [Required(ErrorMessage = "El departamento es requerido")]
+        public int IdDepartamento { get; set; }
 
         public string EstadoOriginalJson { get; set; }
 
