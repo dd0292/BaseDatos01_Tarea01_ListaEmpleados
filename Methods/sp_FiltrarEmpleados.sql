@@ -43,8 +43,7 @@ BEGIN
             e.IdUsuario AS IdUsuario,
             u.Username AS Usuario,
 			u.Password AS Passphrase,
-            
-            CASE WHEN e.Activo = 1 THEN 'Activo' ELSE 'Inactivo' END AS Estado
+            e.Activo AS Estado
             
         FROM dbo.Empleado AS e
         INNER JOIN dbo.Puesto AS p ON p.Id = e.IdPuesto

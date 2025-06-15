@@ -1,0 +1,144 @@
+CREATE PROCEDURE sub_ProcesarAsistencias
+    @XmlOperacion XML,
+    @FechaOperacion DATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @EsFeriado BIT = CASE WHEN EXISTS (
+        SELECT 1 FROM Feriado WHERE Fecha = @FechaOperacion
+    ) THEN 1 ELSE 0 END;
+
+    DECLARE @EsDomingo BIT = CASE WHEN DATENAME(WEEKDAY, @FechaOperacion) = 'Sunday' THEN 1 ELSE 0 END;
+
+    -- Extraer asistencias
+    WITH AsistenciasXML AS (
+        SELECT 
+            x.value('@ValorTipoDocumento', 'VARCHAR(64)') AS ValorDocumento,
+            x.value('@HoraEntrada', 'DATETIME') AS HoraEntrada,
+            x.value('@HoraSalida', 'DATETIME') AS HoraSalida
+        FROM @XmlOperacion.nodes('/Operacion/FechaOperacion[@Fecha=sql:variable("@FechaOperacion")]/MarcasAsistencia/MarcaDeAsistencia') AS T(x)
+    )
+    SELECT 
+        e.Id AS IdEmpleado,
+        ax.HoraEntrada,
+        ax.HoraSalida,
+        DATEDIFF(MINUTE, ax.HoraEntrada, ax.HoraSalida) / 60 AS HorasTrabajadas,
+        ax.ValorDocumento,
+        p.SalarioXHora,
+        tj.HoraInicio,
+        tj.HoraFin,
+        sj.Id AS IdSemana,
+        ax.HoraEntrada AS FechaAsistencia
+    INTO #AsistenciasProcesadas
+    FROM AsistenciasXML ax
+    JOIN Empleado e ON e.ValorDocumento = ax.ValorDocumento
+    JOIN JornadasEmpleados je ON je.IdEmpleado = e.Id
+    JOIN SemanasPlanilla sj ON sj.Id = je.IdSemana
+    JOIN TiposJornada tj ON tj.Id = je.IdTipoJornada
+    JOIN Puesto p ON p.Id = e.IdPuesto
+    WHERE @FechaOperacion BETWEEN sj.FechaInicio AND sj.FechaFin;
+
+    -- Insertar en tabla Asistencias
+    INSERT INTO Asistencias (IdEmpleado, Fecha, HoraEntrada, HoraSalida)
+    SELECT IdEmpleado, CAST(HoraEntrada AS DATE), HoraEntrada, HoraSalida
+    FROM #AsistenciasProcesadas;
+
+    -- Calcular horas y movimientos
+    DECLARE @IdEmpleado INT, @IdSemana INT, @Fecha DATE,
+            @HoraEntrada DATETIME, @HoraSalida DATETIME,
+            @HoraInicio TIME, @HoraFin TIME, 
+            @HorasOrdinarias INT, @HorasExtrasNormales INT, @HorasExtrasDobles INT,
+            @SalarioXHora DECIMAL(10,2), @Monto DECIMAL(10,2);
+
+    DECLARE asistencia CURSOR FOR
+        SELECT IdEmpleado, IdSemana, FechaAsistencia, HoraEntrada, HoraSalida, HoraInicio, HoraFin, SalarioXHora
+        FROM #AsistenciasProcesadas;
+
+    OPEN asistencia;
+    FETCH NEXT FROM asistencia INTO @IdEmpleado, @IdSemana, @Fecha, @HoraEntrada, @HoraSalida, @HoraInicio, @HoraFin, @SalarioXHora;
+
+    WHILE @@FETCH_STATUS = 0
+    BEGIN
+        -- Conversión de rangos
+        DECLARE @InicioJornada DATETIME = CAST(@Fecha AS DATETIME) + CAST(@HoraInicio AS DATETIME);
+        DECLARE @FinJornada DATETIME = CAST(@Fecha AS DATETIME) + CAST(@HoraFin AS DATETIME);
+        IF @HoraFin < @HoraInicio SET @FinJornada = DATEADD(DAY, 1, @FinJornada); -- Jornada nocturna
+
+        -- Calcular horas
+        SET @HorasOrdinarias = DATEDIFF(MINUTE, 
+                                CASE WHEN @HoraEntrada < @InicioJornada THEN @InicioJornada ELSE @HoraEntrada END,
+                                CASE WHEN @HoraSalida > @FinJornada THEN @FinJornada ELSE @HoraSalida END) / 60;
+        IF @HorasOrdinarias < 0 SET @HorasOrdinarias = 0;
+
+        SET @HorasExtrasNormales = 0;
+        SET @HorasExtrasDobles = 0;
+
+        IF @HoraSalida > @FinJornada
+        BEGIN
+            DECLARE @Exceso DATETIME = @HoraSalida;
+
+            SET @HorasExtrasNormales = DATEDIFF(MINUTE, @FinJornada, @Exceso) / 60;
+            IF @HorasExtrasNormales < 0 SET @HorasExtrasNormales = 0;
+
+            IF @EsFeriado = 1 OR @EsDomingo = 1
+            BEGIN
+                SET @HorasExtrasDobles = @HorasExtrasNormales;
+                SET @HorasExtrasNormales = 0;
+            END
+        END
+
+        -- Movimiento: Horas ordinarias
+        IF @HorasOrdinarias > 0
+        BEGIN
+            SET @Monto = @HorasOrdinarias * @SalarioXHora;
+            INSERT INTO Movimiento (IdEmpleado, IdSemana, Fecha, TipoMovimiento, CategoriaMovimiento, Monto, CantidadHoras, Fuente)
+            VALUES (@IdEmpleado, @IdSemana, @Fecha, 'Devengado', 'Horas Ordinarias', @Monto, @HorasOrdinarias, 'Asistencia');
+        END
+
+        -- Movimiento: Extras normales
+        IF @HorasExtrasNormales > 0
+        BEGIN
+            SET @Monto = @HorasExtrasNormales * @SalarioXHora * 1.5;
+            INSERT INTO Movimiento (IdEmpleado, IdSemana, Fecha, TipoMovimiento, CategoriaMovimiento, Monto, CantidadHoras, Fuente)
+            VALUES (@IdEmpleado, @IdSemana, @Fecha, 'Devengado', 'Horas Extra Normales', @Monto, @HorasExtrasNormales, 'Asistencia');
+        END
+
+        -- Movimiento: Extras dobles
+        IF @HorasExtrasDobles > 0
+        BEGIN
+            SET @Monto = @HorasExtrasDobles * @SalarioXHora * 2;
+            INSERT INTO Movimiento (IdEmpleado, IdSemana, Fecha, TipoMovimiento, CategoriaMovimiento, Monto, CantidadHoras, Fuente)
+            VALUES (@IdEmpleado, @IdSemana, @Fecha, 'Devengado', 'Horas Extra Dobles', @Monto, @HorasExtrasDobles, 'Asistencia');
+        END
+
+        -- Actualizar resumen semanal
+        MERGE PlanillaSemanalEmpleado AS tgt
+        USING (SELECT @IdEmpleado AS IdEmpleado, @IdSemana AS IdSemana) AS src
+        ON tgt.IdEmpleado = src.IdEmpleado AND tgt.IdSemana = src.IdSemana
+        WHEN MATCHED THEN
+            UPDATE SET
+                SalarioBruto = SalarioBruto + ISNULL(@HorasOrdinarias * @SalarioXHora, 0)
+                                + ISNULL(@HorasExtrasNormales * @SalarioXHora * 1.5, 0)
+                                + ISNULL(@HorasExtrasDobles * @SalarioXHora * 2, 0),
+                HorasOrdinarias = HorasOrdinarias + ISNULL(@HorasOrdinarias, 0),
+                HorasExtrasNormales = HorasExtrasNormales + ISNULL(@HorasExtrasNormales, 0),
+                HorasExtrasDobles = HorasExtrasDobles + ISNULL(@HorasExtrasDobles, 0)
+        WHEN NOT MATCHED THEN
+            INSERT (IdEmpleado, IdSemana, SalarioBruto, HorasOrdinarias, HorasExtrasNormales, HorasExtrasDobles)
+            VALUES (@IdEmpleado, @IdSemana, 
+                    ISNULL(@HorasOrdinarias * @SalarioXHora, 0)
+                    + ISNULL(@HorasExtrasNormales * @SalarioXHora * 1.5, 0)
+                    + ISNULL(@HorasExtrasDobles * @SalarioXHora * 2, 0),
+                    ISNULL(@HorasOrdinarias, 0),
+                    ISNULL(@HorasExtrasNormales, 0),
+                    ISNULL(@HorasExtrasDobles, 0));
+
+        FETCH NEXT FROM asistencia INTO @IdEmpleado, @IdSemana, @Fecha, @HoraEntrada, @HoraSalida, @HoraInicio, @HoraFin, @SalarioXHora;
+    END
+
+    CLOSE asistencia;
+    DEALLOCATE asistencia;
+
+    DROP TABLE #AsistenciasProcesadas;
+END;

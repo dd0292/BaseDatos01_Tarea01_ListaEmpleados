@@ -12,7 +12,7 @@
     <strong>Documento de Identidad:</strong> @Model.ValorDocumento
 </div>
 
-@using (Html.BeginForm("DeleteConfirmed", "Employee", FormMethod.Post))
+@using (Html.BeginForm("DeleteConfirmed", "Admin", FormMethod.Post))
 {
     @Html.AntiForgeryToken()
 

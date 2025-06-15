@@ -38,7 +38,7 @@
         <div class="form-group">
             @Html.LabelFor(model => model.IdTipoDocumento, "Tipo de Documento", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.DropDownListFor(model => model.IdTipoDocumento, Model.TiposDocumento, "Seleccione tipo documento", new { @class = "form-control" })
+                @Html.DropDownListFor(model => model.IdTipoDocumento, Model.TiposDocumento, new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.IdTipoDocumento, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -65,7 +65,7 @@
         <div class="form-group">
             @Html.LabelFor(model => model.IdPuesto, "Puesto", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.DropDownListFor(model => model.IdPuesto, Model.Puestos, "Seleccione un puesto", new { @class = "form-control" })
+                @Html.DropDownListFor(model => model.IdPuesto, Model.Puestos, new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.IdPuesto, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -74,7 +74,7 @@
         <div class="form-group">
             @Html.LabelFor(model => model.IdDepartamento, "Departamento", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.DropDownListFor(model => model.IdDepartamento, Model.Departamentos, "Seleccione departamento", new { @class = "form-control" })
+                @Html.DropDownListFor(model => model.IdDepartamento, Model.Departamentos, new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.IdDepartamento, "", new { @class = "text-danger" })
             </div>
         </div>

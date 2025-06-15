@@ -17,6 +17,10 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Models
             ValorDocumento = employee.ValorDocumento;
             FechaNacimiento = employee.FechaNacimiento;
 
+            TiposDocumentoOriginal = employee.TipoDocumento.Nombre;
+            PuestosOriginal = employee.Puesto.Nombre;
+            DepartamentosOriginal = employee.Departamento.Nombre;  
+
             EstadoOriginalJson = EstadoOriginalJson = JsonConvert.SerializeObject(employee);
 
             this.TiposDocumento = TiposDocumento;
@@ -40,6 +44,7 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Models
         [Required(ErrorMessage = "La fecha de nacimiento es requerida")]
         [DataType(DataType.Date)]
         [Display(Name = "Fecha de Nacimiento")]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime FechaNacimiento { get; set; }
 
         [Required(ErrorMessage = "El puesto es requerido")]
@@ -49,6 +54,10 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Models
         public int IdDepartamento { get; set; }
 
         public string EstadoOriginalJson { get; set; }
+
+        public string TiposDocumentoOriginal { get; set; }
+        public string PuestosOriginal { get; set; }
+        public string DepartamentosOriginal { get; set; }
 
         public SelectList TiposDocumento { get; set; }
         public SelectList Puestos { get; set; }

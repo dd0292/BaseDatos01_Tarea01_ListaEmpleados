@@ -1,0 +1,45 @@
+CREATE PROCEDURE sub_ProcesarJornadas
+    @XmlOperacion XML,
+    @FechaOperacion DATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- Obtener lunes de la próxima semana
+    DECLARE @InicioSemana DATE = DATEADD(DAY, (8 - DATEPART(WEEKDAY, @FechaOperacion)) % 7, @FechaOperacion);
+
+    -- Obtener la semana correspondiente en la tabla SemanasPlanilla
+    DECLARE @IdSemana INT;
+
+    SELECT TOP 1 @IdSemana = sp.Id
+    FROM SemanasPlanilla sp
+    WHERE sp.FechaInicio = @InicioSemana;
+
+    IF @IdSemana IS NULL
+    BEGIN
+        -- Si no existe la semana, no se puede asignar jornadas
+        RETURN;
+    END
+
+    -- ========================
+    -- Procesar asignación de jornada
+    -- ========================
+    WITH JornadasXML AS (
+        SELECT 
+            j.value('@ValorTipoDocumento', 'VARCHAR(64)') AS ValorDocumento,
+            j.value('@IdTipoJornada', 'INT') AS IdTipoJornada
+        FROM @XmlOperacion.nodes('/Operacion/FechaOperacion[@Fecha=sql:variable("@FechaOperacion")]/JornadasProximaSemana/TipoJornadaProximaSemana') AS T(j)
+    )
+    INSERT INTO JornadasEmpleados (IdEmpleado, IdSemana, IdTipoJornada)
+    SELECT 
+        e.Id,
+        @IdSemana,
+        jx.IdTipoJornada
+    FROM JornadasXML jx
+    JOIN Empleado e ON e.ValorDocumento = jx.ValorDocumento
+    WHERE NOT EXISTS (
+        SELECT 1 FROM JornadasEmpleados je
+        WHERE je.IdEmpleado = e.Id AND je.IdSemana = @IdSemana
+    );
+
+END;

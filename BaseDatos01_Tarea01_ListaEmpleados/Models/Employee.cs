@@ -17,7 +17,7 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Models
             DateTime FechaNacimiento, 
             int IdUsuario, string Username, 
             string Password,
-            string Estado
+            bool Estado
             ) {
             this.Id = Id;
             this.Nombre = Nombre;
@@ -58,7 +58,7 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Models
 
         [Required]
         [DisplayName("Estado")]
-        public string Estado { get; set; }
+        public bool Estado { get; set; }
 
         [DisplayName("Usuario")]
         public Usuario Usuario { get; set; }

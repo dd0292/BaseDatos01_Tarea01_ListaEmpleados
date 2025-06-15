@@ -57,13 +57,9 @@ else if (TempData["ErrorMessage"] != null)
             <td>@Html.DisplayFor(modelItem => item.ValorDocumento)</td>
             <td>@Html.DisplayFor(modelItem => item.Departamento.Nombre)</td>
             <td>@Html.DisplayFor(modelItem => item.Puesto.Nombre)</td>
-
-            <td>@Html.ActionLink("Editar", "Edit", "Employee", new { Nombre = item.Nombre, ValorDocumentoIdentidad = item.ValorDocumento }, new { @class = "btn btn-success btn-sm" })</td>
-            <td>@Html.ActionLink("Borrar", "Delete", "Employee", new { Nombre = item.Nombre, ValorDocumentoIdentidad = item.ValorDocumento }, new { @class = "btn btn-danger btn-sm" })</td>
-
-            <td>
-                @Html.ActionLink("Movimientos", "Index", "Movement", new { Nombre = item.Nombre, ValorDocumentoIdentidad = item.ValorDocumento }, new { @class = "btn btn-secondary btn-sm" })
-            </td>
+            <td>@Html.ActionLink("Editar", "Edit", "Admin", new { id = item.Id }, new { @class = "btn btn-success btn-sm" })</td>
+            <td>@Html.ActionLink("Borrar", "Delete", "Admin", new { id = item.Id }, new { @class = "btn btn-danger btn-sm" })</td>
+            <td>@Html.ActionLink("Movimientos", "Index", "Movement", new { employee = item }, new { @class = "btn btn-secondary btn-sm" })</td>
         </tr>
     }
 </table>

@@ -3,8 +3,10 @@ using BaseDatos01_Tarea01_ListaEmpleados.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection.Emit;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 
@@ -18,8 +20,8 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
 
         public ActionResult Index(string filtro = "")
         {
-    
-            var employeeList = _employeeDAL.FiltrarEmpleados(filtro,ref outResultCode,ref outResultDescription);
+
+            var employeeList = _employeeDAL.FiltrarEmpleados(filtro, ref outResultCode, ref outResultDescription);
 
             if (outResultCode != 0)
             {
@@ -34,6 +36,7 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
             return View(employeeList);
         }
 
+        // Create
         [HttpGet]
         public ActionResult Create()
         {
@@ -100,22 +103,20 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
             return View(employee);
         }
 
+        // Edit
         [HttpGet]
-        public ActionResult Edit(Employee employee)
+        public ActionResult Edit(int id)
         {
-            if (employee == null)
-            {
-                TempData["ErrorMessage"] = "Empleado no encontrado.";
-                return RedirectToAction("Index");
-            }
+            Employee employee = _employeeDAL.ObtenerEmpleadoPorId(id, ref outResultCode, ref outResultDescription);
 
             var listaTiposDoc = _employeeDAL.ObtenerListaTipoDocumentos(ref outResultCode, ref outResultDescription);
             var listaPuestos = _employeeDAL.ObtenerListaPuestos(ref outResultCode, ref outResultDescription);
             var listaDepartamentos = _employeeDAL.ObtenerListaDepartamentos(ref outResultCode, ref outResultDescription);
 
-            if (outResultCode != 0)
+            if (outResultCode != 0 || employee == null)
             {
-                TempData["ErrorMessage"] = $"[ERROR {outResultCode}] : {outResultDescription}";
+                TempData["ErrorMessage"] = $"[Error {outResultCode}] : {outResultDescription}";
+                return RedirectToAction("Index");
             }
 
             var model = new EmployeeEditViewModel(
@@ -144,13 +145,16 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
             return RedirectToAction("Index");
         }
 
-        [HttpGet]
-        public ActionResult Delete(Employee employee)
-        {
 
-            if (employee == null)
+        // Delete 
+        [HttpGet]
+        public ActionResult Delete(int id)
+        {
+            Employee employee = _employeeDAL.ObtenerEmpleadoPorId(id, ref outResultCode, ref outResultDescription);
+
+            if (outResultCode != 0 || employee == null)
             {
-                TempData["ErrorMessage"] = "Empleado no encontrado.";
+                TempData["ErrorMessage"] = $"[Error {outResultCode}] : {outResultDescription}";
                 return RedirectToAction("Index");
             }
 
@@ -158,7 +162,7 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
         }
 
         [HttpPost]
-        public ActionResult Delete(int employeeId)
+        public ActionResult DeleteConfirmed(int employeeId)
         {
             _employeeDAL.EliminarEmpleadoLogicamente(employeeId, ref outResultCode, ref outResultDescription);
 
@@ -169,5 +173,46 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
 
             return RedirectToAction("Index");
         }
+
+        // XML_Fuctions
+        [HttpGet]
+        public ActionResult XML_Fuctions()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> XML_Fuctions(HttpPostedFileBase xmlCatalogos, HttpPostedFileBase xmlOperaciones)
+        {
+            if (xmlCatalogos == null || xmlOperaciones == null)
+            {
+                ViewBag.Mensaje = "Debe seleccionar ambos archivos XML.";
+                return View();
+            }
+
+            try
+            {
+                string contenidoCatalogos, contenidoOperaciones;
+
+                using (var reader1 = new StreamReader(xmlCatalogos.InputStream))
+                    contenidoCatalogos = await reader1.ReadToEndAsync();
+
+                using (var reader2 = new StreamReader(xmlOperaciones.InputStream))
+                    contenidoOperaciones = await reader2.ReadToEndAsync();
+
+                EjecutarSpXml("sp_CargarCatalogosDesdeXml", contenidoCatalogos);
+                EjecutarSpXml("sp_EjecutarOperacionesDesdeXml", contenidoOperaciones);
+
+                ViewBag.Mensaje = "Archivos procesados correctamente.";
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Mensaje = $"Error al procesar archivos: {ex.Message}";
+            }
+
+            return View();
+        }
+
     }
 }

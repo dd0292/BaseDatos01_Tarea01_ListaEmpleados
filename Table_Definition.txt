@@ -149,19 +149,21 @@ CREATE TABLE DeduccionesMensualesEmpleado (
 );
 
 
-CREATE TABLE MovimientosPlanilla (
+CREATE TABLE Movimiento (
     Id INT IDENTITY(1,1) PRIMARY KEY,
     IdEmpleado INT NOT NULL,
     IdSemana INT NOT NULL,
-    IdTipoMovimiento INT NOT NULL,
     Fecha DATE NOT NULL,
-    CantidadHoras INT NULL,
-    Monto DECIMAL(12,2) NOT NULL,
+    TipoMovimiento VARCHAR(100) NOT NULL, -- Devengado o Deducción o Asistencia
+    CategoriaMovimiento VARCHAR(100) NOT NULL, -- Ej: Horas Ordinarias, Extra Dobles, Aporte CCSS, etc.
+    Monto DECIMAL(25,2) NOT NULL,
+    CantidadHoras INT NULL, -- solo si aplica
     Descripcion VARCHAR(255) NULL,
+    Fuente VARCHAR(100) NULL, -- "Asistencia", "Deducción", "Manual", etc.
     FOREIGN KEY (IdEmpleado) REFERENCES Empleado(Id),
-    FOREIGN KEY (IdSemana) REFERENCES SemanasPlanilla(Id),
-    FOREIGN KEY (IdTipoMovimiento) REFERENCES TiposMovimiento(Id)
+    FOREIGN KEY (IdSemana) REFERENCES SemanasPlanilla(Id)
 );
+
 
 CREATE TABLE Asistencias (
     Id INT IDENTITY(1,1) PRIMARY KEY,

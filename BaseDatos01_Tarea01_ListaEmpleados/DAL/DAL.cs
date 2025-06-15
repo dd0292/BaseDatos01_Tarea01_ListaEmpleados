@@ -310,7 +310,7 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.DAL // Data Access Layer
                             IdUsuario: Convert.ToInt32(row["IdUsuario"]),
                             Username: row["Usuario"].ToString(),
                             Password: row["Passphrase"].ToString(),
-                            Estado: row["Estado"].ToString()
+                            Estado: Convert.ToBoolean(row["Estado"])
                         ));
                     }
                     Console.WriteLine($"Éxito [FiltrarEmpleados]: {outResultDescription}");
@@ -329,6 +329,67 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.DAL // Data Access Layer
             return list;
         }
 
+        public Employee ObtenerEmpleadoPorId(int id, ref int outResultCode, ref string outResultDescription)
+        {
+            Employee empleado = null;
+
+            var parameters = new SqlParameter[]
+            {
+                new SqlParameter("@inId", SqlDbType.Int) { Value = id },
+            };
+
+            try
+            {
+
+                DataTable resultTable = dbHelper.ExecuteStoredProcedure(
+                    "sp_ObtenerEmpleadoPorId",
+                    parameters,
+                    ref outResultCode,
+                    ref outResultDescription);
+
+                if (outResultCode == 0)
+                {
+                    foreach (DataRow row in resultTable.Rows)
+                    {
+                        empleado  = new Employee(
+                            Id: Convert.ToInt32(row["Id"]),
+                            Nombre: row["Nombre"].ToString(),
+
+                            IdTipoDocumento: Convert.ToInt32(row["IdTipoDocumento"]),
+                            TipoDocumento: row["TipoDocumento"].ToString(),
+
+                            ValorDocumento: row["ValorDocumento"].ToString(),
+
+                            IdPuesto: Convert.ToInt32(row["IdPuesto"]),
+                            NombrePuesto: row["NombrePuesto"].ToString(),
+                            SalarioPorHora: Convert.ToDecimal(row["SalarioPorHora"]),
+
+                            IdDepartamento: Convert.ToInt32(row["IdDepartamento"]),
+                            Departamento: row["Departamento"].ToString(),
+
+                            FechaNacimiento: Convert.ToDateTime(row["FechaNacimiento"]),
+
+                            IdUsuario: Convert.ToInt32(row["IdUsuario"]),
+                            Username: row["Username"].ToString(),
+                            Password: row["Passphrase"].ToString(),
+                            Estado: Convert.ToBoolean(row["Estado"])
+                        );
+                    }
+                    Console.WriteLine($"Éxito [ObtenerEmpleadoPorId]: {outResultDescription}");
+                }
+                else
+                {
+                    Console.WriteLine($"Error [ObtenerEmpleadoPorId]: Código {outResultCode} - {outResultDescription}");
+                }
+            }
+            catch (Exception ex)
+            {
+                outResultCode = -1;
+                Console.WriteLine($"Exception [ObtenerEmpleadoPorId]: {ex.Message}");
+            }
+
+            return empleado;
+        }
         public List<TipoDocumento> ObtenerListaTipoDocumentos(ref int outResultCode, ref string outResultDescription)
         {
             var list = new List<TipoDocumento>();
