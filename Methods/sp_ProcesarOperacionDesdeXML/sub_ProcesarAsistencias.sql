@@ -1,4 +1,4 @@
-CREATE PROCEDURE sub_ProcesarAsistencias
+ALTER PROCEDURE sub_ProcesarAsistencias
     @XmlOperacion XML,
     @FechaOperacion DATE
 AS

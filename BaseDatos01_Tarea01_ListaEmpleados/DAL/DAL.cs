@@ -1,4 +1,5 @@
 ﻿using BaseDatos01_Tarea01_ListaEmpleados.Models;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -31,238 +32,6 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.DAL // Data Access Layer
             dbHelper = new DatabaseHelper(conString);
         }
 
-        private static int? ExtractIntFromBrackets(string input)
-        {
-            if (string.IsNullOrEmpty(input))
-                return null;
-
-            var pattern = @"\[(\d+)\]";
-            var match = Regex.Match(input, pattern);
-
-            if (match.Success && match.Groups.Count > 1)
-            {
-
-                if (int.TryParse(match.Groups[1].Value, out int result))
-                {
-                    return result;
-                }
-            }
-
-            return null;
-        }
-
-        public int EliminarEmpleadoCancelar(string nombre, int valorDocumento)
-        {
-            int resultCode;
-
-            using (SqlConnection conn = new SqlConnection(conString))
-            {
-                SqlCommand cmd = new SqlCommand("dbo.EliminarEmpleadoCancelar", conn);
-                cmd.CommandType = CommandType.StoredProcedure;
-
-                cmd.Parameters.AddWithValue("@inNombre", nombre);
-                cmd.Parameters.AddWithValue("@inValorDocumentoIdentidad", valorDocumento);
-                cmd.Parameters.AddWithValue("@inIdPostByUser", UserId);
-                cmd.Parameters.AddWithValue("@inPostInIP", ClientIp);
-
-                SqlParameter outParam = new SqlParameter("@outResultCode", SqlDbType.Int)
-                {
-                    Direction = ParameterDirection.Output
-                };
-                cmd.Parameters.Add(outParam);
-
-                conn.Open();
-                cmd.ExecuteNonQuery();
-                resultCode = Convert.ToInt32(outParam.Value);
-                conn.Close();
-            }
-
-            return resultCode;
-        }
-
-        public int InsertarMovimiento(int valorDocumentoIdentidad, string idTipoMovimiento, decimal monto)
-        {
-            int resultado = -1;
-
-            using (SqlConnection conn = new SqlConnection(conString))
-            {
-                SqlCommand cmd = new SqlCommand("InsertarMovimiento", conn);
-                cmd.CommandType = CommandType.StoredProcedure;
-
-                cmd.Parameters.AddWithValue("@inValorDocumentoIdentidad", valorDocumentoIdentidad);
-                cmd.Parameters.AddWithValue("@inIdTipoMovimiento", ExtractIntFromBrackets(idTipoMovimiento));
-                cmd.Parameters.AddWithValue("@inMonto", monto);
-                cmd.Parameters.AddWithValue("@inIdPostByUser", UserId);
-                cmd.Parameters.AddWithValue("@inPostInIP", ClientIp);
-
-                SqlParameter outParam = new SqlParameter("@outResultCode", SqlDbType.Int)
-                {
-                    Direction = ParameterDirection.Output
-                };
-                cmd.Parameters.Add(outParam);
-
-                conn.Open();
-                cmd.ExecuteNonQuery();
-
-                resultado = (int)cmd.Parameters["@outResultCode"].Value;
-            }
-
-            return resultado;
-        }
-
-        public List<Movement> ListarMovimientosEmpleado(int valorDocumentoIdentidad)
-        {
-            List<Movement> lista = new List<Movement>();
-
-            using (SqlConnection conn = new SqlConnection(conString))
-            using (SqlCommand cmd = new SqlCommand("ListarMovimientosEmpleado", conn))
-            {
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@inValorDocumentoIdentidad", valorDocumentoIdentidad);
-
-                SqlParameter outputParam = new SqlParameter("@outResultCode", SqlDbType.Int);
-                outputParam.Direction = ParameterDirection.Output;
-                cmd.Parameters.Add(outputParam);
-
-                conn.Open();
-
-                using (SqlDataReader reader = cmd.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        Movement mov = new Movement
-                        {
-                            Fecha = Convert.ToDateTime(reader["Fecha"]),
-                            NombreTipo = reader["NombreTipo"].ToString(),
-                            Monto = Convert.ToDecimal(reader["Monto"]),
-                            NuevoSaldo = Convert.ToDecimal(reader["NuevoSaldo"]),
-                            NombreUsuario = reader["NombreUsuario"].ToString(),
-                            IdPostByUser = reader["IdPostByUser"].ToString(),
-                            PostTime = Convert.ToDateTime(reader["PostTime"]),
-                            PostInIP = reader["PostInIP"].ToString()
-                        };
-                        lista.Add(mov);
-                    }
-                }
-            }
-
-            return lista;
-        }
-
-        public string ObtenerDescripcionError(int code)
-        {
-            string descripcion;
-
-            using (SqlConnection connection = new SqlConnection(conString))
-            {
-                SqlCommand cmd = new SqlCommand("ObtenerDescripcionError", connection);
-                cmd.CommandType = CommandType.StoredProcedure;
-
-                cmd.Parameters.AddWithValue("@inCodigoError", code);
-
-                SqlParameter outputDescripcion = new SqlParameter("@outDescripcion", SqlDbType.NVarChar, -1);
-                outputDescripcion.Direction = ParameterDirection.Output;
-                cmd.Parameters.Add(outputDescripcion);
-
-                SqlParameter outputParam = new SqlParameter("@outResultCode", SqlDbType.Int);
-                outputParam.Direction = ParameterDirection.Output;
-                cmd.Parameters.Add(outputParam);
-
-                connection.Open();
-                cmd.ExecuteNonQuery();
-                connection.Close();
-
-                descripcion = outputDescripcion.Value?.ToString();
-            }
-
-            return descripcion;
-        }
-
-        public Employee ObtenerEmpleadoPorNombreYDocumento(string nombre, int valorDocumento)
-        {
-            Employee empleado = null;
-
-            using (SqlConnection conn = new SqlConnection(conString))
-            {
-                SqlCommand cmd = new SqlCommand("ObtenerEmpleadoPorNombreYDocumento", conn);
-                cmd.CommandType = CommandType.StoredProcedure;
-
-                cmd.Parameters.AddWithValue("@inNombre", nombre);
-                cmd.Parameters.AddWithValue("@inValorDocumentoIdentidad", valorDocumento);
-
-                SqlParameter outputParam = new SqlParameter("@outResultCode", SqlDbType.Int);
-                outputParam.Direction = ParameterDirection.Output;
-                cmd.Parameters.Add(outputParam);
-
-                conn.Open();
-                SqlDataReader reader = cmd.ExecuteReader();
-
-                if (reader.Read())
-                {
-                    //empleado = new Employee();
-                }
-
-                reader.Close();
-                conn.Close();
-            }
-
-            return empleado;
-        }
-
-        public int ObtenerIdPuestoPorNombre(string nombrePuesto)
-        {
-            int idPuesto = -1;
-
-            using (SqlConnection conn = new SqlConnection(conString))
-            {
-                SqlCommand cmd = new SqlCommand("ObtenerIdPuestoPorNombre", conn);
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@inNombrePuesto", nombrePuesto);
-
-                SqlParameter outputParam = new SqlParameter("@outResultCode", SqlDbType.Int);
-                outputParam.Direction = ParameterDirection.Output;
-                cmd.Parameters.Add(outputParam);
-
-                conn.Open();
-                object result = cmd.ExecuteScalar();
-
-                if (result != null && int.TryParse(result.ToString(), out int id))
-                {
-                    idPuesto = id;
-                }
-
-                conn.Close();
-            }
-
-            return idPuesto;
-        }
-
-        public List<string> ObtenerTiposMovimiento()
-        {
-            List<string> tiposMovimiento = new List<string>();
-
-            using (SqlConnection conn = new SqlConnection(conString))
-            {
-                SqlCommand cmd = new SqlCommand("ObtenerTiposMovimiento", conn);
-                cmd.CommandType = CommandType.StoredProcedure;
-
-                SqlParameter outParam = new SqlParameter("@outResultCode", SqlDbType.Int)
-                {
-                    Direction = ParameterDirection.Output
-                };
-                cmd.Parameters.Add(outParam);
-
-                conn.Open();
-                SqlDataReader reader = cmd.ExecuteReader();
-
-                while (reader.Read())
-                {
-                    tiposMovimiento.Add($"[{reader["Id"].ToString()}] {reader["Nombre"].ToString()}");
-                }
-            }
-
-            return tiposMovimiento;
-        }
         //-----------------------------------------------------------------------------------------
 
         public List<Employee> FiltrarEmpleados(string filtro, ref int outResultCode, ref string outResultDescription)
@@ -390,6 +159,7 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.DAL // Data Access Layer
 
             return empleado;
         }
+        
         public List<TipoDocumento> ObtenerListaTipoDocumentos(ref int outResultCode, ref string outResultDescription)
         {
             var list = new List<TipoDocumento>();
@@ -514,23 +284,23 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.DAL // Data Access Layer
             int userId = -1;
 
             var parameters = new SqlParameter[]
-{
-            new SqlParameter("@inNombre", model.Nombre),
-            new SqlParameter("@inIdTipoDocumento", model.TipoDocumento.Id),
-            new SqlParameter("@inValorDocumento", model.ValorDocumento),
-            new SqlParameter("@inFechaNacimiento", model.FechaNacimiento),
-            new SqlParameter("@inIdPuesto", model.Puesto.Id),
-            new SqlParameter("@inIdDepartamento", model.Departamento.Id),
-            new SqlParameter("@inUsername", model.Usuario.Nombre),
-            new SqlParameter("@inPassword", model.Usuario.Contrasena),
-            new SqlParameter("@inIdUsuarioEjecutor", UserId),
-            new SqlParameter("@inUserIP", ClientIp),
+            {
+                new SqlParameter("@inNombre", model.Nombre),
+                new SqlParameter("@inIdTipoDocumento", model.TipoDocumento.Id),
+                new SqlParameter("@inValorDocumento", model.ValorDocumento),
+                new SqlParameter("@inFechaNacimiento", model.FechaNacimiento),
+                new SqlParameter("@inIdPuesto", model.Puesto.Id),
+                new SqlParameter("@inIdDepartamento", model.Departamento.Id),
+                new SqlParameter("@inUsername", model.Usuario.Nombre),
+                new SqlParameter("@inPassword", model.Usuario.Contrasena),
+                new SqlParameter("@inIdUsuarioEjecutor", UserId),
+                new SqlParameter("@inUserIP", ClientIp),
 
-            new SqlParameter("@outResultCode", SqlDbType.Int) { Direction = ParameterDirection.Output },
-            new SqlParameter("@outResultMessage", SqlDbType.VarChar, 529) { Direction = ParameterDirection.Output },
-            new SqlParameter("@outIdEmpleado", SqlDbType.Int) { Direction = ParameterDirection.Output },
-            new SqlParameter("@outIdUsuario", SqlDbType.Int) { Direction = ParameterDirection.Output }
-    };
+                new SqlParameter("@outResultCode", SqlDbType.Int) { Direction = ParameterDirection.Output },
+                new SqlParameter("@outResultMessage", SqlDbType.VarChar, 529) { Direction = ParameterDirection.Output },
+                new SqlParameter("@outIdEmpleado", SqlDbType.Int) { Direction = ParameterDirection.Output },
+                new SqlParameter("@outIdUsuario", SqlDbType.Int) { Direction = ParameterDirection.Output }
+            };
 
             try
             {
@@ -634,6 +404,142 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.DAL // Data Access Layer
             catch (Exception ex)
             {
                 Console.WriteLine($"Excepción al eliminar empleado: {ex.Message}");
+
+            }
+
+            return outResultCode;
+        }
+
+        public int EliminarBaseDeDatos(ref int outResultCode, ref string outResultDescription)
+        {
+
+            try
+            {
+                int rowsAffected = dbHelper.ExecuteNonQueryStoredProcedure(
+                    "sp_BorrarYReiniciarBaseDatos",
+                    new SqlParameter[] { },
+                    ref outResultCode,
+                    ref outResultDescription);
+
+                if (outResultCode == 0)
+                {
+                    Console.WriteLine($"Base de Datos Reiniciada. Filas afectadas: {rowsAffected}");
+                }
+                else
+                {
+                    Console.WriteLine($"Error al Reiniciada: {outResultDescription}");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Excepción al Reiniciada DB: {ex.Message}");
+
+            }
+
+            return outResultCode;
+        }
+
+        public int CargarCatalogoXML(string xml, ref int outResultCode, ref string outResultDescription)
+        {
+
+            try
+            {
+                var parameters = new SqlParameter[]
+                {
+                    new SqlParameter("@inXmlCat", SqlDbType.Xml) {Value = xml, Direction = ParameterDirection.Input},
+                };
+
+                int rowsAffected = dbHelper.ExecuteNonQueryStoredProcedure(
+                    "sp_CargarCatalogoXML",
+                    new SqlParameter[] { },
+                    ref outResultCode,
+                    ref outResultDescription);
+
+                if (outResultCode == 0)
+                {
+                    Console.WriteLine($"Empleado eliminado correctamente. Filas afectadas: {rowsAffected}");
+                }
+                else
+                {
+                    Console.WriteLine($"Error al eliminar: {outResultDescription}");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Excepción al eliminar empleado: {ex.Message}");
+
+            }
+
+            return outResultCode;
+        }
+
+        public int CargarOperacionesXML(string xml, ref int outResultCode, ref string outResultDescription)
+        {
+
+            try
+            {
+                var parameters = new SqlParameter[]
+                {
+                    new SqlParameter("@XmlOperacion", SqlDbType.Xml) {Value = xml, Direction = ParameterDirection.Input},
+                    new SqlParameter("@inIdUsuario", SqlDbType.Int) { Value = UserId,  Direction = ParameterDirection.Input },
+                    new SqlParameter("@inUserIP", SqlDbType.VarChar, 64) { Value = ClientIp,  Direction = ParameterDirection.Input }
+                };
+
+                int rowsAffected = dbHelper.ExecuteNonQueryStoredProcedure(
+                    "sp_CargarOperacionesXML",
+                    parameters,
+                    ref outResultCode,
+                    ref outResultDescription);
+
+                if (outResultCode == 0)
+                {
+                    Console.WriteLine($" CargarOperacionesXM correctamente. Filas afectadas: {rowsAffected}");
+                }
+                else
+                {
+                    Console.WriteLine($"Error al CargarOperacionesXM: {outResultDescription}");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Excepción al CargarOperacionesXM: {ex.Message}");
+
+            }
+
+            return outResultCode;
+        }
+
+        public int RegistrarEvento(int IdTipoEvento, string info, ref int outResultCode, ref string outResultDescription)
+        {
+
+            try
+            {
+                var parameters = new SqlParameter[]
+                {
+                    new SqlParameter("@inIdUsuario", SqlDbType.Int) {Value = UserId, Direction = ParameterDirection.Input},
+                    new SqlParameter("@inIdTipoEvento", SqlDbType.Int) {Value = IdTipoEvento, Direction = ParameterDirection.Input},
+                    new SqlParameter("@inIPUser", SqlDbType.Int) {Value = ClientIp, Direction = ParameterDirection.Input},
+                    new SqlParameter("@inDescripcion", SqlDbType.Int) {Value = info, Direction = ParameterDirection.Input},
+                };
+
+                int rowsAffected = dbHelper.ExecuteNonQueryStoredProcedure(
+                    "sp_RegistrarEvento",
+                    parameters,
+                    ref outResultCode,
+                    ref outResultDescription);
+
+                if (outResultCode == 0)
+                {
+                    Console.WriteLine($" Registrar Evento correctamente");
+                }
+                else
+                {
+                    Console.WriteLine($"Error al Registrar Evento: {outResultDescription}");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Excepción al Registrar Evento: {ex.Message}");
 
             }
 

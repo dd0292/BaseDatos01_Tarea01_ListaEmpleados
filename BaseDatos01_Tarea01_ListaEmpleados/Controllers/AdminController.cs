@@ -3,6 +3,8 @@ using BaseDatos01_Tarea01_ListaEmpleados.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Reflection.Emit;
@@ -193,18 +195,15 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
 
             try
             {
-                string contenidoCatalogos, contenidoOperaciones;
+                _employeeDAL.EliminarBaseDeDatos(ref outResultCode, ref outResultDescription);
+                _employeeDAL.CargarCatalogoXML(xmlCatalogos.ToString(), ref outResultCode, ref outResultDescription);
+                _employeeDAL.CargarOperacionesXML(xmlOperaciones.ToString(), ref outResultCode, ref outResultDescription);
 
-                using (var reader1 = new StreamReader(xmlCatalogos.InputStream))
-                    contenidoCatalogos = await reader1.ReadToEndAsync();
+                if (outResultCode == 0)
+                    TempData["SuccessMessage"] = "Datos Cargados Correctamente...";
+                else
+                    TempData["ErrorMessage"] = $"[ERROR {outResultCode}] {outResultDescription}";
 
-                using (var reader2 = new StreamReader(xmlOperaciones.InputStream))
-                    contenidoOperaciones = await reader2.ReadToEndAsync();
-
-                EjecutarSpXml("sp_CargarCatalogosDesdeXml", contenidoCatalogos);
-                EjecutarSpXml("sp_EjecutarOperacionesDesdeXml", contenidoOperaciones);
-
-                ViewBag.Mensaje = "Archivos procesados correctamente.";
             }
             catch (Exception ex)
             {

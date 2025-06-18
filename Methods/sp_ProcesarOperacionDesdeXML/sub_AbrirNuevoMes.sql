@@ -1,4 +1,4 @@
-CREATE PROCEDURE sub_AbrirNuevoMes
+ALTER PROCEDURE sub_AbrirNuevoMes
     @FechaOperacion DATE
 AS
 BEGIN

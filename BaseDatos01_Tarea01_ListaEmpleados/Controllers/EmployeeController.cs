@@ -45,19 +45,19 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
             try
             {
 
-                if (true) {
-                   // outCode = _employeeDAL.InsertarEmpleado(employee, puestoNombre);
+                //if (true) {
+                //   // outCode = _employeeDAL.InsertarEmpleado(employee, puestoNombre);
 
-                    if (outCode == 0) 
-                    {
-                        TempData["SuccessMessage"] = "Inserción exitosa !!!";
-                    } 
-                    else
-                    {
-                        string errorDescription = _employeeDAL.ObtenerDescripcionError(outCode);
-                        TempData["ErrorMessage"] = $"[ERROR {outCode}] {errorDescription}";
-                    }
-                }
+                //    if (outCode == 0) 
+                //    {
+                //        TempData["SuccessMessage"] = "Inserción exitosa !!!";
+                //    } 
+                //    else
+                //    {
+                //        string errorDescription = _employeeDAL.ObtenerDescripcionError(outCode);
+                //        TempData["ErrorMessage"] = $"[ERROR {outCode}] {errorDescription}";
+                //    }
+                //}
 
                 return RedirectToAction("Index");
             }
@@ -71,30 +71,30 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
         [HttpGet]
         public ActionResult Read(string Nombre, int ValorDocumentoIdentidad)
         {
-            var empleado = _employeeDAL.ObtenerEmpleadoPorNombreYDocumento(Nombre, ValorDocumentoIdentidad);
+            //var empleado = _employeeDAL.ObtenerEmpleadoPorNombreYDocumento(Nombre, ValorDocumentoIdentidad);
 
-            if (empleado == null)
-            {
-                TempData["ErrorMessage"] = "Empleado no encontrado.";
-                return RedirectToAction("Index");
-            }
+            //if (empleado == null)
+            //{
+            //    TempData["ErrorMessage"] = "Empleado no encontrado.";
+            //    return RedirectToAction("Index");
+            //}
 
-            return View(empleado);
+            return View();
         }
 
         [HttpGet]
         public ActionResult Edit(string Nombre, int ValorDocumentoIdentidad)
         {
-            var empleado = _employeeDAL.ObtenerEmpleadoPorNombreYDocumento(Nombre, ValorDocumentoIdentidad);
+            //var empleado = _employeeDAL.ObtenerEmpleadoPorNombreYDocumento(Nombre, ValorDocumentoIdentidad);
 
-            if (empleado == null)
-            {
-                TempData["ErrorMessage"] = "Empleado no encontrado.";
-                return RedirectToAction("Index");
-            }
+            //if (empleado == null)
+            //{
+            //    TempData["ErrorMessage"] = "Empleado no encontrado.";
+            //    return RedirectToAction("Index");
+            //}
 
             //ViewBag.Puestos = new SelectList(_employeeDAL.ObtenerListaPuestos(ref outCode, ''), empleado.Puesto);
-            return View(empleado);
+            return View();
         }
 
         [HttpPost]
@@ -120,15 +120,15 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
         [HttpGet]
         public ActionResult Delete(string Nombre, int ValorDocumentoIdentidad)
         {
-            var empleado = _employeeDAL.ObtenerEmpleadoPorNombreYDocumento(Nombre, ValorDocumentoIdentidad);
+            //var empleado = _employeeDAL.ObtenerEmpleadoPorNombreYDocumento(Nombre, ValorDocumentoIdentidad);
 
-            if (empleado == null)
-            {
-                TempData["ErrorMessage"] = "Empleado no encontrado.";
-                return RedirectToAction("Index");
-            }
+            //if (empleado == null)
+            //{
+            //    TempData["ErrorMessage"] = "Empleado no encontrado.";
+            //    return RedirectToAction("Index");
+            //}
 
-            return View(empleado);
+            return View();
         }
 
         [HttpPost]
@@ -147,10 +147,10 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
         [HttpGet]
         public ActionResult DeleteCancel(string Nombre, int ValorDocumentoIdentidad)
         {
-            int resultado = _employeeDAL.EliminarEmpleadoCancelar(Nombre, ValorDocumentoIdentidad);
+            //int resultado = _employeeDAL.EliminarEmpleadoCancelar(Nombre, ValorDocumentoIdentidad);
 
-            if (resultado != 0)
-                TempData["ErrorMessage"] = "Error al eliminar el empleado.";
+            //if (resultado != 0)
+            //    TempData["ErrorMessage"] = "Error al eliminar el empleado.";
 
             return RedirectToAction("Index");
         }

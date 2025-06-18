@@ -1,4 +1,4 @@
-CREATE PROCEDURE CargarOperacionesXML
+CREATE PROCEDURE sp_CargarOperacionesXML
     @XmlOperacion XML
 AS
 BEGIN

@@ -19,7 +19,7 @@ BEGIN
     BEGIN
         -- Si no existe la semana, no se puede asignar jornadas
         RETURN;
-    END
+    END;
 
     -- ========================
     -- Procesar asignación de jornada

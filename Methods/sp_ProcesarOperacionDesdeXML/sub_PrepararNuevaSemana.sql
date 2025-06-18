@@ -1,4 +1,4 @@
-CREATE PROCEDURE sub_PrepararNuevaSemana
+ALTER PROCEDURE sub_PrepararNuevaSemana
     @FechaOperacion DATE
 AS
 BEGIN
