@@ -1,0 +1,98 @@
+﻿@model BaseDatos01_Tarea01_ListaEmpleados.Models.Employee
+@{
+    ViewBag.Title = "Dashboard del Empleado";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <!-- Tarjeta de información del empleado -->
+    <div class="card mb-4">
+        <!-- Cabecera con información del empleado -->
+        <div class="card-header bg-primary text-white">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h3 class="mb-0">@Model.Nombre</h3>
+                    <div class="d-flex gap-4 mt-2">
+                        <span><i class="bi bi-briefcase"></i> @Model.Puesto.Nombre</span>
+                        <span><i class="bi bi-cash-coin"></i> Salario/Hora: @Model.Puesto.SalarioXHora.ToString("C")</span>
+                    </div>
+                </div>
+                <div>
+                    <span class="badge bg-light text-dark">
+                        <i class="bi bi-person-badge"></i> ID: @Model.Id
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cuerpo de la tarjeta -->
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><i class="bi bi-person-vcard"></i> <strong>Documento:</strong> @Model.TipoDocumento.Nombre: @Model.ValorDocumento</p>
+                    <p><i class="bi bi-building"></i> <strong>Departamento:</strong> @Model.Departamento.Nombre</p>
+                </div>
+                <div class="col-md-6">
+                    <p><i class="bi bi-calendar"></i> <strong>Fecha Nacimiento:</strong> @Model.FechaNacimiento.ToShortDateString()</p>
+                    <p><i class="bi bi-person-circle"></i> <strong>Usuario:</strong> @Model.Usuario.Nombre</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sección de acciones principales -->
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card h-100 border-primary">
+                <div class="card-body text-center">
+                    <i class="bi bi-calendar-week fs-1 text-primary mb-3"></i>
+                    <h4 class="card-title">Planilla Semanal</h4>
+                    <p class="card-text">Consulta tu planilla de pagos semanal con detalles de horas trabajadas.</p>
+                    @Html.ActionLink("Consultar", "PlanillaSemanal", "Empleado", new { id = Model.Id }, new { @class = "btn btn-primary btn-lg" })
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card h-100 border-success">
+                <div class="card-body text-center">
+                    <i class="bi bi-calendar-month fs-1 text-success mb-3"></i>
+                    <h4 class="card-title">Planilla Mensual</h4>
+                    <p class="card-text">Revisa tu planilla de pagos mensual con el resumen completo.</p>
+                    @Html.ActionLink("Consultar", "PlanillaMensual", "Empleado", new { id = Model.Id }, new { @class = "btn btn-success btn-lg" })
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sección de estado -->
+    <div class="card mt-4">
+        <div class="card-header bg-info text-white">
+            <h4 class="mb-0"><i class="bi bi-info-circle"></i> Información Importante</h4>
+        </div>
+        <div class="card-body">
+            <div class="alert @(Model.Estado ? "alert-success" : "alert-danger")">
+                <i class="bi @(Model.Estado ? "bi-check-circle" : "bi-exclamation-triangle")"></i>
+                <strong>Estado Actual:</strong>
+                @(Model.Estado ? "Activo" : "Inactivo")
+            </div>
+            <p>Para cualquier consulta sobre tus planillas, contacta a Recursos Humanos.</p>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function() {
+            // Puedes acceder a los datos del empleado desde JavaScript si los necesitas
+            var empleadoId = @Model.Id;
+            console.log("Dashboard cargado para empleado ID: " + empleadoId);
+
+            // Ejemplo de funcionalidad adicional
+            $('.card').hover(
+                function() { $(this).addClass('shadow-sm'); },
+                function() { $(this).removeClass('shadow-sm'); }
+            );
+        });
+    </script>
+}
