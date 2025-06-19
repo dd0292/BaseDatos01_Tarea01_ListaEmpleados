@@ -9,7 +9,7 @@ ALTER PROCEDURE [dbo].[sp_EditarEmpleado]
     @inIdUsuario INT,
     @inUserIP VARCHAR(64),
     @outResultCode INT OUTPUT,
-    @outResultMessage VARCHAR(529) OUTPUT
+    @outResultDescription VARCHAR(529) OUTPUT
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -17,7 +17,7 @@ BEGIN
     BEGIN TRY
 	BEGIN TRANSACTION;
         SET @outResultCode = 0;
-        SET @outResultMessage = 'Operación exitosa';
+        SET @outResultDescription = 'Operación exitosa';
         
         DECLARE @EstadoOriginal VARCHAR(MAX);
         
@@ -25,7 +25,7 @@ BEGIN
         IF NOT EXISTS (SELECT 1 FROM Empleado WHERE Id = @inIdEmpleado AND Activo = 1)
         BEGIN
             SET @outResultCode = 50002;
-            SET @outResultMessage = 'El empleado no existe o está inactivo';
+            SET @outResultDescription = 'El empleado no existe o está inactivo';
             RETURN;
         END;
         
@@ -52,7 +52,7 @@ BEGIN
         )
         BEGIN
             SET @outResultCode = 50003;
-            SET @outResultMessage = 'Ya existe otro empleado activo con este documento';
+            SET @outResultDescription = 'Ya existe otro empleado activo con este documento';
             RETURN;
         END;
         
@@ -104,7 +104,7 @@ BEGIN
 	IF @@TRANCOUNT > 0
             ROLLBACK TRANSACTION;
         SET @outResultCode = ERROR_NUMBER();
-        SET @outResultMessage = ERROR_MESSAGE();
+        SET @outResultDescription = ERROR_MESSAGE();
         
         INSERT INTO BitacoraEventos (
             IdUsuario,

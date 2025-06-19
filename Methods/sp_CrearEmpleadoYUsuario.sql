@@ -13,14 +13,14 @@ ALTER PROCEDURE [dbo].[sp_CrearEmpleadoYUsuario]
     @inUserIP VARCHAR(64),
 
     @outResultCode INT OUTPUT,
-    @outResultMessage VARCHAR(529) OUTPUT,
+    @outResultDescription VARCHAR(529) OUTPUT,
 	@outIdEmpleado INT OUTPUT,
     @outIdUsuario INT OUTPUT
 AS
 BEGIN
     SET NOCOUNT ON;
     SET @outResultCode = 0;
-    SET @outResultMessage = 'Operación exitosa';
+    SET @outResultDescription = 'Operación exitosa';
 
 	SET @outIdEmpleado = -1;
     SET @outIdUsuario = -1;
@@ -38,7 +38,7 @@ BEGIN
 		AND Activo = 1)
         BEGIN
             SET @outResultCode = 50004;
-            SET @outResultMessage = 'Ya existe un empleado activo con este documento';
+            SET @outResultDescription = 'Ya existe un empleado activo con este documento';
             
             INSERT INTO BitacoraEventos (
                 IdUsuario,
@@ -53,7 +53,7 @@ BEGIN
                 GETDATE(),
                 @inUserIP,
                 JSON_OBJECT(
-					'error': @outResultMessage,
+					'error': @outResultDescription,
 					'numeroError': @outResultCode
 				)
             );
@@ -66,7 +66,7 @@ BEGIN
         IF EXISTS (SELECT 1 FROM Usuario WHERE Username = @inUsername)
         BEGIN
             SET @outResultCode = 50005;
-            SET @outResultMessage = 'El nombre de usuario ya está en uso';
+            SET @outResultDescription = 'El nombre de usuario ya está en uso';
             
             -- Registrar intento fallido en bitácora
             INSERT INTO BitacoraEventos (
@@ -82,7 +82,7 @@ BEGIN
                 GETDATE(),
                 @inUserIP,
                 JSON_OBJECT(
-					'error': @outResultMessage,
+					'error': @outResultDescription,
 					'numeroError': @outResultCode
 				)
             );
@@ -162,7 +162,7 @@ BEGIN
             ROLLBACK TRANSACTION;
         
         SET @outResultCode = ERROR_NUMBER();
-        SET @outResultMessage = ERROR_MESSAGE();
+        SET @outResultDescription = ERROR_MESSAGE();
         
         -- Registrar error técnico en bitácora
         INSERT INTO BitacoraEventos (

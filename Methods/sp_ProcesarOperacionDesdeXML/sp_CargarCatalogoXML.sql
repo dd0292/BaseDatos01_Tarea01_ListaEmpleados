@@ -1,4 +1,4 @@
-CREATE PROCEDURE [dbo].[sp_CargarCatalogoXML]
+ALTER PROCEDURE [dbo].[sp_CargarCatalogoXML]
 	@inXmlCat XML,
 	@outResultCode INT OUTPUT,
 	@outResultDescription Nvarchar(529) OUTPUT

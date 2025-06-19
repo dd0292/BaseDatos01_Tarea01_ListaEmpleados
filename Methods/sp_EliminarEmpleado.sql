@@ -3,19 +3,19 @@ ALTER PROCEDURE [dbo].[sp_EliminarEmpleado]
     @inIdUsuario INT,
     @inUserIP VARCHAR(64),
     @outResultCode INT OUTPUT,
-    @outResultMessage VARCHAR(529) OUTPUT
+    @outResultDescription VARCHAR(529) OUTPUT
 AS
 BEGIN
     SET NOCOUNT ON;
     
     BEGIN TRY
         SET @outResultCode = 0;
-        SET @outResultMessage = 'Operación exitosa';
+        SET @outResultDescription = 'Operación exitosa';
 
         IF NOT EXISTS (SELECT 1 FROM Empleado WHERE Id = @inIdEmpleado AND Activo = 1)
         BEGIN
             SET @outResultCode = 50001;
-            SET @outResultMessage = 'El empleado no existe o ya está inactivo';
+            SET @outResultDescription = 'El empleado no existe o ya está inactivo';
             RETURN;
         END;
        
@@ -43,7 +43,7 @@ BEGIN
     END TRY
     BEGIN CATCH
         SET @outResultCode = ERROR_NUMBER();
-        SET @outResultMessage = ERROR_MESSAGE();
+        SET @outResultDescription = ERROR_MESSAGE();
         
 		INSERT INTO BitacoraEventos (
             IdUsuario,

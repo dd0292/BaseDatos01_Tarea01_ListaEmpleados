@@ -451,22 +451,22 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.DAL // Data Access Layer
 
                 int rowsAffected = dbHelper.ExecuteNonQueryStoredProcedure(
                     "sp_CargarCatalogoXML",
-                    new SqlParameter[] { },
+                    parameters,
                     ref outResultCode,
                     ref outResultDescription);
 
                 if (outResultCode == 0)
                 {
-                    Console.WriteLine($"Empleado eliminado correctamente. Filas afectadas: {rowsAffected}");
+                    Console.WriteLine($"Tablas catalogo insertadas correctamente. Filas afectadas: {rowsAffected}");
                 }
                 else
                 {
-                    Console.WriteLine($"Error al eliminar: {outResultDescription}");
+                    Console.WriteLine($"Error al insertar tablas catalogo: {outResultDescription}");
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Excepción al eliminar empleado: {ex.Message}");
+                Console.WriteLine($"Excepción al insertar tablas catalogo: {ex.Message}");
 
             }
 

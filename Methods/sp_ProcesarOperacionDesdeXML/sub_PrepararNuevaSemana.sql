@@ -1,4 +1,4 @@
-ALTER PROCEDURE sub_PrepararNuevaSemana
+ALTER PROCEDURE [dbo].[sub_PrepararNuevaSemana]
     @FechaOperacion DATE
 AS
 BEGIN

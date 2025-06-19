@@ -1,4 +1,4 @@
-CREATE PROCEDURE sub_RealizarCierreSemanal
+ALTER PROCEDURE [dbo].[sub_RealizarCierreSemanal]
     @FechaOperacion DATE
 AS
 BEGIN

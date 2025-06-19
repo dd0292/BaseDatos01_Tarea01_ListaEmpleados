@@ -1,4 +1,4 @@
-ALTER PROCEDURE sub_AbrirNuevoMes
+ALTER PROCEDURE [dbo].[sub_AbrirNuevoMes]
     @FechaOperacion DATE
 AS
 BEGIN

@@ -3,6 +3,25 @@
     ViewBag.Title = "XML_Fuctions";
 }
 
+@if (TempData["InfoMessage"] != null)
+{
+    <div class="alert  alert-info">
+        <strong>Informacion: </strong>  @TempData["InfoMessage"]
+    </div>
+}
+else if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert  alert-success">
+        <strong>Informacion: </strong>  @TempData["SuccessMessage"]
+    </div>
+}
+else if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert  alert-danger">
+        <strong>ERROR: </strong>  @TempData["ErrorMessage"]
+    </div>
+}
+
 <h2>XML_Fuctions</h2>
 
 @using (Html.BeginForm("XML_Fuctions", "Admin", FormMethod.Post, new { enctype = "multipart/form-data" }))

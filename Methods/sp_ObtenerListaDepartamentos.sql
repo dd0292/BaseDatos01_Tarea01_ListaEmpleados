@@ -1,6 +1,6 @@
 ALTER PROCEDURE [dbo].[sp_ObtenerListaDepartamentos]
     @outResultCode INT OUTPUT,
-	@outResultDescription Nvarchar(529) OUTPUT
+	@outResultDescription NVARCHAR (529) OUTPUT
 AS
 BEGIN
     SET NOCOUNT ON;

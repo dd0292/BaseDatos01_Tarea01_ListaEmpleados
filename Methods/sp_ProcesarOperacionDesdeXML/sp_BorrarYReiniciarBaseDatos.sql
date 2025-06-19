@@ -31,6 +31,7 @@ BEGIN
         DELETE FROM Departamento;
         DELETE FROM TiposJornada;
         DELETE FROM TiposDocumentoIdentidad;
+		DELETE FROM Errores;
         
         -- Reiniciar los valores IDENTITY en las tablas que lo requieren
         DBCC CHECKIDENT ('BitacoraEventos', RESEED, 0);

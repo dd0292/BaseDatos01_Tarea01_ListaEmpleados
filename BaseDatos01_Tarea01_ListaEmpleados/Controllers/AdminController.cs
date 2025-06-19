@@ -184,8 +184,7 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> XML_Fuctions(HttpPostedFileBase xmlCatalogos, HttpPostedFileBase xmlOperaciones)
+        public ActionResult XML_Fuctions(HttpPostedFileBase xmlCatalogos, HttpPostedFileBase xmlOperaciones)
         {
             if (xmlCatalogos == null || xmlOperaciones == null)
             {
@@ -195,15 +194,35 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
 
             try
             {
+                string xmlCatalogoContent;
+                using (var reader = new StreamReader(xmlCatalogos.InputStream))
+                {
+                    xmlCatalogoContent = reader.ReadToEnd();
+                }
+
+                string xmlOperacionContent;
+                using (var reader = new StreamReader(xmlOperaciones.InputStream))
+                {
+                    xmlOperacionContent = reader.ReadToEnd();
+                }
+
                 _employeeDAL.EliminarBaseDeDatos(ref outResultCode, ref outResultDescription);
-                _employeeDAL.CargarCatalogoXML(xmlCatalogos.ToString(), ref outResultCode, ref outResultDescription);
-                _employeeDAL.CargarOperacionesXML(xmlOperaciones.ToString(), ref outResultCode, ref outResultDescription);
 
-                if (outResultCode == 0)
-                    TempData["SuccessMessage"] = "Datos Cargados Correctamente...";
-                else
-                    TempData["ErrorMessage"] = $"[ERROR {outResultCode}] {outResultDescription}";
+                _employeeDAL.CargarCatalogoXML(xmlCatalogoContent, ref outResultCode, ref outResultDescription);
+                if (outResultCode != 0)
+                {
+                    TempData["ErrorMessage"] = $"[ERROR CATALOGO {outResultCode}] {outResultDescription}";
+                    return View();
+                }
 
+                _employeeDAL.CargarOperacionesXML(xmlOperacionContent, ref outResultCode, ref outResultDescription);
+                if (outResultCode != 0)
+                {
+                    TempData["ErrorMessage"] = $"[ERROR OPERACIONES {outResultCode}] {outResultDescription}";
+                    return View();
+                }
+
+                TempData["SuccessMessage"] = "Datos cargados correctamente desde ambos XML.";
             }
             catch (Exception ex)
             {
@@ -212,6 +231,7 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
 
             return View();
         }
+
 
     }
 }
