@@ -59,50 +59,49 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(Employee employee, int tipoDocumentoId, int departamentoId, int puestoId)
+        public ActionResult Create(Employee employee, int tipoDocumentoId, int departamentoId, int puestoId, string username, string password)
         {
-            if (ModelState.IsValid)
+
+            try
             {
-                try
+                employee.Usuario = new Usuario(Nombre: username, Contrasena: password);
+                employee.TipoDocumento = new TipoDocumento(Id: tipoDocumentoId);
+                employee.Departamento = new Departamento(Id: departamentoId);
+                employee.Puesto = new Puesto(Id: puestoId);
+
+                _employeeDAL.InsertarEmpleado(employee, ref outResultCode, ref outResultDescription);
+
+                if (outResultCode == 0)
                 {
-                    employee.TipoDocumento.Id = tipoDocumentoId;
-                    employee.Departamento.Id = departamentoId;
-                    employee.Puesto.Id = puestoId;
-
-                    _employeeDAL.InsertarEmpleado(employee, ref outResultCode, ref outResultDescription);
-
-                    if (outResultCode == 0)
-                    {
-                        TempData["SuccessMessage"] = "Inserción exitosa !!!";
-                    }
-                    else
-                    {
-                        TempData["ErrorMessage"] = $"[ERROR {outResultCode}] : {outResultDescription}";
-                    }
-
-                    return RedirectToAction("Index");
+                    TempData["SuccessMessage"] = "Inserción exitosa !!!";
                 }
-                catch (Exception ex)
+                else
                 {
-                    TempData["ErrorMessage"] = "Error al insertar empleado: " + ex.Message;
+                    TempData["ErrorMessage"] = $"[ERROR {outResultCode}] : {outResultDescription}";
                 }
+
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "Error al insertar empleado: " + ex.Message;
+
+                var listaTiposDoc = _employeeDAL.ObtenerListaTipoDocumentos(ref outResultCode, ref outResultDescription);
+                var listaPuestos = _employeeDAL.ObtenerListaPuestos(ref outResultCode, ref outResultDescription);
+                var listaDepartamentos = _employeeDAL.ObtenerListaDepartamentos(ref outResultCode, ref outResultDescription);
+
+                if (outResultCode != 0)
+                {
+                    TempData["ErrorMessage"] = $"[ERROR {outResultCode}] : {outResultDescription}";
+                }
+
+                ViewBag.TiposDocumento = new SelectList(listaTiposDoc, "Id", "Nombre", tipoDocumentoId);
+                ViewBag.Puestos = new SelectList(listaPuestos, "Id", "Nombre", puestoId);
+                ViewBag.Departamentos = new SelectList(listaDepartamentos, "Id", "Nombre", departamentoId);
+
+                return View(employee);
             }
 
-            var listaTiposDoc = _employeeDAL.ObtenerListaTipoDocumentos(ref outResultCode, ref outResultDescription);
-            var listaPuestos = _employeeDAL.ObtenerListaPuestos(ref outResultCode, ref outResultDescription);
-            var listaDepartamentos = _employeeDAL.ObtenerListaDepartamentos(ref outResultCode, ref outResultDescription);
-
-            if (outResultCode != 0)
-            {
-                TempData["ErrorMessage"] = $"[ERROR {outResultCode}] : {outResultDescription}";
-            }
-
-            ViewBag.TiposDocumento = new SelectList(listaTiposDoc, "Id", "Nombre", tipoDocumentoId);
-            ViewBag.Puestos = new SelectList(listaPuestos, "Id", "Nombre", puestoId);
-            ViewBag.Departamentos = new SelectList(listaDepartamentos, "Id", "Nombre", departamentoId);
-
-            return View(employee);
         }
 
         // Edit
@@ -164,9 +163,9 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
         }
 
         [HttpPost]
-        public ActionResult DeleteConfirmed(int employeeId)
+        public ActionResult DeleteConfirmed(int Id)
         {
-            _employeeDAL.EliminarEmpleadoLogicamente(employeeId, ref outResultCode, ref outResultDescription);
+            _employeeDAL.EliminarEmpleadoLogicamente(Id, ref outResultCode, ref outResultDescription);
 
             if (outResultCode == 0)
                 TempData["SuccessMessage"] = "Empleado eliminado correctamente.";
@@ -186,28 +185,22 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
         [HttpPost]
         public ActionResult XML_Fuctions(HttpPostedFileBase xmlCatalogos, HttpPostedFileBase xmlOperaciones)
         {
-            if (xmlCatalogos == null || xmlOperaciones == null)
+            if (xmlCatalogos == null)
             {
-                ViewBag.Mensaje = "Debe seleccionar ambos archivos XML.";
+                ViewBag.Mensaje = "Debe seleccionar un catalogo XML.";
                 return View();
             }
 
             try
             {
+                _employeeDAL.EliminarBaseDeDatos(ref outResultCode, ref outResultDescription);
+
+
                 string xmlCatalogoContent;
                 using (var reader = new StreamReader(xmlCatalogos.InputStream))
                 {
                     xmlCatalogoContent = reader.ReadToEnd();
                 }
-
-                string xmlOperacionContent;
-                using (var reader = new StreamReader(xmlOperaciones.InputStream))
-                {
-                    xmlOperacionContent = reader.ReadToEnd();
-                }
-
-                _employeeDAL.EliminarBaseDeDatos(ref outResultCode, ref outResultDescription);
-
                 _employeeDAL.CargarCatalogoXML(xmlCatalogoContent, ref outResultCode, ref outResultDescription);
                 if (outResultCode != 0)
                 {
@@ -215,11 +208,19 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
                     return View();
                 }
 
-                _employeeDAL.CargarOperacionesXML(xmlOperacionContent, ref outResultCode, ref outResultDescription);
-                if (outResultCode != 0)
+                if (xmlOperaciones != null)
                 {
-                    TempData["ErrorMessage"] = $"[ERROR OPERACIONES {outResultCode}] {outResultDescription}";
-                    return View();
+                    string xmlOperacionContent;
+                    using (var reader = new StreamReader(xmlOperaciones.InputStream))
+                    {
+                        xmlOperacionContent = reader.ReadToEnd();
+                    }
+                    _employeeDAL.CargarOperacionesXML(xmlOperacionContent, ref outResultCode, ref outResultDescription);
+                    if (outResultCode != 0)
+                    {
+                        TempData["ErrorMessage"] = $"[ERROR OPERACIONES {outResultCode}] {outResultDescription}";
+                        return View();
+                    }
                 }
 
                 TempData["SuccessMessage"] = "Datos cargados correctamente desde ambos XML.";

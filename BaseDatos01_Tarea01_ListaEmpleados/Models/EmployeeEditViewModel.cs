@@ -10,6 +10,7 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Models
 {
     public class EmployeeEditViewModel
     {
+        public EmployeeEditViewModel() { }
         public EmployeeEditViewModel(Employee employee, SelectList TiposDocumento, SelectList Puestos, SelectList Departamentos) 
         { 
             Id = employee.Id;

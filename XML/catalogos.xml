@@ -154,65 +154,65 @@
     <TipoEvento Id="15" Nombre="Ingreso nuevas jornadas"/>
   </TiposdeEvento>
   <Empleados>
-    <Empleado Nombre="Harold Cook" IdTipoDocumento="1" ValorDocumento="7-905-598" FechaNacimiento="1991-09-17" IdDepartamento="1" NombrePuesto="Soldador" IdUsuario="6" Activo="1"/>
-    <Empleado Nombre="Phil Tilley" IdTipoDocumento="1" ValorDocumento="1-379-534" FechaNacimiento="1984-08-18" IdDepartamento="1" NombrePuesto="Operador de Maquina" IdUsuario="7" Activo="1"/>
-    <Empleado Nombre="Nichole Collins" IdTipoDocumento="1" ValorDocumento="2-230-503" FechaNacimiento="2000-10-01" IdDepartamento="3" NombrePuesto="Electricista" IdUsuario="8" Activo="1"/>
-    <Empleado Nombre="Catherine Habeck" IdTipoDocumento="1" ValorDocumento="1-693-553" FechaNacimiento="1990-11-04" IdDepartamento="2" NombrePuesto="Auxiliar de Laboratorio" IdUsuario="9" Activo="1"/>
-    <Empleado Nombre="Jesenia Caudill" IdTipoDocumento="1" ValorDocumento="4-656-908" FechaNacimiento="2003-03-09" IdDepartamento="3" NombrePuesto="Operador de Maquina" IdUsuario="10" Activo="1"/>
-    <Empleado Nombre="Natalie Merritt" IdTipoDocumento="1" ValorDocumento="3-473-263" FechaNacimiento="1968-03-09" IdDepartamento="4" NombrePuesto="Bodeguero" IdUsuario="11" Activo="1"/>
-    <Empleado Nombre="Patricia Billings" IdTipoDocumento="1" ValorDocumento="1-822-801" FechaNacimiento="1999-12-13" IdDepartamento="2" NombrePuesto="Tecnico de Mantenimiento" IdUsuario="12" Activo="1"/>
-    <Empleado Nombre="Andrew Hymel" IdTipoDocumento="1" ValorDocumento="1-844-443" FechaNacimiento="1966-07-10" IdDepartamento="2" NombrePuesto="Electricista" IdUsuario="13" Activo="1"/>
-    <Empleado Nombre="George Klopfer" IdTipoDocumento="1" ValorDocumento="6-602-208" FechaNacimiento="1972-08-17" IdDepartamento="4" NombrePuesto="Operador de Maquina" IdUsuario="14" Activo="1"/>
-    <Empleado Nombre="Cathy Camerano" IdTipoDocumento="1" ValorDocumento="7-521-908" FechaNacimiento="1983-11-22" IdDepartamento="3" NombrePuesto="Auxiliar de Laboratorio" IdUsuario="15" Activo="1"/>
-    <Empleado Nombre="Whitney Coyle" IdTipoDocumento="1" ValorDocumento="7-860-698" FechaNacimiento="1971-06-18" IdDepartamento="3" NombrePuesto="Auxiliar de Laboratorio" IdUsuario="16" Activo="1"/>
-    <Empleado Nombre="Teresa Freeman" IdTipoDocumento="1" ValorDocumento="4-980-889" FechaNacimiento="1987-12-04" IdDepartamento="1" NombrePuesto="Soldador" IdUsuario="17" Activo="1"/>
-    <Empleado Nombre="Bobby Cox" IdTipoDocumento="1" ValorDocumento="3-351-750" FechaNacimiento="1985-06-22" IdDepartamento="3" NombrePuesto="Bodeguero" IdUsuario="18" Activo="1"/>
-    <Empleado Nombre="Ethel Willey" IdTipoDocumento="1" ValorDocumento="3-791-305" FechaNacimiento="2000-03-13" IdDepartamento="4" NombrePuesto="Operador de Maquina" IdUsuario="19" Activo="1"/>
-    <Empleado Nombre="Bryan Bercier" IdTipoDocumento="1" ValorDocumento="1-956-174" FechaNacimiento="2000-06-23" IdDepartamento="2" NombrePuesto="Soldador" IdUsuario="20" Activo="1"/>
-    <Empleado Nombre="Robert Haw" IdTipoDocumento="1" ValorDocumento="2-291-580" FechaNacimiento="1990-11-12" IdDepartamento="4" NombrePuesto="Operador de Maquina" IdUsuario="21" Activo="1"/>
-    <Empleado Nombre="Phyllis Davis" IdTipoDocumento="1" ValorDocumento="6-331-829" FechaNacimiento="1982-01-01" IdDepartamento="4" NombrePuesto="Electricista" IdUsuario="22" Activo="1"/>
-    <Empleado Nombre="Kenneth Dugat" IdTipoDocumento="1" ValorDocumento="7-276-689" FechaNacimiento="1995-02-24" IdDepartamento="4" NombrePuesto="Operador de Maquina" IdUsuario="23" Activo="1"/>
-    <Empleado Nombre="Michael Eraso" IdTipoDocumento="1" ValorDocumento="2-437-565" FechaNacimiento="1980-08-05" IdDepartamento="2" NombrePuesto="Soldador" IdUsuario="24" Activo="1"/>
-    <Empleado Nombre="Robert Winstead" IdTipoDocumento="1" ValorDocumento="4-889-308" FechaNacimiento="1969-10-24" IdDepartamento="4" NombrePuesto="Operador de Maquina" IdUsuario="25" Activo="1"/>
-    <Empleado Nombre="Pedro Miller" IdTipoDocumento="1" ValorDocumento="1-426-945" FechaNacimiento="1977-11-11" IdDepartamento="4" NombrePuesto="Tecnico de Mantenimiento" IdUsuario="26" Activo="1"/>
-    <Empleado Nombre="Ronnie Kelly" IdTipoDocumento="1" ValorDocumento="2-340-650" FechaNacimiento="1968-06-18" IdDepartamento="3" NombrePuesto="Soldador" IdUsuario="27" Activo="1"/>
-    <Empleado Nombre="James Kelly" IdTipoDocumento="1" ValorDocumento="5-466-259" FechaNacimiento="1985-10-09" IdDepartamento="4" NombrePuesto="Electricista" IdUsuario="28" Activo="1"/>
-    <Empleado Nombre="Blanche Arnold" IdTipoDocumento="1" ValorDocumento="7-287-606" FechaNacimiento="1997-02-13" IdDepartamento="1" NombrePuesto="Soldador" IdUsuario="29" Activo="1"/>
-    <Empleado Nombre="Wayne Loera" IdTipoDocumento="1" ValorDocumento="1-322-614" FechaNacimiento="1969-09-08" IdDepartamento="1" NombrePuesto="Soldador" IdUsuario="30" Activo="1"/>
-    <Empleado Nombre="George Samuels" IdTipoDocumento="1" ValorDocumento="6-163-864" FechaNacimiento="1986-11-06" IdDepartamento="3" NombrePuesto="Bodeguero" IdUsuario="31" Activo="1"/>
-    <Empleado Nombre="David Olvera" IdTipoDocumento="1" ValorDocumento="1-780-406" FechaNacimiento="1989-11-07" IdDepartamento="1" NombrePuesto="Tecnico de Mantenimiento" IdUsuario="32" Activo="1"/>
-    <Empleado Nombre="Sydney Bertran" IdTipoDocumento="1" ValorDocumento="3-798-466" FechaNacimiento="2001-03-01" IdDepartamento="2" NombrePuesto="Operador de Maquina" IdUsuario="33" Activo="1"/>
-    <Empleado Nombre="Emilia Guzowski" IdTipoDocumento="1" ValorDocumento="3-494-485" FechaNacimiento="1980-08-23" IdDepartamento="1" NombrePuesto="Auxiliar de Laboratorio" IdUsuario="34" Activo="1"/>
-    <Empleado Nombre="Roberta Carey" IdTipoDocumento="1" ValorDocumento="3-240-103" FechaNacimiento="2001-04-17" IdDepartamento="1" NombrePuesto="Tecnico de Mantenimiento" IdUsuario="35" Activo="1"/>
-    <Empleado Nombre="John Ramos" IdTipoDocumento="1" ValorDocumento="5-637-304" FechaNacimiento="1986-06-17" IdDepartamento="1" NombrePuesto="Tecnico de Mantenimiento" IdUsuario="36" Activo="1"/>
-    <Empleado Nombre="Reanna Gunter" IdTipoDocumento="1" ValorDocumento="6-242-241" FechaNacimiento="1972-06-28" IdDepartamento="4" NombrePuesto="Bodeguero" IdUsuario="37" Activo="1"/>
-    <Empleado Nombre="Joseph Freeman" IdTipoDocumento="1" ValorDocumento="6-438-750" FechaNacimiento="1981-12-20" IdDepartamento="4" NombrePuesto="Electricista" IdUsuario="38" Activo="1"/>
-    <Empleado Nombre="Henry Frank" IdTipoDocumento="1" ValorDocumento="1-861-623" FechaNacimiento="1998-01-02" IdDepartamento="3" NombrePuesto="Operador de Maquina" IdUsuario="39" Activo="1"/>
-    <Empleado Nombre="Susan Diaz" IdTipoDocumento="1" ValorDocumento="7-572-453" FechaNacimiento="1974-01-07" IdDepartamento="4" NombrePuesto="Tecnico de Mantenimiento" IdUsuario="40" Activo="1"/>
-    <Empleado Nombre="Frank Metzler" IdTipoDocumento="1" ValorDocumento="7-917-943" FechaNacimiento="1974-01-06" IdDepartamento="1" NombrePuesto="Electricista" IdUsuario="41" Activo="1"/>
-    <Empleado Nombre="Norma Roberts" IdTipoDocumento="1" ValorDocumento="2-327-472" FechaNacimiento="1977-04-15" IdDepartamento="1" NombrePuesto="Operador de Maquina" IdUsuario="42" Activo="1"/>
-    <Empleado Nombre="Carol Jinkens" IdTipoDocumento="1" ValorDocumento="6-383-874" FechaNacimiento="1998-06-09" IdDepartamento="4" NombrePuesto="Soldador" IdUsuario="43" Activo="1"/>
-    <Empleado Nombre="Rickie Ramirez" IdTipoDocumento="1" ValorDocumento="5-931-181" FechaNacimiento="2002-09-10" IdDepartamento="1" NombrePuesto="Soldador" IdUsuario="44" Activo="1"/>
-    <Empleado Nombre="Henry Davine" IdTipoDocumento="1" ValorDocumento="4-361-802" FechaNacimiento="1972-03-05" IdDepartamento="2" NombrePuesto="Electricista" IdUsuario="45" Activo="1"/>
-    <Empleado Nombre="Daniel Zick" IdTipoDocumento="1" ValorDocumento="4-163-503" FechaNacimiento="1972-07-28" IdDepartamento="2" NombrePuesto="Tecnico de Mantenimiento" IdUsuario="46" Activo="1"/>
-    <Empleado Nombre="Phillip Harned" IdTipoDocumento="1" ValorDocumento="5-429-516" FechaNacimiento="1991-11-06" IdDepartamento="4" NombrePuesto="Electricista" IdUsuario="47" Activo="1"/>
-    <Empleado Nombre="Minnie Mcilvaine" IdTipoDocumento="1" ValorDocumento="5-843-617" FechaNacimiento="1967-06-01" IdDepartamento="4" NombrePuesto="Tecnico de Mantenimiento" IdUsuario="48" Activo="1"/>
-    <Empleado Nombre="Salvador Dickson" IdTipoDocumento="1" ValorDocumento="1-906-691" FechaNacimiento="1990-09-05" IdDepartamento="1" NombrePuesto="Auxiliar de Laboratorio" IdUsuario="49" Activo="1"/>
-    <Empleado Nombre="Jeremy Rea" IdTipoDocumento="1" ValorDocumento="1-715-865" FechaNacimiento="2002-12-22" IdDepartamento="3" NombrePuesto="Auxiliar de Laboratorio" IdUsuario="50" Activo="1"/>
-    <Empleado Nombre="Jennifer Miller" IdTipoDocumento="1" ValorDocumento="1-827-625" FechaNacimiento="1995-06-07" IdDepartamento="3" NombrePuesto="Bodeguero" IdUsuario="51" Activo="1"/>
-    <Empleado Nombre="Mitchell Rutledge" IdTipoDocumento="1" ValorDocumento="2-109-504" FechaNacimiento="1995-01-07" IdDepartamento="2" NombrePuesto="Operador de Maquina" IdUsuario="52" Activo="1"/>
-    <Empleado Nombre="Brian Obermeyer" IdTipoDocumento="1" ValorDocumento="6-592-372" FechaNacimiento="2003-11-25" IdDepartamento="1" NombrePuesto="Soldador" IdUsuario="53" Activo="1"/>
-    <Empleado Nombre="Juan Watkins" IdTipoDocumento="1" ValorDocumento="4-473-343" FechaNacimiento="2000-07-25" IdDepartamento="4" NombrePuesto="Tecnico de Mantenimiento" IdUsuario="54" Activo="1"/>
-    <Empleado Nombre="Lacy Roberts" IdTipoDocumento="1" ValorDocumento="2-200-834" FechaNacimiento="2004-11-14" IdDepartamento="4" NombrePuesto="Soldador" IdUsuario="55" Activo="1"/>
-    <Empleado Nombre="Joe Mayfield" IdTipoDocumento="1" ValorDocumento="4-150-188" FechaNacimiento="1981-11-20" IdDepartamento="3" NombrePuesto="Soldador" IdUsuario="56" Activo="1"/>
-    <Empleado Nombre="Veronica Rodriquez" IdTipoDocumento="1" ValorDocumento="4-383-233" FechaNacimiento="1979-10-24" IdDepartamento="2" NombrePuesto="Operador de Maquina" IdUsuario="57" Activo="1"/>
-    <Empleado Nombre="Leroy Powell" IdTipoDocumento="1" ValorDocumento="6-246-168" FechaNacimiento="2000-02-25" IdDepartamento="4" NombrePuesto="Auxiliar de Laboratorio" IdUsuario="58" Activo="1"/>
-    <Empleado Nombre="Geoffrey Balistrieri" IdTipoDocumento="1" ValorDocumento="3-397-562" FechaNacimiento="2000-11-05" IdDepartamento="2" NombrePuesto="Tecnico de Mantenimiento" IdUsuario="59" Activo="1"/>
-    <Empleado Nombre="Sean Stark" IdTipoDocumento="1" ValorDocumento="2-544-750" FechaNacimiento="1987-06-04" IdDepartamento="1" NombrePuesto="Tecnico de Mantenimiento" IdUsuario="60" Activo="1"/>
-    <Empleado Nombre="Violet Burge" IdTipoDocumento="1" ValorDocumento="3-971-811" FechaNacimiento="1967-08-12" IdDepartamento="1" NombrePuesto="Electricista" IdUsuario="61" Activo="1"/>
-    <Empleado Nombre="Herman Smith" IdTipoDocumento="1" ValorDocumento="7-249-677" FechaNacimiento="1966-04-21" IdDepartamento="4" NombrePuesto="Soldador" IdUsuario="62" Activo="1"/>
-    <Empleado Nombre="Kirk Mcguire" IdTipoDocumento="1" ValorDocumento="4-698-978" FechaNacimiento="1990-10-26" IdDepartamento="2" NombrePuesto="Tecnico de Mantenimiento" IdUsuario="63" Activo="1"/>
-    <Empleado Nombre="Marvin Bishop" IdTipoDocumento="1" ValorDocumento="7-672-199" FechaNacimiento="1977-03-14" IdDepartamento="1" NombrePuesto="Auxiliar de Laboratorio" IdUsuario="64" Activo="1"/>
-    <Empleado Nombre="Natasha Watson" IdTipoDocumento="1" ValorDocumento="7-473-625" FechaNacimiento="1982-12-20" IdDepartamento="3" NombrePuesto="Soldador" IdUsuario="65" Activo="1"/>
+    <Empleado Nombre="Tesha Kocur" IdTipoDocumento="1" ValorDocumento="2-364-573" FechaNacimiento="1996-08-18" IdDepartamento="1" NombrePuesto="Auxiliar de Laboratorio" IdUsuario="6" Activo="1"/>
+    <Empleado Nombre="John Lovato" IdTipoDocumento="1" ValorDocumento="7-619-628" FechaNacimiento="1998-08-16" IdDepartamento="2" NombrePuesto="Operador de Maquina" IdUsuario="7" Activo="1"/>
+    <Empleado Nombre="Earl Cruz" IdTipoDocumento="1" ValorDocumento="6-518-297" FechaNacimiento="1970-08-08" IdDepartamento="4" NombrePuesto="Tecnico de Mantenimiento" IdUsuario="8" Activo="1"/>
+    <Empleado Nombre="Arthur Thompson" IdTipoDocumento="1" ValorDocumento="6-258-570" FechaNacimiento="1986-04-10" IdDepartamento="1" NombrePuesto="Bodeguero" IdUsuario="9" Activo="1"/>
+    <Empleado Nombre="Shirley Coleman" IdTipoDocumento="1" ValorDocumento="4-534-468" FechaNacimiento="1985-08-23" IdDepartamento="2" NombrePuesto="Auxiliar de Laboratorio" IdUsuario="10" Activo="1"/>
+    <Empleado Nombre="Kevin Yard" IdTipoDocumento="1" ValorDocumento="3-885-593" FechaNacimiento="1982-05-08" IdDepartamento="2" NombrePuesto="Auxiliar de Laboratorio" IdUsuario="11" Activo="1"/>
+    <Empleado Nombre="Brittany Turner" IdTipoDocumento="1" ValorDocumento="6-521-589" FechaNacimiento="1973-05-24" IdDepartamento="1" NombrePuesto="Electricista" IdUsuario="12" Activo="1"/>
+    <Empleado Nombre="Zachary Wright" IdTipoDocumento="1" ValorDocumento="6-614-887" FechaNacimiento="1975-04-27" IdDepartamento="3" NombrePuesto="Electricista" IdUsuario="13" Activo="1"/>
+    <Empleado Nombre="Roger Dossey" IdTipoDocumento="1" ValorDocumento="1-998-988" FechaNacimiento="1991-10-13" IdDepartamento="4" NombrePuesto="Electricista" IdUsuario="14" Activo="1"/>
+    <Empleado Nombre="Genevieve Munson" IdTipoDocumento="1" ValorDocumento="2-388-345" FechaNacimiento="1979-12-20" IdDepartamento="4" NombrePuesto="Electricista" IdUsuario="15" Activo="1"/>
+    <Empleado Nombre="Jan Conlisk" IdTipoDocumento="1" ValorDocumento="4-881-782" FechaNacimiento="1982-04-02" IdDepartamento="3" NombrePuesto="Auxiliar de Laboratorio" IdUsuario="16" Activo="1"/>
+    <Empleado Nombre="Kathryn Ho" IdTipoDocumento="1" ValorDocumento="4-831-597" FechaNacimiento="1979-01-22" IdDepartamento="1" NombrePuesto="Bodeguero" IdUsuario="17" Activo="1"/>
+    <Empleado Nombre="Mamie Simard" IdTipoDocumento="1" ValorDocumento="6-958-951" FechaNacimiento="1991-02-03" IdDepartamento="3" NombrePuesto="Auxiliar de Laboratorio" IdUsuario="18" Activo="1"/>
+    <Empleado Nombre="Diane Reid" IdTipoDocumento="1" ValorDocumento="1-603-787" FechaNacimiento="1968-06-08" IdDepartamento="1" NombrePuesto="Bodeguero" IdUsuario="19" Activo="1"/>
+    <Empleado Nombre="Jeanette Wertheimer" IdTipoDocumento="1" ValorDocumento="4-921-702" FechaNacimiento="1971-11-15" IdDepartamento="1" NombrePuesto="Electricista" IdUsuario="20" Activo="1"/>
+    <Empleado Nombre="Leslie Hicks" IdTipoDocumento="1" ValorDocumento="3-652-894" FechaNacimiento="1966-03-11" IdDepartamento="4" NombrePuesto="Electricista" IdUsuario="21" Activo="1"/>
+    <Empleado Nombre="Benjamin Hall" IdTipoDocumento="1" ValorDocumento="3-156-466" FechaNacimiento="1977-02-28" IdDepartamento="1" NombrePuesto="Soldador" IdUsuario="22" Activo="1"/>
+    <Empleado Nombre="Joshua Sobel" IdTipoDocumento="1" ValorDocumento="1-324-435" FechaNacimiento="1986-07-27" IdDepartamento="1" NombrePuesto="Bodeguero" IdUsuario="23" Activo="1"/>
+    <Empleado Nombre="Peggy Patton" IdTipoDocumento="1" ValorDocumento="3-542-175" FechaNacimiento="2001-01-06" IdDepartamento="2" NombrePuesto="Auxiliar de Laboratorio" IdUsuario="24" Activo="1"/>
+    <Empleado Nombre="Christopher Bouwkamp" IdTipoDocumento="1" ValorDocumento="6-941-921" FechaNacimiento="1966-07-07" IdDepartamento="2" NombrePuesto="Soldador" IdUsuario="25" Activo="1"/>
+    <Empleado Nombre="Geneva Summers" IdTipoDocumento="1" ValorDocumento="4-901-200" FechaNacimiento="1993-07-18" IdDepartamento="3" NombrePuesto="Operador de Maquina" IdUsuario="26" Activo="1"/>
+    <Empleado Nombre="Abby Kelley" IdTipoDocumento="1" ValorDocumento="7-646-352" FechaNacimiento="1978-06-24" IdDepartamento="1" NombrePuesto="Tecnico de Mantenimiento" IdUsuario="27" Activo="1"/>
+    <Empleado Nombre="Erica Smith" IdTipoDocumento="1" ValorDocumento="6-931-990" FechaNacimiento="1975-03-13" IdDepartamento="3" NombrePuesto="Soldador" IdUsuario="28" Activo="1"/>
+    <Empleado Nombre="James Irby" IdTipoDocumento="1" ValorDocumento="5-929-138" FechaNacimiento="2001-12-23" IdDepartamento="4" NombrePuesto="Tecnico de Mantenimiento" IdUsuario="29" Activo="1"/>
+    <Empleado Nombre="Jenna Daniels" IdTipoDocumento="1" ValorDocumento="2-970-807" FechaNacimiento="1970-01-07" IdDepartamento="4" NombrePuesto="Auxiliar de Laboratorio" IdUsuario="30" Activo="1"/>
+    <Empleado Nombre="Peggy Carter" IdTipoDocumento="1" ValorDocumento="5-983-480" FechaNacimiento="1985-10-12" IdDepartamento="2" NombrePuesto="Soldador" IdUsuario="31" Activo="1"/>
+    <Empleado Nombre="Joseph Peterson" IdTipoDocumento="1" ValorDocumento="5-258-897" FechaNacimiento="1998-05-05" IdDepartamento="4" NombrePuesto="Bodeguero" IdUsuario="32" Activo="1"/>
+    <Empleado Nombre="Bernard Dowden" IdTipoDocumento="1" ValorDocumento="4-703-492" FechaNacimiento="1993-01-08" IdDepartamento="1" NombrePuesto="Operador de Maquina" IdUsuario="33" Activo="1"/>
+    <Empleado Nombre="Anna Davis" IdTipoDocumento="1" ValorDocumento="7-768-567" FechaNacimiento="1983-01-03" IdDepartamento="3" NombrePuesto="Bodeguero" IdUsuario="34" Activo="1"/>
+    <Empleado Nombre="Gilbert Spears" IdTipoDocumento="1" ValorDocumento="4-194-639" FechaNacimiento="1992-04-01" IdDepartamento="1" NombrePuesto="Tecnico de Mantenimiento" IdUsuario="35" Activo="1"/>
+    <Empleado Nombre="Renee Featherston" IdTipoDocumento="1" ValorDocumento="2-231-592" FechaNacimiento="1991-01-17" IdDepartamento="1" NombrePuesto="Bodeguero" IdUsuario="36" Activo="1"/>
+    <Empleado Nombre="Willie Hurd" IdTipoDocumento="1" ValorDocumento="2-389-973" FechaNacimiento="1983-06-26" IdDepartamento="2" NombrePuesto="Electricista" IdUsuario="37" Activo="1"/>
+    <Empleado Nombre="Andrew Williams" IdTipoDocumento="1" ValorDocumento="7-453-895" FechaNacimiento="1997-01-26" IdDepartamento="2" NombrePuesto="Electricista" IdUsuario="38" Activo="1"/>
+    <Empleado Nombre="Janet Davis" IdTipoDocumento="1" ValorDocumento="6-443-834" FechaNacimiento="1981-10-24" IdDepartamento="2" NombrePuesto="Operador de Maquina" IdUsuario="39" Activo="1"/>
+    <Empleado Nombre="Gladys Newell" IdTipoDocumento="1" ValorDocumento="1-235-711" FechaNacimiento="1992-05-15" IdDepartamento="2" NombrePuesto="Auxiliar de Laboratorio" IdUsuario="40" Activo="1"/>
+    <Empleado Nombre="Dustin Lewis" IdTipoDocumento="1" ValorDocumento="7-667-511" FechaNacimiento="1979-05-08" IdDepartamento="4" NombrePuesto="Bodeguero" IdUsuario="41" Activo="1"/>
+    <Empleado Nombre="James Bain" IdTipoDocumento="1" ValorDocumento="6-313-291" FechaNacimiento="1974-05-18" IdDepartamento="4" NombrePuesto="Tecnico de Mantenimiento" IdUsuario="42" Activo="1"/>
+    <Empleado Nombre="Willie Boyer" IdTipoDocumento="1" ValorDocumento="3-818-674" FechaNacimiento="2005-05-01" IdDepartamento="3" NombrePuesto="Electricista" IdUsuario="43" Activo="1"/>
+    <Empleado Nombre="Todd Prado" IdTipoDocumento="1" ValorDocumento="4-554-477" FechaNacimiento="1965-09-03" IdDepartamento="1" NombrePuesto="Electricista" IdUsuario="44" Activo="1"/>
+    <Empleado Nombre="Nancy Foreman" IdTipoDocumento="1" ValorDocumento="4-363-743" FechaNacimiento="1990-05-12" IdDepartamento="3" NombrePuesto="Bodeguero" IdUsuario="45" Activo="1"/>
+    <Empleado Nombre="Miguel Dakins" IdTipoDocumento="1" ValorDocumento="6-834-900" FechaNacimiento="1981-02-01" IdDepartamento="4" NombrePuesto="Soldador" IdUsuario="46" Activo="1"/>
+    <Empleado Nombre="Rebecca Franco" IdTipoDocumento="1" ValorDocumento="2-681-875" FechaNacimiento="1990-12-26" IdDepartamento="1" NombrePuesto="Tecnico de Mantenimiento" IdUsuario="47" Activo="1"/>
+    <Empleado Nombre="Theresa Andreason" IdTipoDocumento="1" ValorDocumento="6-602-675" FechaNacimiento="1970-10-17" IdDepartamento="3" NombrePuesto="Electricista" IdUsuario="48" Activo="1"/>
+    <Empleado Nombre="Sharon Whitsitt" IdTipoDocumento="1" ValorDocumento="3-145-430" FechaNacimiento="2005-03-20" IdDepartamento="1" NombrePuesto="Bodeguero" IdUsuario="49" Activo="1"/>
+    <Empleado Nombre="Judy Carswell" IdTipoDocumento="1" ValorDocumento="5-484-865" FechaNacimiento="1992-12-08" IdDepartamento="4" NombrePuesto="Auxiliar de Laboratorio" IdUsuario="50" Activo="1"/>
+    <Empleado Nombre="Ethel Foy" IdTipoDocumento="1" ValorDocumento="4-803-255" FechaNacimiento="1976-01-01" IdDepartamento="4" NombrePuesto="Tecnico de Mantenimiento" IdUsuario="51" Activo="1"/>
+    <Empleado Nombre="Gregory Hixson" IdTipoDocumento="1" ValorDocumento="2-208-149" FechaNacimiento="1981-08-28" IdDepartamento="2" NombrePuesto="Operador de Maquina" IdUsuario="52" Activo="1"/>
+    <Empleado Nombre="Elaine Griffin" IdTipoDocumento="1" ValorDocumento="3-748-785" FechaNacimiento="1966-12-05" IdDepartamento="1" NombrePuesto="Electricista" IdUsuario="53" Activo="1"/>
+    <Empleado Nombre="John Lawrence" IdTipoDocumento="1" ValorDocumento="4-235-186" FechaNacimiento="1982-01-16" IdDepartamento="4" NombrePuesto="Tecnico de Mantenimiento" IdUsuario="54" Activo="1"/>
+    <Empleado Nombre="Aurelia Walker" IdTipoDocumento="1" ValorDocumento="6-695-839" FechaNacimiento="1974-03-08" IdDepartamento="3" NombrePuesto="Electricista" IdUsuario="55" Activo="1"/>
+    <Empleado Nombre="Patrick Marsella" IdTipoDocumento="1" ValorDocumento="4-829-161" FechaNacimiento="1981-01-12" IdDepartamento="3" NombrePuesto="Soldador" IdUsuario="56" Activo="1"/>
+    <Empleado Nombre="Anna Baksh" IdTipoDocumento="1" ValorDocumento="7-709-814" FechaNacimiento="1972-01-17" IdDepartamento="2" NombrePuesto="Tecnico de Mantenimiento" IdUsuario="57" Activo="1"/>
+    <Empleado Nombre="Adriana Brouillard" IdTipoDocumento="1" ValorDocumento="2-352-602" FechaNacimiento="1977-11-22" IdDepartamento="1" NombrePuesto="Auxiliar de Laboratorio" IdUsuario="58" Activo="1"/>
+    <Empleado Nombre="Joan Neumann" IdTipoDocumento="1" ValorDocumento="2-472-270" FechaNacimiento="1969-04-23" IdDepartamento="3" NombrePuesto="Tecnico de Mantenimiento" IdUsuario="59" Activo="1"/>
+    <Empleado Nombre="Connie Loreto" IdTipoDocumento="1" ValorDocumento="3-323-439" FechaNacimiento="1985-09-22" IdDepartamento="4" NombrePuesto="Bodeguero" IdUsuario="60" Activo="1"/>
+    <Empleado Nombre="Shirley Acuna" IdTipoDocumento="1" ValorDocumento="7-178-457" FechaNacimiento="1999-11-03" IdDepartamento="4" NombrePuesto="Electricista" IdUsuario="61" Activo="1"/>
+    <Empleado Nombre="Grace Arellano" IdTipoDocumento="1" ValorDocumento="1-481-673" FechaNacimiento="1996-01-15" IdDepartamento="4" NombrePuesto="Soldador" IdUsuario="62" Activo="1"/>
+    <Empleado Nombre="George Wiggins" IdTipoDocumento="1" ValorDocumento="3-881-869" FechaNacimiento="2002-11-01" IdDepartamento="1" NombrePuesto="Tecnico de Mantenimiento" IdUsuario="63" Activo="1"/>
+    <Empleado Nombre="Joe Austin" IdTipoDocumento="1" ValorDocumento="2-709-950" FechaNacimiento="1970-04-20" IdDepartamento="4" NombrePuesto="Operador de Maquina" IdUsuario="64" Activo="1"/>
+    <Empleado Nombre="David Weiser" IdTipoDocumento="1" ValorDocumento="4-356-955" FechaNacimiento="1969-06-22" IdDepartamento="4" NombrePuesto="Tecnico de Mantenimiento" IdUsuario="65" Activo="1"/>
   </Empleados>
 </Catalogo>

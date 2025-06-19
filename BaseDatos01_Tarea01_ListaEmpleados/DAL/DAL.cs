@@ -291,13 +291,13 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.DAL // Data Access Layer
                 new SqlParameter("@inFechaNacimiento", model.FechaNacimiento),
                 new SqlParameter("@inIdPuesto", model.Puesto.Id),
                 new SqlParameter("@inIdDepartamento", model.Departamento.Id),
+
                 new SqlParameter("@inUsername", model.Usuario.Nombre),
                 new SqlParameter("@inPassword", model.Usuario.Contrasena),
+
                 new SqlParameter("@inIdUsuarioEjecutor", UserId),
                 new SqlParameter("@inUserIP", ClientIp),
 
-                new SqlParameter("@outResultCode", SqlDbType.Int) { Direction = ParameterDirection.Output },
-                new SqlParameter("@outResultMessage", SqlDbType.VarChar, 529) { Direction = ParameterDirection.Output },
                 new SqlParameter("@outIdEmpleado", SqlDbType.Int) { Direction = ParameterDirection.Output },
                 new SqlParameter("@outIdUsuario", SqlDbType.Int) { Direction = ParameterDirection.Output }
             };
@@ -309,12 +309,6 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.DAL // Data Access Layer
                     parameters,
                     ref outResultCode,
                     ref outResultDescription);
-
-                outResultCode = parameters.First(p => p.ParameterName == "@outResultCode").Value != DBNull.Value ?
-                    (int)parameters.First(p => p.ParameterName == "@outResultCode").Value : -1;
-
-                outResultDescription = parameters.First(p => p.ParameterName == "@outResultMessage").Value != DBNull.Value ?
-                    parameters.First(p => p.ParameterName == "@outResultMessage").Value.ToString() : "Error desconocido";
 
                 employeeId = parameters.First(p => p.ParameterName == "@outIdEmpleado").Value != DBNull.Value ?
                     (int)parameters.First(p => p.ParameterName == "@outIdEmpleado").Value : -1;

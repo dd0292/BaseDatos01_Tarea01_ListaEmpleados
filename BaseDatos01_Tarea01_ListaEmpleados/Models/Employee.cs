@@ -9,6 +9,7 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Models
 {
 	public class Employee
 	{
+        public Employee() { }
         public Employee(int Id, string Nombre, 
             int IdTipoDocumento, string TipoDocumento, 
             string ValorDocumento,
@@ -26,7 +27,7 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Models
             this.Puesto = new Puesto(Id: IdPuesto , Nombre: NombrePuesto, SalarioXHora: SalarioPorHora);
             this.Departamento = new Departamento(Id: IdDepartamento , Nombre: Departamento);
             this.FechaNacimiento = FechaNacimiento;
-            this.Usuario = new Usuario() {Id = IdUsuario, Nombre = Username, Contrasena = Password};
+            this.Usuario = new Usuario(Id: IdUsuario, Nombre: Username, Contrasena: Password);
             this.Estado = Estado;
         }
 
@@ -62,7 +63,6 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Models
 
         [DisplayName("Usuario")]
         public Usuario Usuario { get; set; }
-
 
     }
 }

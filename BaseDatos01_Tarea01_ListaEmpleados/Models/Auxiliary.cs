@@ -14,6 +14,11 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Models
             this.Id = Id;
             this.Nombre = Nombre;
         }
+
+        public TipoDocumento(int Id)
+        {
+            this.Id = Id;
+        }
         public int Id { get; set; }
 
         public string Nombre { get; set; }
@@ -26,6 +31,11 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Models
             this.Id = Id;
             this.Nombre = Nombre;
         }
+
+        public Departamento(int Id)
+        {
+            this.Id = Id;
+        }
         public int Id { get; set; }
         public string Nombre { get; set; }
     }
@@ -37,6 +47,11 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Models
             this.Nombre = Nombre;
             this.SalarioXHora = SalarioXHora;
         }
+
+        public Puesto(int Id)
+        {
+            this.Id = Id;
+        }
         public int Id { get; set; }
         public string Nombre { get; set; }
         public decimal SalarioXHora { get; set; }
@@ -44,6 +59,20 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Models
 
     public class Usuario 
     {
+
+        public Usuario(int Id, string Nombre, string Contrasena)
+        {
+            this.Id = Id;
+            this.Nombre = Nombre;
+            this.Contrasena = Contrasena;
+        }
+
+        public Usuario(string Nombre, string Contrasena)
+        {
+            this.Nombre = Nombre;
+            this.Contrasena = Contrasena;
+        }
+
         [DisplayName("Id Usuario")]
         public int Id { get; set; }
 
