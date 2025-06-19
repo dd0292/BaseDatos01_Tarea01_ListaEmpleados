@@ -45,7 +45,7 @@ BEGIN
 	SELECT en.Usuario, en.Password, 2
 	FROM #EmpleadosNuevos AS en
 	WHERE NOT EXISTS (
-		SELECT 1 FROM Usuario u WHERE u.Username = en.Usuario
+		SELECT 1 FROM Usuario AS u WHERE u.Username = en.Usuario
 	);
 
 	-- Inserta empleados
@@ -95,6 +95,6 @@ BEGIN
 		FROM #EmpleadosNuevos AS en
 		INNER JOIN Puesto p ON p.Nombre = en.NombrePuesto;
 
-		-- Eliminar la tabla temporal
-		DROP TABLE #EmpleadosNuevos;
+	-- Eliminar la tabla temporal
+	DROP TABLE #EmpleadosNuevos;
 END;
