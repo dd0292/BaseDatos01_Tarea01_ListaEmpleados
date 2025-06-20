@@ -4,7 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
+using System.Data.Entity;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Remoting.Messaging;
 using System.Text.RegularExpressions;
@@ -33,6 +35,110 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.DAL // Data Access Layer
         }
 
         //-----------------------------------------------------------------------------------------
+
+        // Modifica solo el método ObtenerPlanillaSemanal así:
+        public PlanillaSem ObtenerPlanillaSemanal(int idEmpleado, int? idSemana, ref int outResultCode, ref string outMessage)
+        {
+            var planilla = new PlanillaSem();
+            outResultCode = 0;
+            outMessage = "OK";
+
+            try
+            {
+                using (var connection = new SqlConnection(conString))
+                using (var command = new SqlCommand("sp_ObtenerPlanillaSemanalEmpleado", connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    // Parámetros
+                    command.Parameters.Add("@IdEmpleado", SqlDbType.Int).Value = idEmpleado;
+                    command.Parameters.Add("@IdSemana", SqlDbType.Int).Value = idSemana ?? (object)DBNull.Value;
+
+                    // Parámetros de salida
+                    command.Parameters.Add(new SqlParameter("@CodigoResultado", SqlDbType.Int) { Direction = ParameterDirection.Output });
+                    command.Parameters.Add(new SqlParameter("@MensajeResultado", SqlDbType.NVarChar, 500) { Direction = ParameterDirection.Output });
+
+                    connection.Open();
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        // 1. Datos básicos del empleado
+                        if (reader.Read())
+                        {
+                            planilla.EmpleadoId = reader.GetInt32(reader.GetOrdinal("EmpleadoId"));
+                            planilla.NombreCompleto = reader.GetString(reader.GetOrdinal("NombreCompleto"));
+                            planilla.Puesto = reader.GetString(reader.GetOrdinal("Puesto"));
+                            planilla.SalarioHora = reader.GetDecimal(reader.GetOrdinal("SalarioHora"));
+                        }
+
+                        // 2. Datos de la semana
+                        if (reader.NextResult() && reader.Read())
+                        {
+                            planilla.Semana.SemanaId = reader.GetInt32(reader.GetOrdinal("SemanaId"));
+                            planilla.Semana.FechaInicio = reader.GetDateTime(reader.GetOrdinal("FechaInicio"));
+                            planilla.Semana.FechaFin = reader.GetDateTime(reader.GetOrdinal("FechaFin"));
+                            planilla.Semana.Cerrada = reader.GetBoolean(reader.GetOrdinal("Cerrada"));
+                            planilla.Semana.SalarioBruto = reader.GetDecimal(reader.GetOrdinal("SalarioBruto"));
+                            planilla.Semana.Descuentos = reader.GetDecimal(reader.GetOrdinal("Descuentos"));
+                            planilla.Semana.MotivoDescuento = reader.IsDBNull(reader.GetOrdinal("MotivoDescuento")) ? null : reader.GetString(reader.GetOrdinal("MotivoDescuento"));
+                            planilla.Semana.SalarioNeto = reader.GetDecimal(reader.GetOrdinal("SalarioNeto"));
+                        }
+
+                        // 3. Movimientos por día (ajustado a tu modelo)
+                        if (reader.NextResult())
+                        {
+                            while (reader.Read())
+                            {
+                                var movimiento = new MovimientoDia
+                                {
+                                    Fecha = reader.GetDateTime(reader.GetOrdinal("Fecha")),
+                                    TipoMovimiento = reader.GetString(reader.GetOrdinal("TipoMovimiento")),
+                                    Categoria = reader.GetString(reader.GetOrdinal("Categoria")),
+                                    Horas = reader.GetDecimal(reader.GetOrdinal("Horas")),
+                                    Monto = reader.GetDecimal(reader.GetOrdinal("Monto")),
+                                    Descripcion = reader.IsDBNull(reader.GetOrdinal("Descripcion")) ? string.Empty : reader.GetString(reader.GetOrdinal("Descripcion"))
+                                };
+
+                                // Asignación optimizada a tu array de 7 días
+                                int diaSemana = (int)movimiento.Fecha.DayOfWeek;
+                                int indexDia = (diaSemana + 6) % 7; // Ajuste para Lunes=0, Domingo=6
+
+                                if (indexDia >= 0 && indexDia < 7)
+                                {
+                                    planilla.Semana.MovimientosPorDia[indexDia].Add(movimiento);
+                                }
+                                else
+                                {
+                                    Debug.WriteLine($"[WARNING] Índice de día inválido: {indexDia} para fecha {movimiento.Fecha}");
+                                }
+                            }
+                        }
+                    }
+
+                    // Obtener resultados del SP
+                    outResultCode = Convert.ToInt32(command.Parameters["@CodigoResultado"].Value);
+                    outMessage = command.Parameters["@MensajeResultado"].Value?.ToString() ?? "OK";
+                }
+            }
+            catch (SqlException ex)
+            {
+                outResultCode = ex.Number;
+                outMessage = $"Error de base de datos: {ex.Message}";
+                Debug.WriteLine($"[SQL ERROR] {ex}");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"StackTrace completo: {ex.StackTrace}");
+                if (ex.InnerException != null)
+                {
+                    Debug.WriteLine($"InnerException: {ex.InnerException}");
+                }
+            }
+
+            return outResultCode == 0 ? planilla : null;
+        }
+
+        // Método auxiliar para mapear días de la semana a índices
 
         public List<Employee> FiltrarEmpleados(string filtro, ref int outResultCode, ref string outResultDescription)
         {

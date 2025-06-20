@@ -12,12 +12,37 @@ namespace BaseDatos01_Tarea01_ListaEmpleados
         public static void RegisterRoutes(RouteCollection routes)
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
+            // Ruta para Planilla Mensual
+            routes.MapRoute(
+                  name: "Admin",
+                  url: "Admin/Index",
+                  defaults: new { controller = "Admin", action = "Index" }
+              );
+            routes.MapRoute(
+                name: "MainViewEmployee",
+                url: "Employee/MainViewEmployee",
+                defaults: new { controller = "Employee", action = "MainViewEmployee" }
+            );
+            routes.MapRoute(
+                name: "PlanillaSemanal",
+                url: "Employee/Semanal/{id}/{semanaId}",
+                defaults: new
+                {
+                    controller = "Employee",
+                    action = "Semanal",
+                    semanaId = UrlParameter.Optional
+                }
+            );
+
+            routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",
-                defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
+                defaults: new { controller = "Account", action = "Login", id = UrlParameter.Optional }
             );
         }
     }
 }
+
+

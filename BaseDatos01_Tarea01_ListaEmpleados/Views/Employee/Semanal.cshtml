@@ -1,8 +1,11 @@
-﻿@model BaseDatos01_Tarea01_ListaEmpleados.Models.PlanillaSem
+﻿@@model BaseDatos01_Tarea01_ListaEmpleados.Models.PlanillaSem
+@using BaseDatos01_Tarea01_ListaEmpleados.Models
 
 @{
-    var semanaActual = Model.Semanas.First();
     var diasSemana = new[] { "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo" };
+
+    // Para acceder a los tipos anidados más fácilmente
+    var semana = Model.Semana;
 }
 
 <div class="card">
@@ -27,19 +30,21 @@
         </div>
     </div>
 
-    <!-- Selector de semana -->
+    <!-- Información de la semana -->
     <div class="card-body py-2 bg-light">
         <div class="row align-items-center">
             <div class="col-md-8">
-                <select class="form-select form-select-sm" id="semanaSelect">
-                    @foreach (var semana in Model.Semanas)
+                <h5 class="mb-0">
+                    Semana del @Model.Semana.FechaInicio.ToString("dd/MM/yyyy") al @Model.Semana.FechaFin.ToString("dd/MM/yyyy")
+                    @if (Model.Semana.Cerrada)
                     {
-                        <option value="@semana.SemanaId">
-                            Semana del @semana.FechaInicio.ToString("dd/MM/yyyy") al @semana.FechaFin.ToString("dd/MM/yyyy")
-                            @(semana.Cerrada ? " (Cerrada)" : "")
-                        </option>
+                        <span class="badge bg-success ms-2">Cerrada</span>
                     }
-                </select>
+                    else
+                    {
+                        <span class="badge bg-warning text-dark ms-2">En Proceso</span>
+                    }
+                </h5>
             </div>
             <div class="col-md-4 text-end">
                 <span class="badge bg-info text-dark">
@@ -63,20 +68,19 @@
                     </tr>
                 </thead>
                 <tbody>
-
                     @for (int i = 0; i < 7; i++)
                     {
-                        var fecha = semanaActual.FechaInicio.AddDays(i);
-                        var tieneMovimientos = semanaActual.MovimientosPorDia[i].Count > 0;
+                        var fecha = Model.Semana.FechaInicio.AddDays(i);
+                        var tieneMovimientos = Model.Semana.MovimientosPorDia[i].Count > 0;
 
                         <tr>
                             <td>@diasSemana[i]</td>
                             <td>@fecha.ToString("dd/MM/yyyy")</td>
-                            <td class="text-end @(semanaActual.HorasPorDia[i] == 0 ? "text-muted" : "fw-bold")">
-                                @semanaActual.HorasPorDia[i]
+                            <td class="text-end @(Model.Semana.HorasPorDia[i] == 0 ? "text-muted" : "fw-bold")">
+                                @Model.Semana.HorasPorDia[i]
                             </td>
                             <td class="text-end">
-                                @((semanaActual.HorasPorDia[i] * Model.SalarioHora).ToString("C"))
+                                @((Model.Semana.HorasPorDia[i] * Model.SalarioHora).ToString("C"))
                             </td>
                             <td>
                                 @if (tieneMovimientos)
@@ -84,7 +88,7 @@
                                     <button class="btn btn-sm btn-outline-primary detalles-movimiento"
                                             data-dia="@i"
                                             data-fecha="@fecha.ToString("dd/MM/yyyy")">
-                                        <i class="bi bi-list-ul"></i> (@semanaActual.MovimientosPorDia[i].Count)
+                                        <i class="bi bi-list-ul"></i> (@Model.Semana.MovimientosPorDia[i].Count)
                                     </button>
                                 }
                                 else
@@ -105,58 +109,24 @@
             <div class="col-md-4 mb-3">
                 <div class="p-3 border border-success rounded">
                     <h5 class="text-success">Salario Bruto</h5>
-                    <h3 class="text-success">@semanaActual.SalarioBruto.ToString("C")</h3>
-                    <small class="text-muted">@semanaActual.HorasTotales horas trabajadas</small>
+                    <h3 class="text-success">@Model.Semana.SalarioBruto.ToString("C")</h3>
+                    <small class="text-muted">@Model.Semana.HorasTotales horas trabajadas</small>
                 </div>
             </div>
             <div class="col-md-4 mb-3">
                 <div class="p-3 border border-danger rounded">
                     <h5 class="text-danger">Descuentos</h5>
-                    <h3 class="text-danger">@semanaActual.Descuentos.ToString("C")</h3>
-                    <small class="text-muted">@semanaActual.MotivoDescuento</small>
+                    <h3 class="text-danger">@Model.Semana.Descuentos.ToString("C")</h3>
+                    <small class="text-muted">@Model.Semana.MotivoDescuento</small>
                 </div>
             </div>
             <div class="col-md-4 mb-3">
                 <div class="p-3 border border-primary rounded">
                     <h5 class="text-primary">Salario Neto</h5>
-                    <h3 class="text-primary">@semanaActual.SalarioNeto.ToString("C")</h3>
+                    <h3 class="text-primary">@Model.Semana.SalarioNeto.ToString("C")</h3>
                     <small class="text-muted">Líquido a pagar</small>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <!-- Historial -->
-    <div class="card-footer">
-        <h5 class="mb-3"><i class="bi bi-clock-history"></i> Historial Reciente</h5>
-        <div class="table-responsive">
-            <table class="table table-sm">
-                <thead>
-                    <tr>
-                        <th>Semana</th>
-                        <th class="text-end">Horas</th>
-                        <th class="text-end">Bruto</th>
-                        <th class="text-end">Neto</th>
-                        <th width="50px"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var semana in Model.Semanas)
-                    {
-                        <tr>
-                            <td>@semana.FechaInicio.ToString("dd/MM") - @semana.FechaFin.ToString("dd/MM")</td>
-                            <td class="text-end">@semana.HorasTotales</td>
-                            <td class="text-end">@semana.SalarioBruto.ToString("C")</td>
-                            <td class="text-end">@semana.SalarioNeto.ToString("C")</td>
-                            <td class="text-end">
-                                <button class="btn btn-sm btn-outline-secondary">
-                                    <i class="bi bi-eye"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
         </div>
     </div>
 </div>
@@ -201,7 +171,7 @@
             @for (int i = 0; i < 7; i++)
             {
                 @Html.Raw($"{i}: [")
-                @foreach (var mov in semanaActual.MovimientosPorDia[i])
+                foreach (var mov in Model.Semana.MovimientosPorDia[i])
                 {
                     @Html.Raw($"{{ tipoMovimiento: '{mov.TipoMovimiento}', categoria: '{mov.Categoria}', horas: {mov.Horas}, monto: {mov.Monto}, descripcion: '{mov.Descripcion}' }},")
                 }
@@ -235,13 +205,5 @@
                 new bootstrap.Modal(document.getElementById('movimientosModal')).show();
             });
         });
-
-    // Manejar cambio de semana
-    document.getElementById('semanaSelect').addEventListener('change', function() {
-    const semanaId = this.value;
-    // Aquí deberías implementar la lógica para cargar los datos de la semana seleccionada
-    // Puede ser mediante una llamada AJAX o recargando la página con el parámetro
-    window.location.href = `?semanaId=${semanaId}`;
-    });
     </script>
-}
+}}

@@ -36,18 +36,6 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Models
         public decimal TotalHorasExtras { get; set; }
     }
 
-    public class SemanaPlanilla
-    {
-        public int NumeroSemana { get; set; }
-        public DateTime FechaInicio { get; set; }
-        public DateTime FechaFin { get; set; }
-        public int DiasTrabajados { get; set; }
-        public decimal HorasNormales { get; set; }
-        public decimal HorasExtras { get; set; }
-        public decimal SalarioBruto { get; set; }
-        public decimal SalarioNeto { get; set; }
-    }
-
     public class Deduccion
     {
         public string Tipo { get; set; }          // Ej: "Seguro Social", "Impuesto Renta"
