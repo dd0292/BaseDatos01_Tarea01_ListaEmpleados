@@ -143,6 +143,7 @@
     <Compile Include="Models\MovimientoViewModel.cs" />
     <Compile Include="Models\Planillamen.cs" />
     <Compile Include="Models\PlanillaSem.cs" />
+    <Compile Include="Models\SemanaPlanillaResumen.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

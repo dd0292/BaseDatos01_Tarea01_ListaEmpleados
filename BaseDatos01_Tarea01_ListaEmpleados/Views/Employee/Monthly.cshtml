@@ -1,20 +1,21 @@
-﻿@model PlanillaMensualViewModel
+﻿@model BaseDatos01_Tarea01_ListaEmpleados.Models.PlanillaMensualViewModel
+@using System.Globalization
 
 <div class="card">
-    <!-- Cabecera con información del empleado -->
+    <!-- Cabecera del Empleado -->
     <div class="card-header bg-primary text-white">
         <div class="d-flex justify-content-between align-items-center">
             <div>
                 <h3 class="mb-0">@Model.NombreCompleto</h3>
                 <div class="d-flex gap-4 mt-2">
                     <span><i class="bi bi-briefcase"></i> @Model.Puesto</span>
-                    <span><i class="bi bi-cash-coin"></i> Salario Base: @Model.SalarioBase.ToString("C")</span>
+                    <span><i class="bi bi-cash-coin"></i> Salario Base: @Model.SalarioBase.ToString("C", new CultureInfo("es-CR"))</span>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Información del mes -->
+    <!-- Información del Mes -->
     <div class="card-body py-2 bg-light">
         <div class="row align-items-center">
             <div class="col-md-12">
@@ -30,14 +31,13 @@
                     }
                 </h5>
                 <small class="text-muted">
-                    Periodo del @Model.MesActual.FechaInicio.ToString("dd/MM") al @Model.MesActual.FechaFin.ToString("dd/MM")
-                    (primer al último jueves)
+                    Del @Model.MesActual.FechaInicio.ToString("dd/MM/yyyy") al @Model.MesActual.FechaFin.ToString("dd/MM/yyyy")
                 </small>
             </div>
         </div>
     </div>
 
-    <!-- Desglose por semanas -->
+    <!-- Semanas (Usando SemanaPlanillaResumen) -->
     <div class="card-body">
         <h5 class="mb-3"><i class="bi bi-calendar-week"></i> Desglose por semanas</h5>
         <div class="table-responsive">
@@ -45,23 +45,35 @@
                 <thead class="table-light">
                     <tr>
                         <th>Semana</th>
-                        <th class="text-end">Días trabajados</th>
-                        <th class="text-end">Horas normales</th>
-                        <th class="text-end">Horas extras</th>
-                        <th class="text-end">Salario bruto</th>
-                        <th class="text-end">Salario neto</th>
+                        <th class="text-end">Días</th>
+                        <th class="text-end">Horas Normales</th>
+                        <th class="text-end">Horas Extras</th>
+                        <th class="text-end">Bruto</th>
+                        <th class="text-end">Neto</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var semana in Model.Semanas)
+                    @if (Model.Semanas != null && Model.Semanas.Any())
+                    {
+                        foreach (var semana in Model.Semanas)
+                        {
+                            <tr>
+                                <td>
+                                    Semana @semana.NumeroSemana<br>
+                                    <small class="text-muted">@semana.FechaInicio.ToString("dd/MM")-@semana.FechaFin.ToString("dd/MM")</small>
+                                </td>
+                                <td class="text-end">@semana.DiasTrabajados</td>
+                                <td class="text-end">@semana.HorasNormales.ToString("0.00")</td>
+                                <td class="text-end">@semana.HorasExtras.ToString("0.00")</td>
+                                <td class="text-end">@semana.SalarioBruto.ToString("C", new CultureInfo("es-CR"))</td>
+                                <td class="text-end">@semana.SalarioNeto.ToString("C", new CultureInfo("es-CR"))</td>
+                            </tr>
+                        }
+                    }
+                    else
                     {
                         <tr>
-                            <td>Semana @semana.NumeroSemana (@semana.FechaInicio.ToString("dd/MM") - @semana.FechaFin.ToString("dd/MM"))</td>
-                            <td class="text-end">@semana.DiasTrabajados</td>
-                            <td class="text-end">@semana.HorasNormales</td>
-                            <td class="text-end">@semana.HorasExtras</td>
-                            <td class="text-end">@semana.SalarioBruto.ToString("C")</td>
-                            <td class="text-end">@semana.SalarioNeto.ToString("C")</td>
+                            <td colspan="6" class="text-center text-muted py-3">No hay registros de semanas</td>
                         </tr>
                     }
                 </tbody>
@@ -69,39 +81,46 @@
         </div>
     </div>
 
-    <!-- Resumen financiero mensual -->
+    <!-- Resumen Financiero -->
     <div class="card-body">
         <div class="row">
+            <!-- Salario Bruto -->
             <div class="col-md-4 mb-3">
-                <div class="p-3 border border-success rounded">
+                <div class="p-3 border border-success rounded h-100">
                     <h5 class="text-success"><i class="bi bi-cash-stack"></i> Salario Bruto</h5>
-                    <h3 class="text-success">@Model.MesActual.SalarioBruto.ToString("C")</h3>
+                    <h3 class="text-success">@Model.MesActual.SalarioBruto.ToString("C", new CultureInfo("es-CR"))</h3>
                     <small class="text-muted">
-                        @Model.MesActual.TotalHorasNormales horas normales +
-                        @Model.MesActual.TotalHorasExtras horas extras
+                        @Model.MesActual.TotalHorasNormales.ToString("0.00") horas normales<br>
+                        + @Model.MesActual.TotalHorasExtras.ToString("0.00") horas extras
                     </small>
                 </div>
             </div>
+
+            <!-- Deducciones -->
             <div class="col-md-4 mb-3">
-                <div class="p-3 border border-danger rounded">
+                <div class="p-3 border border-danger rounded h-100">
                     <h5 class="text-danger"><i class="bi bi-receipt-cutoff"></i> Deducciones</h5>
-                    <h3 class="text-danger">@Model.MesActual.TotalDeducciones.ToString("C")</h3>
-                    <small class="text-muted">@Model.Deducciones.Count deducciones aplicadas</small>
+                    <h3 class="text-danger">@Model.MesActual.TotalDeducciones.ToString("C", new CultureInfo("es-CR"))</h3>
+                    <small class="text-muted">
+                        @(Model.Deducciones?.Count ?? 0) deducciones aplicadas
+                    </small>
                 </div>
             </div>
+
+            <!-- Salario Neto -->
             <div class="col-md-4 mb-3">
-                <div class="p-3 border border-primary rounded">
+                <div class="p-3 border border-primary rounded h-100">
                     <h5 class="text-primary"><i class="bi bi-wallet2"></i> Salario Neto</h5>
-                    <h3 class="text-primary">@Model.MesActual.SalarioNeto.ToString("C")</h3>
-                    <small class="text-muted">Base para cálculos legales</small>
+                    <h3 class="text-primary">@Model.MesActual.SalarioNeto.ToString("C", new CultureInfo("es-CR"))</h3>
+                    <small class="text-muted">Total líquido</small>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Deducciones detalladas -->
+    <!-- Deducciones Detalladas -->
     <div class="card-body">
-        <h5 class="mb-3"><i class="bi bi-receipt"></i> Deducciones Mensuales</h5>
+        <h5 class="mb-3"><i class="bi bi-receipt"></i> Detalle de Deducciones</h5>
         <div class="table-responsive">
             <table class="table table-sm">
                 <thead>
@@ -109,26 +128,35 @@
                         <th>Tipo</th>
                         <th>Descripción</th>
                         <th class="text-end">Monto</th>
-                        <th>Obligatorio</th>
+                        <th>Obligatoriedad</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var deduccion in Model.Deducciones)
+                    @if (Model.Deducciones != null && Model.Deducciones.Any())
+                    {
+                        foreach (var deduccion in Model.Deducciones)
+                        {
+                            <tr>
+                                <td>@deduccion.Tipo</td>
+                                <td>@(string.IsNullOrEmpty(deduccion.Descripcion) ? "N/A" : deduccion.Descripcion)</td>
+                                <td class="text-end">@deduccion.Monto.ToString("C", new CultureInfo("es-CR"))</td>
+                                <td>
+                                    @if (deduccion.Obligatorio)
+                                    {
+                                        <span class="badge bg-danger">Obligatorio</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Voluntario</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
                     {
                         <tr>
-                            <td>@deduccion.Tipo</td>
-                            <td>@deduccion.Descripcion</td>
-                            <td class="text-end">@deduccion.Monto.ToString("C")</td>
-                            <td>
-                                @if (deduccion.Obligatorio)
-                                {
-                                    <span class="badge bg-danger">Sí</span>
-                                }
-                                else
-                                {
-                                    <span class="badge bg-secondary">No</span>
-                                }
-                            </td>
+                            <td colspan="4" class="text-center text-muted py-3">No hay deducciones registradas</td>
                         </tr>
                     }
                 </tbody>

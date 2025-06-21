@@ -1,4 +1,5 @@
 ﻿using BaseDatos01_Tarea01_ListaEmpleados.Models;
+using BaseDatos01_Tarea01_ListaEmpleados.Models.ViewModels;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -102,7 +103,10 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.DAL // Data Access Layer
                                 // Asignación optimizada a tu array de 7 días
                                 int diaSemana = (int)movimiento.Fecha.DayOfWeek;
                                 int indexDia = (diaSemana + 6) % 7; // Ajuste para Lunes=0, Domingo=6
-
+                                planilla.Semana = new SemanaPlanilla()
+                                {
+                                    MovimientosPorDia = new List<MovimientoDia>[7]
+                                };
                                 if (indexDia >= 0 && indexDia < 7)
                                 {
                                     planilla.Semana.MovimientosPorDia[indexDia].Add(movimiento);
@@ -138,7 +142,98 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.DAL // Data Access Layer
             return outResultCode == 0 ? planilla : null;
         }
 
-        // Método auxiliar para mapear días de la semana a índices
+        public PlanillaMensualViewModel ObtenerPlanillaMensual(int idEmpleado, int? idMes)
+        {
+            var model = new PlanillaMensualViewModel();
+            int outCode = 0;
+            string outMessage = "";
+
+            using (var connection = new SqlConnection(conString))
+            using (var command = new SqlCommand("sp_ObtenerPlanillaMensualEmpleado", connection))
+            {
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@IdEmpleado", idEmpleado);
+                command.Parameters.AddWithValue("@IdMes", idMes ?? (object)DBNull.Value);
+                command.Parameters.Add(new SqlParameter("@CodigoResultado", SqlDbType.Int) { Direction = ParameterDirection.Output });
+                command.Parameters.Add(new SqlParameter("@MensajeResultado", SqlDbType.NVarChar, 500) { Direction = ParameterDirection.Output });
+
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                {
+                    // 1. Datos del empleado
+                    if (reader.Read())
+                    {
+                        model.NombreCompleto = reader["NombreCompleto"].ToString();
+                        model.Puesto = reader["Puesto"].ToString();
+                        model.SalarioBase = Convert.ToDecimal(reader["SalarioBase"]);
+                    }
+
+                    // 2. Datos del mes
+                    if (reader.NextResult() && reader.Read())
+                    {
+                        model.MesActual = new MesPlanilla
+                        {
+                            NombreMes = reader["NombreMes"].ToString(),
+                            Anio = Convert.ToInt32(reader["Anio"]),
+                            FechaInicio = Convert.ToDateTime(reader["FechaInicio"]),
+                            FechaFin = Convert.ToDateTime(reader["FechaFin"]),
+                            Cerrado = Convert.ToBoolean(reader["Cerrado"]),
+                            SalarioBruto = Convert.ToDecimal(reader["SalarioBruto"]),
+                            TotalDeducciones = Convert.ToDecimal(reader["TotalDeducciones"]),
+                            SalarioNeto = Convert.ToDecimal(reader["SalarioNeto"]),
+                            TotalHorasNormales = Convert.ToDecimal(reader["TotalHorasNormales"]),
+                            TotalHorasExtras = Convert.ToDecimal(reader["TotalHorasExtras"])
+                        };
+                    }
+
+                    // 3. Semanas (mapeo a SemanaPlanillaResumen)
+                    if (reader.NextResult())
+                    {
+                        model.Semanas = new List<SemanaPlanillaResumen>();
+                        while (reader.Read())
+                        {
+                            model.Semanas.Add(new SemanaPlanillaResumen
+                            {
+                                NumeroSemana = Convert.ToInt32(reader["NumeroSemana"]),
+                                FechaInicio = Convert.ToDateTime(reader["FechaInicio"]),
+                                FechaFin = Convert.ToDateTime(reader["FechaFin"]),
+                                DiasTrabajados = Convert.ToInt32(reader["DiasTrabajados"]),
+                                HorasNormales = Convert.ToDecimal(reader["HorasNormales"]),
+                                HorasExtras = Convert.ToDecimal(reader["HorasExtras"]),
+                                SalarioBruto = Convert.ToDecimal(reader["SalarioBruto"]),
+                                SalarioNeto = Convert.ToDecimal(reader["SalarioNeto"])
+                            });
+                        }
+                    }
+
+                    // 4. Deducciones
+                    if (reader.NextResult())
+                    {
+                        model.Deducciones = new List<Deduccion>();
+                        while (reader.Read())
+                        {
+                            model.Deducciones.Add(new Deduccion
+                            {
+                                Tipo = reader["Tipo"].ToString(),
+                                Descripcion = reader["Descripcion"].ToString(),
+                                Monto = Convert.ToDecimal(reader["Monto"]),
+                                Obligatorio = Convert.ToBoolean(reader["Obligatorio"])
+                            });
+                        }
+                    }
+                }
+
+                outCode = Convert.ToInt32(command.Parameters["@CodigoResultado"].Value);
+                outMessage = command.Parameters["@MensajeResultado"].Value?.ToString();
+
+                if (outCode != 0)
+                {
+                    throw new Exception(outMessage);
+                }
+            }
+
+            return model;
+        }
 
         public List<Employee> FiltrarEmpleados(string filtro, ref int outResultCode, ref string outResultDescription)
         {

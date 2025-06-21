@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BaseDatos01_Tarea01_ListaEmpleados.Models.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -16,7 +17,7 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Models
         public MesPlanilla MesActual { get; set; }
 
         // Semanas que componen este mes
-        public List<SemanaPlanilla> Semanas { get; set; }
+        public List<SemanaPlanillaResumen> Semanas { get; set; }
 
         // Deducciones aplicadas
         public List<Deduccion> Deducciones { get; set; }

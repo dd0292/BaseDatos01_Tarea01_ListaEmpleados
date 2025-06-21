@@ -58,7 +58,6 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
         }
 
 
-        [Authorize]
             [HttpGet]
         public ActionResult Semanal(int id, int? semanaId)
         {
@@ -98,7 +97,20 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
 
             // Cálculo adicional de horas por día (opcional)
             CalcularHorasPorDia(planilla.Semana);
-
+            //devbug
+            Debug.WriteLine($"Estado final - Código: {outCode}, Mensaje: {outMessage}");
+            Debug.WriteLine($"Planilla nula? {planilla == null}");
+            Debug.WriteLine($"Semana nula? {planilla?.Semana == null}");
+            Debug.WriteLine($"MovimientosPorDia nulo? {planilla?.Semana?.MovimientosPorDia == null}");
+            
+            if (planilla?.Semana?.MovimientosPorDia != null)
+            {
+                for (int i = 0; i < 7; i++)
+                {
+                    Debug.WriteLine($"Día {i}: {planilla.Semana.MovimientosPorDia[i]?.Count ?? 0} movimientos");
+                }
+            }
+            //
             return View(planilla);
         }
 
@@ -117,36 +129,53 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
             ViewBag.ErrorMessage = TempData["Error"]?.ToString() ?? "Error desconocido";
             return View();
         }
-        /* [Authorize]
-     /*    public ActionResult Monthly(int id) // Recibe el ID del empleado
-         {
-             // Lógica para cargar datos mensuales
-             int outCode = 0;
-             string sss = "";
-             var planillaMensual = _employeeDAL.ObtenerPlanillaMensual(id, ref outCode, ref sss);
+        public ActionResult Mensual(int id, int? mesId)
+        {
+            try
+            {
+                // 1. Validar parámetro id
+                if (id <= 0)
+                {
+                    TempData["Error"] = "ID de empleado inválido";
+                    return RedirectToAction("Index");
+                }
 
-             if (planillaMensual == null)
-             {
-                 TempData["Error"] = "No se encontró la planilla mensual";
-                 return RedirectToAction("Error");
-             }
+                // 2. Obtener datos
+                var model = _employeeDAL.ObtenerPlanillaMensual(id, mesId);
 
-             return View(planillaMensual); // Pasa los datos a Monthly.cshtml
-         }
-         public ActionResult Index(string filtro = "")
-         {
-             int outCode = 0;
-             /*
-             var employeeList = _employeeDAL.FiltrarEmpleados(filtro, ref outCode, ref sss);
+                // 3. Verificar si hay datos
+                if (model == null)
+                {
+                    TempData["Error"] = "No se encontró la planilla solicitada";
+                    return RedirectToAction("Index");
+                }
 
-             if (employeeList.Count == 0)
-             {
-                 TempData["InfoMessage"] = "No hay empleados registrados actualmente en la Base de Datos con dicha informacion...";
-             }
+                // 4. Retornar vista (forzando el nombre "Monthly")
+                return View("Monthly", model);
+            }
+            catch (Exception ex)
+            {
+                // Log del error (opcional)
+                System.Diagnostics.Debug.WriteLine($"Error en Mensual: {ex.Message}");
+
+                TempData["Error"] = "Ocurrió un error al cargar la planilla";
+                return RedirectToAction("Index");
+            }
+        }
+        /* public ActionResult Index(string filtro = "")
+          {
+              int outCode = 0;
+              /*
+              var employeeList = _employeeDAL.FiltrarEmpleados(filtro, ref outCode, ref sss);
+
+              if (employeeList.Count == 0)
+              {
+                  TempData["InfoMessage"] = "No hay empleados registrados actualmente en la Base de Datos con dicha informacion...";
+              }
 
 
-             return View();
-         }*/
+              return View();
+          }*/
         [HttpGet]
         public ActionResult Create()
         {
