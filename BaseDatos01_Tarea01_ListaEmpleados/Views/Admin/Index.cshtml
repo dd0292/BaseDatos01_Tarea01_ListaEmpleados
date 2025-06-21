@@ -59,7 +59,7 @@ else if (TempData["ErrorMessage"] != null)
             <td>@Html.DisplayFor(modelItem => item.Puesto.Nombre)</td>
             <td>@Html.ActionLink("Editar", "Edit", "Admin", new { id = item.Id }, new { @class = "btn btn-success btn-sm" })</td>
             <td>@Html.ActionLink("Borrar", "Delete", "Admin", new { id = item.Id }, new { @class = "btn btn-danger btn-sm" })</td>
-            <td>@Html.ActionLink("Movimientos", "Index", "Movement", new { employee = item }, new { @class = "btn btn-secondary btn-sm" })</td>
+            <td>@Html.ActionLink("-->", "impersonateEmplyee", "Admin", new { id = item.Id }, new { @class = "btn btn-secondary btn-sm" })</td>
         </tr>
     }
 </table>

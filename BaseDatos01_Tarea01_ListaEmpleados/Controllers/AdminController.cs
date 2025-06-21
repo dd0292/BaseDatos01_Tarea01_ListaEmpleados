@@ -146,7 +146,6 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
             return RedirectToAction("Index");
         }
 
-
         // Delete 
         [HttpGet]
         public ActionResult Delete(int id)
@@ -233,6 +232,13 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
             return View();
         }
 
-
+        // Impersonate Emplyee
+        [HttpGet]
+        public ActionResult impersonateEmplyee(int Id)
+        {
+            Session["CurrentEmployeeId"] = Id;
+            _employeeDAL.RegistrarEvento(12, $"empleadoId : {Id}, ", ref outResultCode, ref outResultDescription);
+            return RedirectToAction("MainViewEmployee", "Employee");
+        }
     }
 }

@@ -22,7 +22,7 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Models
             PuestosOriginal = employee.Puesto.Nombre;
             DepartamentosOriginal = employee.Departamento.Nombre;  
 
-            EstadoOriginalJson = EstadoOriginalJson = JsonConvert.SerializeObject(employee);
+            EstadoOriginalJson = JsonConvert.SerializeObject(employee);
 
             this.TiposDocumento = TiposDocumento;
             this.Puestos = Puestos;

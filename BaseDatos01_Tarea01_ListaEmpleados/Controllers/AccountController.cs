@@ -27,6 +27,7 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
 
             if (userData.Rows.Count > 0 && Convert.ToInt32(userData.Rows[0]["ResultCode"]) == 1)
             {
+
                 // Guardar datos en sesión (como en tu WebForm)
                 Session["CurrentUserId"] = userData.Rows[0]["UserId"];
                 Session["CurrentEmployeeId"] = userData.Rows[0]["EmployeeId"];
@@ -35,9 +36,13 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
                 // Redirigir según UserType
                 int userType = Convert.ToInt32(userData.Rows[0]["UserType"]);
                 if (userType == 1)
+                {
                     return RedirectToAction("Index", "Admin");
+                }
                 else
+                {
                     return RedirectToAction("MainViewEmployee", "Employee");
+                }
             }
 
             ViewBag.Error = "Credenciales inválidas"; // Mensaje de error

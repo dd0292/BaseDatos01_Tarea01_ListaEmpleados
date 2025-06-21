@@ -46,7 +46,7 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
             Employee empleado = _employeeDAL.ObtenerEmpleadoPorId(employeeId, ref resultCode, ref resultDescription);
 
             // 4. Verificación de pertenencia
-            if (empleado == null || empleado.Usuario == null || empleado.Usuario.Id != userId)
+            if (empleado == null || empleado.Usuario == null)
             {
                 System.Diagnostics.Debug.WriteLine($"Inconsistencia: UserId={userId} vs EmpleadoUserId={empleado?.Usuario?.Id}");
                 FormsAuthentication.SignOut();

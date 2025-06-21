@@ -23,18 +23,19 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.DAL // Data Access Layer
         string conString = ConfigurationManager.ConnectionStrings["adoConnectionString"].ToString();
         DatabaseHelper dbHelper;
 
-        // string UserName = HttpContext.Current.Session["Username"].ToString();
-        // string UserId = HttpContext.Current.Session["UserId"].ToString();
-
-        int UserId = 1;
+        int UserId;
         string ClientIp = "192.168.18.7";
 
         public _DAL()
         {
             ClientIp = (context.Request.ServerVariables["HTTP_X_FORWARDED_FOR"] ?? context.Request.ServerVariables["REMOTE_ADDR"]).Split(',')[0].Trim();
+            UserId = Convert.ToInt32(HttpContext.Current.Session["CurrentUserId"]);
             dbHelper = new DatabaseHelper(conString);
         }
 
+        public int getUseId() { 
+            return this.UserId;
+        }
         //-----------------------------------------------------------------------------------------
 
         // Modifica solo el método ObtenerPlanillaSemanal así:
@@ -713,8 +714,8 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.DAL // Data Access Layer
                 {
                     new SqlParameter("@inIdUsuario", SqlDbType.Int) {Value = UserId, Direction = ParameterDirection.Input},
                     new SqlParameter("@inIdTipoEvento", SqlDbType.Int) {Value = IdTipoEvento, Direction = ParameterDirection.Input},
-                    new SqlParameter("@inIPUser", SqlDbType.Int) {Value = ClientIp, Direction = ParameterDirection.Input},
-                    new SqlParameter("@inDescripcion", SqlDbType.Int) {Value = info, Direction = ParameterDirection.Input},
+                    new SqlParameter("@inIPUser", SqlDbType.VarChar,64) {Value = ClientIp, Direction = ParameterDirection.Input},
+                    new SqlParameter("@inDescripcion", SqlDbType.VarChar) {Value = info, Direction = ParameterDirection.Input},
                 };
 
                 int rowsAffected = dbHelper.ExecuteNonQueryStoredProcedure(
