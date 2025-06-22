@@ -104,15 +104,16 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.DAL // Data Access Layer
 
                                 // Asignación optimizada a tu array de 7 días
                                 int diaSemana = (int)movimiento.Fecha.DayOfWeek;
-                                int indexDia = (diaSemana + 6) % 7; // Ajuste para Lunes=0, Domingo=6
-                                planilla.Semana = new SemanaPlanilla()
-                                {
-                                    MovimientosPorDia = new List<MovimientoDia>[7]
-                                };
+                                int indexDia = diaSemana == 0 ? 6 : diaSemana - 1; // Domingo=6, Lunes=0
+
                                 if (indexDia >= 0 && indexDia < 7)
                                 {
+                                    if (planilla.Semana.MovimientosPorDia[indexDia] == null)
+                                        planilla.Semana.MovimientosPorDia[indexDia] = new List<MovimientoDia>();
+
                                     planilla.Semana.MovimientosPorDia[indexDia].Add(movimiento);
                                 }
+
                                 else
                                 {
                                     Debug.WriteLine($"[WARNING] Índice de día inválido: {indexDia} para fecha {movimiento.Fecha}");
