@@ -11,6 +11,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Remoting.Messaging;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 
@@ -669,40 +670,41 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.DAL // Data Access Layer
             return outResultCode;
         }
 
-        public int CargarOperacionesXML(string xml, ref int outResultCode, ref string outResultDescription)
+        public async Task<(int ResultCode, string ResultDescription)> CargarOperacionesXMLAsync(string xml)
         {
-
             try
             {
                 var parameters = new SqlParameter[]
                 {
-                    new SqlParameter("@XmlOperacion", SqlDbType.Xml) {Value = xml, Direction = ParameterDirection.Input},
-                    new SqlParameter("@inIdUsuario", SqlDbType.Int) { Value = UserId,  Direction = ParameterDirection.Input },
-                    new SqlParameter("@inUserIP", SqlDbType.VarChar, 64) { Value = ClientIp,  Direction = ParameterDirection.Input }
+                    new SqlParameter("@XmlOperacion", SqlDbType.Xml) { Value = xml },
+                    new SqlParameter("@inIdUsuario", SqlDbType.Int) { Value = UserId },
+                    new SqlParameter("@inUserIP", SqlDbType.VarChar, 64) { Value = ClientIp },
+
+                    new SqlParameter("@outResultCode", SqlDbType.Int) { Direction = ParameterDirection.Output },
+                    new SqlParameter("@outResultDescription", SqlDbType.VarChar, 529) { Direction = ParameterDirection.Output }
                 };
 
-                int rowsAffected = dbHelper.ExecuteNonQueryStoredProcedure(
+                var result = await dbHelper.ExecuteNonQueryStoredProcedureAsync(
                     "sp_CargarOperacionesXML",
                     parameters,
-                    ref outResultCode,
-                    ref outResultDescription);
+                    180); 
 
-                if (outResultCode == 0)
+                if (result.outResultCode == 0)
                 {
-                    Console.WriteLine($" CargarOperacionesXM correctamente. Filas afectadas: {rowsAffected}");
+                    Console.WriteLine($"CargarOperacionesXML completado");
                 }
                 else
                 {
-                    Console.WriteLine($"Error al CargarOperacionesXM: {outResultDescription}");
+                    Console.WriteLine($"Error al cargar operaciones: {result.outResultDescription}");
                 }
+
+                return (result.outResultCode, result.outResultDescription);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Excepción al CargarOperacionesXM: {ex.Message}");
-
+                Console.WriteLine($"Excepción en CargarOperacionesXML: {ex.Message}");
+                return (-1, ex.Message);
             }
-
-            return outResultCode;
         }
 
         public int RegistrarEvento(int IdTipoEvento, string info, ref int outResultCode, ref string outResultDescription)

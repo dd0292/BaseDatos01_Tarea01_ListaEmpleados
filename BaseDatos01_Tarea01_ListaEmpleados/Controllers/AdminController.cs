@@ -182,7 +182,7 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
         }
 
         [HttpPost]
-        public ActionResult XML_Fuctions(HttpPostedFileBase xmlCatalogos, HttpPostedFileBase xmlOperaciones)
+        public async Task<ActionResult> XML_Fuctions(HttpPostedFileBase xmlCatalogos, HttpPostedFileBase xmlOperaciones)
         {
             if (xmlCatalogos == null)
             {
@@ -214,7 +214,11 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
                     {
                         xmlOperacionContent = reader.ReadToEnd();
                     }
-                    _employeeDAL.CargarOperacionesXML(xmlOperacionContent, ref outResultCode, ref outResultDescription);
+
+                    var result = await _employeeDAL.CargarOperacionesXMLAsync(xmlOperacionContent);
+                    outResultCode = result.ResultCode;
+                    outResultDescription = result.ResultDescription;
+
                     if (outResultCode != 0)
                     {
                         TempData["ErrorMessage"] = $"[ERROR OPERACIONES {outResultCode}] {outResultDescription}";

@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Runtime.Remoting.Messaging;
+using System.Threading.Tasks;
 using System.Web;
 
 namespace BaseDatos01_Tarea01_ListaEmpleados.DAL
@@ -139,6 +140,35 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.DAL
                 outResultCode = -1;
                 outResultDescription = $"General Error: {ex.Message}";
                 throw new ApplicationException(outResultDescription, ex);
+            }
+        }
+
+        public async Task<(int outResultCode, string outResultDescription)> ExecuteNonQueryStoredProcedureAsync(
+            string procedureName,
+            SqlParameter[] parameters,
+            int commandTimeout)
+        {
+            try
+            {
+                using (var connection = new SqlConnection(_connectionString))
+                using (var command = new SqlCommand(procedureName, connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.CommandTimeout = commandTimeout;
+                    command.Parameters.AddRange(parameters);
+
+                    await connection.OpenAsync();
+                    int rowsAffected = await command.ExecuteNonQueryAsync();
+
+                    int outResultCode = (int)command.Parameters["@outResultCode"].Value;
+                    string outResultDescription = command.Parameters["@outResultDescription"].Value?.ToString();
+
+                    return (outResultCode, outResultDescription);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw; 
             }
         }
 
