@@ -150,7 +150,10 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
                     return RedirectToAction("Index");
                 }
 
-                // 4. Retornar vista (forzando el nombre "Monthly")
+                // 4. Retornar vista (forzando el nombre "Monthly
+                System.Diagnostics.Debug.WriteLine($"SalarioBruto: {model.MesActual.SalarioBruto}");
+                System.Diagnostics.Debug.WriteLine($"TotalDeducciones: {model.MesActual.TotalDeducciones}");
+                System.Diagnostics.Debug.WriteLine($"SalarioNeto: {model.MesActual.SalarioNeto}");
                 return View("Monthly", model);
             }
             catch (Exception ex)
