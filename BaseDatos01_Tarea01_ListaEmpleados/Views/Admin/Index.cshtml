@@ -6,6 +6,10 @@
 
 <h2>Lista de Empleados</h2>
 
+<a href="@Url.Action("Login", "Account")" class="btn btn-danger float-start">
+    <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+</a>
+
 @if (TempData["InfoMessage"] != null)
 {
     <div class="alert  alert-info">
