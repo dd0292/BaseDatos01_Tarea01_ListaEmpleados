@@ -168,7 +168,8 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.DAL // Data Access Layer
                     {
                         model.NombreCompleto = reader["NombreCompleto"].ToString();
                         model.Puesto = reader["Puesto"].ToString();
-                        model.SalarioBase = Convert.ToDecimal(reader["SalarioBase"]);
+                        decimal salarioXHora = Convert.ToDecimal(reader["SalarioXHora"]);
+                        model.SalarioBase = salarioXHora * 160; 
                     }
 
                     // 2. Datos del mes

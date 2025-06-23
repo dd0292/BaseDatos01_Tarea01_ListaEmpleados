@@ -129,8 +129,9 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
             ViewBag.ErrorMessage = TempData["Error"]?.ToString() ?? "Error desconocido";
             return View();
         }
-        public ActionResult Mensual(int id, int? mesId)
+        public ActionResult Monthly(int id, int? mesId)
         {
+            System.Diagnostics.Debug.WriteLine("### DEBUG ### ¿Entró al método?"); 
             try
             {
                 // 1. Validar parámetro id
@@ -149,12 +150,11 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
                     TempData["Error"] = "No se encontró la planilla solicitada";
                     return RedirectToAction("Index");
                 }
-
                 // 4. Retornar vista (forzando el nombre "Monthly
                 System.Diagnostics.Debug.WriteLine($"SalarioBruto: {model.MesActual.SalarioBruto}");
                 System.Diagnostics.Debug.WriteLine($"TotalDeducciones: {model.MesActual.TotalDeducciones}");
                 System.Diagnostics.Debug.WriteLine($"SalarioNeto: {model.MesActual.SalarioNeto}");
-                return View("Monthly", model);
+                return View("Monthly",model);
             }
             catch (Exception ex)
             {

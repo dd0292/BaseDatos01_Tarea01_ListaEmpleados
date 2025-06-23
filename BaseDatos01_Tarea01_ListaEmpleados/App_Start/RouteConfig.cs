@@ -39,13 +39,18 @@ namespace BaseDatos01_Tarea01_ListaEmpleados
                 defaults: new
                 {
                     controller = "Employee",
-                    action = "Mensual",
+                    action = "Monthly",
                     mesId = UrlParameter.Optional  // Hace que el mesId sea opcional
                 },
                 constraints: new
                 {
                     id = @"\d+"  // Solo permite números para el id
                 }
+            );
+            routes.MapRoute(
+                name: "PlanillaMensualSoloId",
+                url: "Employee/Monthly/{id}",
+                defaults: new { controller = "Employee", action = "Monthly", mesId = UrlParameter.Optional }
             );
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
