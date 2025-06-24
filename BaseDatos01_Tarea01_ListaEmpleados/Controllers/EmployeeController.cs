@@ -137,8 +137,8 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
                 // 1. Validar parámetro id
                 if (id <= 0)
                 {
-                    TempData["Error"] = "ID de empleado inválido";
-                    return RedirectToAction("Index");
+                    TempData["ShowPopup"] = "Error de id"; // Indicador para mostrar popup
+                    return View("Monthly", new PlanillaMensualViewModel()); // O a donde quieras redirigir
                 }
 
                 // 2. Obtener datos
@@ -147,8 +147,8 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
                 // 3. Verificar si hay datos
                 if (model == null)
                 {
-                    TempData["Error"] = "No se encontró la planilla solicitada";
-                    return RedirectToAction("Index");
+                    TempData["ShowPopup"] = "El usuario no tiene meses registrados"; // Indicador para mostrar popup
+                    return View("Monthly", new PlanillaMensualViewModel());  // O a donde quieras redirigir
                 }
                 // 4. Retornar vista (forzando el nombre "Monthly
                 System.Diagnostics.Debug.WriteLine($"SalarioBruto: {model.MesActual.SalarioBruto}");
@@ -161,8 +161,8 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.Controllers
                 // Log del error (opcional)
                 System.Diagnostics.Debug.WriteLine($"Error en Mensual: {ex.Message}");
 
-                TempData["Error"] = "Ocurrió un error al cargar la planilla";
-                return RedirectToAction("Index");
+                TempData["ShowPopUp"] = "Ocurrió un error al cargar la planilla";
+                return RedirectToAction("MainViewEmployee");
             }
         }
         /* public ActionResult Index(string filtro = "")
