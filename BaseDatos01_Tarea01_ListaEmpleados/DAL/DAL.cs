@@ -689,7 +689,7 @@ namespace BaseDatos01_Tarea01_ListaEmpleados.DAL // Data Access Layer
                 var result = await dbHelper.ExecuteNonQueryStoredProcedureAsync(
                     "sp_CargarOperacionesXML",
                     parameters,
-                    180); 
+                    300); 
 
                 if (result.outResultCode == 0)
                 {
